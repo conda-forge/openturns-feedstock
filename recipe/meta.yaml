@@ -11,7 +11,7 @@ source:
   sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
 
 build:
-  number: 200
+  number: 201
   skip: true  # [py3k or win or osx]
   features:
     - blas_{{ variant }}
@@ -23,7 +23,7 @@ requirements:
     - matplotlib
     - cmake
     - swig
-    - boost
+    - boost 1.61.*
     - gcc  # [linux]
     - blas 1.1 {{ variant }}
     - openblas 0.2.18*
