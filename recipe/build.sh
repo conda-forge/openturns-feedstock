@@ -5,6 +5,7 @@ then
   SO_EXT='.dylib'
 else
   SO_EXT='.so'
+  export CXXFLAGS="${CXXFLAGS} -DBOOST_MATH_DISABLE_FLOAT128"
 fi
 
 mkdir -p build && cd build
