@@ -6,9 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  fn: openturns-{{ version }}.tar.gz
-  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
+  git_url: https://github.com/jschueller/openturns.git
+  git_tag: cotire
 
 build:
   number: 201
