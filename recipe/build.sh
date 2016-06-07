@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export MAKEFLAGS="-j2"
+
 if test `uname` = "Darwin"
 then
   SO_EXT='.dylib'
@@ -15,7 +17,9 @@ cmake \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
   -DLAPACKE_FOUND=TRUE -DOPENTURNS_LIBRARIES="$PREFIX/lib/libopenblas${SO_EXT}" \
   -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath,${PREFIX}/lib -L${PREFIX}/lib" \
+  -DUSE_COTIRE=ON -DCOTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES="${MAKEFLAGS}" \
   ..
 
-make install
-DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib ctest -R pyinstallcheck --output-on-failure ${MAKEFLAGS} 
+make all_unity
+make install/fast
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib ctest -R pyinstallcheck --output-on-failure ${MAKEFLAGS}
