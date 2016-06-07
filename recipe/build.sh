@@ -1,5 +1,7 @@
 #!/bin/sh
 
+export MAKEFLAGS="-j2"
+
 if test `uname` = "Darwin"
 then
   SO_EXT='.dylib'
