@@ -11,7 +11,7 @@ source:
   sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
 
 build:
-  number: 201
+  number: 202
   skip: true  # [py3k or win or osx]
   features:
     - blas_{{ variant }}
@@ -20,7 +20,6 @@ build:
 requirements:
   build:
     - python
-    - matplotlib
     - cmake
     - swig
     - boost
@@ -34,7 +33,6 @@ requirements:
 
   run:
     - python
-    - matplotlib
     - blas 1.1 {{ variant }}
     - openblas 0.2.18*
     - libxml2
@@ -45,7 +43,7 @@ requirements:
 
 test:
   imports:
-    - openturns.viewer
+    - openturns
 
 about:
   home: http://openturns.org/
