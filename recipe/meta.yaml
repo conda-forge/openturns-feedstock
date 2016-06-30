@@ -11,8 +11,8 @@ source:
   sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
 
 build:
-  number: 202
-  skip: true  # [py3k or win or osx]
+  number: 203
+  skip: true  # [py3k or win]
   features:
     - blas_{{ variant }}
   detect_binary_files_with_prefix: True
@@ -21,6 +21,7 @@ requirements:
   build:
     - python
     - cmake
+    - ninja
     - swig
     - boost
     - blas 1.1 {{ variant }}
