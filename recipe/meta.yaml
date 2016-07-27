@@ -11,7 +11,7 @@ source:
   sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
 
 build:
-  number: 203
+  number: 204
   skip: true  # [py3k or win]
   features:
     - blas_{{ variant }}
