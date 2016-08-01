@@ -11,7 +11,7 @@ source:
   sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
 
 build:
-  number: 204
+  number: 205
   skip: true  # [py3k or win]
   features:
     - blas_{{ variant }}
@@ -23,7 +23,7 @@ requirements:
     - cmake
     - ninja
     - swig
-    - boost
+    - boost 1.61.*
     - blas 1.1 {{ variant }}
     - openblas 0.2.18*
     - libxml2
