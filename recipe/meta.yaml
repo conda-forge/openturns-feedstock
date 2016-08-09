@@ -1,4 +1,4 @@
-{% set version = "1.7" %}
+{% set version = "1.8rc1" %}
 {% set variant = "openblas" %}
 
 package:
@@ -8,11 +8,11 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha1: 9535120721b20a45460538f3ed8fa0f0fec1d797
+  sha1: f4085571cdc743b2c1b5ce7ec8bd4c8ea22b254e
 
 build:
-  number: 204
-  skip: true  # [py3k or win]
+  number: 200
+  skip: true  # [win]
   features:
     - blas_{{ variant }}
   detect_binary_files_with_prefix: True
@@ -21,7 +21,6 @@ requirements:
   build:
     - python
     - cmake
-    - ninja
     - swig
     - boost
     - blas 1.1 {{ variant }}
