@@ -6,40 +6,63 @@ package:
   version: {{ version }}
 
 source:
-  fn: openturns-{{ version }}.tar.gz
-  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha1: f4085571cdc743b2c1b5ce7ec8bd4c8ea22b254e
+  fn: openturns-{{ version }}.tar.gz  # [not win]
+  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
+  sha1: f4085571cdc743b2c1b5ce7ec8bd4c8ea22b254e  # [not win]
+
+  fn: openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
+  sha1: 35ac43da5228551b21d51bd94f0d1be0d337a7da  # [win32 and py27]
+
+  fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
+  sha1: c4461d573a3b7e44911a170a33be4ad83c31b2d6  # [win64 and py27]
+
+  fn: openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
+  sha1: 8617379e40583bbcfff3f541ea7b17b71ea41387  # [win32 and py34]
+
+  fn: openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
+  sha1: b3980d91a63df1e804edacbefc39dad0337948f6  # [win64 and py34]
+
+  fn: openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
+  sha1: 2483bdb24665145bb940eac88bbaa970484ab0b5  # [win32 and py35]
+
+  fn: openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
+  sha1: 790082ea344577a24ad9c1c049c8de465be7d31f  # [win64 and py35]
 
 build:
   number: 200
-  skip: true  # [win]
   features:
-    - blas_{{ variant }}
+    - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
 
 requirements:
   build:
     - python
-    - cmake
-    - swig
-    - boost
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.18*
-    - libxml2
-    - muparser
-    - tbb
-    - nlopt
-    - hmat-oss
+    - cmake  # [not win]
+    - swig  # [not win]
+    - boost  # [not win]
+    - blas 1.1 {{ variant }}  # [not win]
+    - openblas 0.2.18*  # [not win]
+    - libxml2  # [not win]
+    - muparser  # [not win]
+    - tbb  # [not win]
+    - nlopt  # [not win]
+    - hmat-oss  # [not win]
 
   run:
     - python
-    - blas 1.1 {{ variant }}
-    - openblas 0.2.18*
-    - libxml2
-    - muparser
-    - tbb
-    - nlopt
-    - hmat-oss
+    - blas 1.1 {{ variant }}  # [not win]
+    - openblas 0.2.18*  # [not win]
+    - libxml2  # [not win]
+    - muparser  # [not win]
+    - tbb  # [not win]
+    - nlopt  # [not win]
+    - hmat-oss  # [not win]
 
 test:
   imports:
