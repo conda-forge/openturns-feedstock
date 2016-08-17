@@ -5,7 +5,6 @@ then
   SO_EXT='.dylib'
 else
   SO_EXT='.so'
-  export CXXFLAGS="${CXXFLAGS} -DBOOST_MATH_DISABLE_FLOAT128"
 fi
 
 mkdir -p build && cd build
@@ -21,3 +20,4 @@ cmake \
 make python_unity -j${CPU_COUNT}
 make install/fast
 DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT}
+
