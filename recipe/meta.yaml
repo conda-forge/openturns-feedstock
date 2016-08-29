@@ -34,14 +34,18 @@ source:
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   sha1: 790082ea344577a24ad9c1c049c8de465be7d31f  # [win64 and py35]
 
+  patches:
+    - 0001-Add-Os-IsDirectory-IsFile.patch  # [unix]
+
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
 
 requirements:
   build:
+    - toolchain
     - python
     - cmake  # [not win]
     - swig  # [not win]
@@ -76,3 +80,4 @@ about:
 extra:
   recipe-maintainers:
     - jschueller
+
