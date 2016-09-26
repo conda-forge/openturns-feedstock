@@ -38,7 +38,7 @@ source:
     - 0001-Add-Os-IsDirectory-IsFile.patch  # [unix]
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
