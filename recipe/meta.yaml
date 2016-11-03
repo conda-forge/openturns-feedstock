@@ -38,7 +38,7 @@ source:
     - 0001-Add-Os-IsDirectory-IsFile.patch  # [unix]
 
 build:
-  number: 203
+  number: 204
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
@@ -52,7 +52,7 @@ requirements:
     - boost 1.61.*  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.18|0.2.18.*  # [not win]
-    - libxml2  # [not win]
+    - libxml2 2.9.3  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
@@ -62,7 +62,7 @@ requirements:
     - python
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.18|0.2.18.*  # [not win]
-    - libxml2  # [not win]
+    - libxml2 2.9.3  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
