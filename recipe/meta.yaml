@@ -1,4 +1,4 @@
-{% set version = "1.8rc1" %}
+{% set version = "1.8rc2" %}
 {% set variant = "openblas" %}
 
 package:
@@ -8,37 +8,34 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz  # [not win]
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
-  sha1: f4085571cdc743b2c1b5ce7ec8bd4c8ea22b254e  # [not win]
+  sha256: 085eecfd970a377b3f3b55423eec3d900058fc68d35a72aa360432b88a6018d8  # [not win]
 
   fn: openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
-  sha1: 35ac43da5228551b21d51bd94f0d1be0d337a7da  # [win32 and py27]
+  sha256: abebcc3af25041440869e817bba52d3fc582b8f7fe400dc5b07631be64403090  # [win32 and py27]
 
   fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
-  sha1: c4461d573a3b7e44911a170a33be4ad83c31b2d6  # [win64 and py27]
+  sha256: fe9faa0efff885322af1acaaae3ef1d6f38e7633a821458bc082cdb4e8d0c46c  # [win64 and py27]
 
   fn: openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
-  sha1: 8617379e40583bbcfff3f541ea7b17b71ea41387  # [win32 and py34]
+  sha256: 8c28aaa24bfa5ead0e35ae2d4a2612824d096ab1dc744998ef1beeff96367594  # [win32 and py34]
 
   fn: openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
-  sha1: b3980d91a63df1e804edacbefc39dad0337948f6  # [win64 and py34]
+  sha256: 522bcbb6b60306df48d89ae09bcd067b0b05542dbf534f8a2e84dc01f80270f4  # [win64 and py34]
 
   fn: openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
-  sha1: 2483bdb24665145bb940eac88bbaa970484ab0b5  # [win32 and py35]
+  sha256: 1c205fcde356752872b42505a7e756f9dc11d69a7e244803bd61c02fdc411480  # [win32 and py35]
 
   fn: openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
-  sha1: 790082ea344577a24ad9c1c049c8de465be7d31f  # [win64 and py35]
-
-  patches:
-    - 0001-Add-Os-IsDirectory-IsFile.patch  # [unix]
+  sha256: d1149a1b54f2fc00af743b9151550f262be07a09353b4ff600fb6a9c35670cd3  # [win64 and py35]
 
 build:
-  number: 203
+  number: 200
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
@@ -75,9 +72,9 @@ test:
 about:
   home: http://openturns.org/
   license: LGPLv3
+  license_file: COPYING.LESSER  # [not win]
   summary: Uncertainty treatment library
 
 extra:
   recipe-maintainers:
     - jschueller
-
