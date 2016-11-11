@@ -33,7 +33,6 @@ conda search openturns --channel conda-forge
 ```
 
 
-
 About conda-forge
 =================
 
