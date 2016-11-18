@@ -1,4 +1,4 @@
-{% set version = "1.8rc2" %}
+{% set version = "1.8" %}
 {% set variant = "openblas" %}
 
 package:
@@ -8,31 +8,31 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz  # [not win]
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
-  sha256: 085eecfd970a377b3f3b55423eec3d900058fc68d35a72aa360432b88a6018d8  # [not win]
+  sha256: a857564257fdb42a0808ef806dfdaa17265d56653634b375f57885106007f687  # [not win]
 
   fn: openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
-  sha256: abebcc3af25041440869e817bba52d3fc582b8f7fe400dc5b07631be64403090  # [win32 and py27]
+  sha256: e986544f268370fcdd8642e47bf9019cf9a03a88825e048c8b7a858c75fb7211  # [win32 and py27]
 
   fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
-  sha256: fe9faa0efff885322af1acaaae3ef1d6f38e7633a821458bc082cdb4e8d0c46c  # [win64 and py27]
+  sha256: 0bf119de8f75d2d0a66bf962e3f7cbf6856149f28f31172e19db6eeec0bb1fbb  # [win64 and py27]
 
   fn: openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-i686.exe  # [win32 and py34]
-  sha256: 8c28aaa24bfa5ead0e35ae2d4a2612824d096ab1dc744998ef1beeff96367594  # [win32 and py34]
+  sha256: b2ee91420af95e43529086126405e9ff031b7f5233c1ec9e0ce60335b5b28592  # [win32 and py34]
 
   fn: openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.4-x86_64.exe  # [win64 and py34]
-  sha256: 522bcbb6b60306df48d89ae09bcd067b0b05542dbf534f8a2e84dc01f80270f4  # [win64 and py34]
+  sha256: d4f9d3a67a08a9aed88052534c2332b4891a59983398153bd0bc78e4260a6f4c  # [win64 and py34]
 
   fn: openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
-  sha256: 1c205fcde356752872b42505a7e756f9dc11d69a7e244803bd61c02fdc411480  # [win32 and py35]
+  sha256: dada0ef3a4053f0125425a4c0fe78b7062ccde6689bea72377307f88299aaa90  # [win32 and py35]
 
   fn: openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
-  sha256: d1149a1b54f2fc00af743b9151550f262be07a09353b4ff600fb6a9c35670cd3  # [win64 and py35]
+  sha256: 86c7f630874c1de30a56d386ff4449ce0693a16b3a4419b2fc729a1c7dbd6521  # [win64 and py35]
 
 build:
   number: 200
@@ -46,9 +46,9 @@ requirements:
     - python
     - cmake  # [not win]
     - swig  # [not win]
-    - boost 1.61.*  # [not win]
+    - boost  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
-    - openblas 0.2.18|0.2.18.*  # [not win]
+    - openblas 0.2.19|0.2.19.*  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
@@ -58,7 +58,7 @@ requirements:
   run:
     - python
     - blas 1.1 {{ variant }}  # [not win]
-    - openblas 0.2.18|0.2.18.*  # [not win]
+    - openblas 0.2.19|0.2.19.*  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
