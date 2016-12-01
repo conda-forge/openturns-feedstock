@@ -35,7 +35,7 @@ source:
   sha256: 86c7f630874c1de30a56d386ff4449ce0693a16b3a4419b2fc729a1c7dbd6521  # [win64 and py35]
 
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
@@ -46,10 +46,10 @@ requirements:
     - python
     - cmake  # [not win]
     - swig  # [not win]
-    - boost  # [not win]
+    - boost 1.62.*  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
-    - libxml2  # [not win]
+    - libxml2 2.9.*  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
@@ -59,7 +59,7 @@ requirements:
     - python
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
-    - libxml2  # [not win]
+    - libxml2 2.9.*  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
