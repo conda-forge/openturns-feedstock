@@ -11,6 +11,18 @@ Summary: Uncertainty treatment library
 
 
 
+Current build status
+====================
+
+Linux: [![Circle CI](https://circleci.com/gh/conda-forge/openturns-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/openturns-feedstock)
+OSX: [![TravisCI](https://travis-ci.org/conda-forge/openturns-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/openturns-feedstock)
+Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/openturns-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/openturns-feedstock/branch/master)
+
+Current release info
+====================
+Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/version.svg)](https://anaconda.org/conda-forge/openturns)
+Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/downloads.svg)](https://anaconda.org/conda-forge/openturns)
+
 Installing openturns
 ====================
 
@@ -66,18 +78,6 @@ Terminology
 
 **conda-forge** - the place where the feedstock and smithy live and work to
                   produce the finished article (built conda distributions)
-
-Current build status
-====================
-
-Linux: [![Circle CI](https://circleci.com/gh/conda-forge/openturns-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/openturns-feedstock)
-OSX: [![TravisCI](https://travis-ci.org/conda-forge/openturns-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/openturns-feedstock)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/openturns-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/openturns-feedstock/branch/master)
-
-Current release info
-====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/version.svg)](https://anaconda.org/conda-forge/openturns)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/downloads.svg)](https://anaconda.org/conda-forge/openturns)
 
 
 Updating openturns-feedstock
