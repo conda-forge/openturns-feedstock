@@ -66,8 +66,11 @@ requirements:
     - hmat-oss  # [not win]
 
 test:
+  requires:
+    - matplotlib
   imports:
     - openturns
+    - openturns.viewer
 
 about:
   home: http://openturns.org/
