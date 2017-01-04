@@ -1,0 +1,25 @@
+From d5729589bb00055a90ba51b49eef9379bc966920 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Wed, 4 Jan 2017 13:59:42 +0100
+Subject: [PATCH] Install libOT-gdb.py using relative LIBRARY_PATH
+
+---
+ lib/src/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/src/CMakeLists.txt b/lib/src/CMakeLists.txt
+index 71110d3..730a683 100644
+--- lib/src/CMakeLists.txt
++++ lib/src/CMakeLists.txt
+@@ -81,7 +81,7 @@ install (TARGETS OT
+ if (UNIX AND BUILD_SHARED_LIBS)
+   set (OT_GDB_PY ${CMAKE_SHARED_LIBRARY_PREFIX}OT${CMAKE_SHARED_LIBRARY_SUFFIX}.${LIB_VERSION}-gdb.py)
+   execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_SOURCE_DIR}/libOT-gdb.py ${CMAKE_CURRENT_BINARY_DIR}/${OT_GDB_PY})
+-  install (FILES libOT-gdb.py DESTINATION ${OPENTURNS_DATA_PATH}/gdb/auto-load/${LIBRARY_PATH} RENAME ${OT_GDB_PY})
++  install (FILES libOT-gdb.py DESTINATION ${OPENTURNS_DATA_PATH}/gdb/auto-load/${OPENTURNS_LIBRARY_PATH} RENAME ${OT_GDB_PY})
+ endif ()
+ 
+ 
+-- 
+2.7.4
+
