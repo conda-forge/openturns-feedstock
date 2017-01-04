@@ -36,7 +36,6 @@ source:
 
   patches:
     - swig3011-truediv.patch
-    - 0001-Install-libOT-gdb.py-using-relative-LIBRARY_PATH.patch
 
 build:
   number: 202
