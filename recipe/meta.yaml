@@ -34,6 +34,9 @@ source:
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   sha256: 86c7f630874c1de30a56d386ff4449ce0693a16b3a4419b2fc729a1c7dbd6521  # [win64 and py35]
 
+  patches:
+    - swig3011-truediv.patch
+
 build:
   number: 201
   features:
