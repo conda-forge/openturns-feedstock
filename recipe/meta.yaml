@@ -36,10 +36,9 @@ source:
 
   patches:
     - swig3011-truediv.patch
-    - 0001-Install-libOT-gdb.py-using-relative-LIBRARY_PATH.patch
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True

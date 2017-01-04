@@ -19,4 +19,5 @@ cmake \
 
 make python_unity -j${CPU_COUNT}
 make install/fast
+rm -r ${PREFIX}/share/gdb
 DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT}
