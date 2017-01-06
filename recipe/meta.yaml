@@ -42,6 +42,7 @@ build:
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
+  skip: true  # [(linux and py34) or (win and py>35)]
 
 requirements:
   build:
@@ -49,7 +50,7 @@ requirements:
     - python
     - cmake  # [not win]
     - swig  # [not win]
-    - boost 1.62.*  # [not win]
+    - boost-cpp 1.63.*  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
     - libxml2 2.9.*  # [not win]
@@ -57,7 +58,6 @@ requirements:
     - tbb  # [not win]
     - nlopt  # [not win]
     - hmat-oss  # [not win]
-
   run:
     - python
     - blas 1.1 {{ variant }}  # [not win]
