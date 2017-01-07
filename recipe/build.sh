@@ -1,13 +1,6 @@
 #!/bin/sh
 
-if test `uname` = "Darwin"
-then
-  SHLIB_EXT='.dylib'
-else
-  SHLIB_EXT='.so'
-fi
-
-mkdir -p build && cd build
+mkdir build && cd build
 
 cmake \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
