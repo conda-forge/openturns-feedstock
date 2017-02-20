@@ -12,5 +12,12 @@ cmake \
 
 make python_unity -j${CPU_COUNT}
 make install/fast
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib python -c "import time; t0=time.time(); import openturns; t1=time.time(); print(t1-t0)"
+
 rm -r ${PREFIX}/share/gdb
 DYLD_FALLBACK_LIBRARY_PATH=${PREFIX}/lib ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT}
