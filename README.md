@@ -3,7 +3,7 @@ About openturns
 
 Home: http://openturns.org/
 
-Package license: LGPLv3
+Package license: LGPL3
 
 Feedstock license: BSD 3-Clause
 
