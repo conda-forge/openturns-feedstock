@@ -56,7 +56,7 @@ requirements:
     - hmat-oss  # [not win]
   run:
     - python  # [py<36]
-    - python >= 3.6.1 # [py>=36]
+    - python >=3.6.1  # [py>=36]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
     - libxml2 2.9.*  # [not win]
