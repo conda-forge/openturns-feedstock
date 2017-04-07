@@ -35,7 +35,7 @@ source:
   sha256: 9b4c27130432b6facea1161ba101a04d81877ab24fdc3db7c75c14e82f2faf61  # [win64 and py36]
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
@@ -55,7 +55,7 @@ requirements:
     - nlopt  # [not win]
     - hmat-oss  # [not win]
   run:
-    - python  # [py<36]
+    - python
     - python >=3.6.1  # [py>=36]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
