@@ -46,7 +46,7 @@ requirements:
     - python
     - cmake  # [not win]
     - swig  # [not win]
-    - boost-cpp 1.63.*  # [not win]
+    - boost-cpp 1.64.*  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.19|0.2.19.*  # [not win]
     - libxml2 2.9.*  # [not win]
