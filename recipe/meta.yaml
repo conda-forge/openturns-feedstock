@@ -33,9 +33,12 @@ source:
   fn: openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   sha256: fa179d8ea5c51a9a99fb0055b58412b414362b1f5be0b8215d217a54daff85d8  # [win64 and py36]
+  patches:
+    # https://github.com/openturns/openturns/pull/500
+    - fix-conda-relocation.patch  # [not win]
 
 build:
-  number: 204
+  number: 205
   features:
     - blas_{{ variant }}  # [not win]
   detect_binary_files_with_prefix: True
