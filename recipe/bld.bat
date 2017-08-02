@@ -3,7 +3,7 @@
 set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
 
 :: swig modules need proper stack alignment on 32 bit
-if "%ARCH%"=="32" (set SWIG_CXX_FLAGS="-mstackrealign") else (set SWIG_CXX_FLAGS="")
+if "%ARCH%"=="32" (set SWIG_CXX_FLAGS="-mstackrealign") else (set SWIG_CXX_FLAGS=)
 
 mkdir build && cd build
 
@@ -21,4 +21,7 @@ if errorlevel 1 exit 1
 
 :: Build.
 mingw32-make install -j %CPU_COUNT% VERBOSE=1
+if errorlevel 1 exit 1
+
+python -c "import openturns"
 if errorlevel 1 exit 1
