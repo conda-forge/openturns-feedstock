@@ -36,6 +36,8 @@ source:
   patches:
     # https://github.com/openturns/openturns/pull/500
     - fix-conda-relocation.patch  # [not win]
+    # https://github.com/openturns/openturns/pull/542
+    - 0001-Fix-numerical-test-failures.patch  # [not win]
 
 build:
   number: 205
