@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a281f53..d443718 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -392,10 +392,14 @@ add_custom_target (uninstall
+ # RPATH settings
+ set (CMAKE_INSTALL_RPATH ${LIBRARY_PATH})
+ set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+-if(POLICY CMP0042)
++if (POLICY CMP0042)
+   # Set MACOSX_RPATH to ON
+-  cmake_policy(SET CMP0042 NEW)
+-endif()
++  cmake_policy (SET CMP0042 NEW)
++endif ()
++if (POLICY CMP0068)
++  # RPATH settings on macOS do not affect install_name
++  cmake_policy (SET CMP0068 NEW)
++endif ()
+ 
+ set (OPENTURNS_SWIG_INCLUDE_DIRS ${INCLUDE_PATH}/openturns/swig)
+ set (OPENTURNS_SWIG_DEFINITIONS -DSWIG_TYPE_TABLE=openturns)
