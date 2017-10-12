@@ -33,9 +33,11 @@ source:
   fn: openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   sha256: 298534d7584d6ee08d6c236f62d69acaa6ab23f95f0bb0ad788b63dbf0d8c179  # [win64 and py36]
+  patches:  # [not win]
+    - 0001-Add-missing-KernelMixture-parameter-accessors.patch  # [not win]
 
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
 
