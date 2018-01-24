@@ -35,7 +35,7 @@ source:
   sha256: 7646c20ab4d355c5b291d8f956af53e569da214377020a346cb3bc8f869dfbbc  # [win64 and py36]
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
 
@@ -45,7 +45,7 @@ requirements:
     - python
     - cmake  # [not win]
     - swig  # [not win]
-    - boost-cpp 1.65.1  # [not win]
+    - boost-cpp 1.66.0  # [not win]
     - blas 1.1 {{ variant }}  # [not win]
     - openblas 0.2.20|0.2.20.*  # [not win]
     - libxml2 2.9.*  # [not win]
