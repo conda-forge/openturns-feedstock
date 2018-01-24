@@ -34,6 +34,9 @@ source:
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   sha256: 7646c20ab4d355c5b291d8f956af53e569da214377020a346cb3bc8f869dfbbc  # [win64 and py36]
 
+  patches:
+    - 0001-Use-numpy-legacy-printing-mode.patch  # [not win]
+
 build:
   number: 202
   features:

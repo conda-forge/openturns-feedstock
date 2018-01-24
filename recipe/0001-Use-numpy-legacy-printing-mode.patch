@@ -1,0 +1,72 @@
+From aafcee1c0481db90696c7591e5175da8861b4a06 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Thu, 11 Jan 2018 13:32:09 +0100
+Subject: [PATCH 1/4] Use numpy legacy printing mode
+
+Fixes output with np 1.14
+---
+ python/src/Point_doc.i.in     | 2 +-
+ python/src/Sample_doc.i.in    | 4 +---
+ python/test/CMakeLists.txt    | 3 ++-
+ python/test/t_Matrix_numpy.py | 3 +++
+ 4 files changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/python/src/Point_doc.i.in b/python/src/Point_doc.i.in
+index 1cf7821..94ec424 100644
+--- a/python/src/Point_doc.i.in
++++ b/python/src/Point_doc.i.in
+@@ -38,7 +38,7 @@ Create a Point from a flat (1d) array, list or tuple
+ and back
+ 
+ >>> np.array(y)
+-array([ 0.,  1.,  2.])
++array...
+ 
+ Addition, subtraction (with compatible dimensions)
+ 
+diff --git a/python/src/Sample_doc.i.in b/python/src/Sample_doc.i.in
+index 096ff58..2a2f9fe 100644
+--- a/python/src/Sample_doc.i.in
++++ b/python/src/Sample_doc.i.in
+@@ -55,9 +55,7 @@ Create a Sample from a (2d) array, list or tuple
+ and back
+ 
+ >>> np.array(sample)
+-array([[ 1.,  2.],
+-       [ 3.,  4.],
+-       [ 5.,  6.]])
++array...
+ 
+ Eventually samples may also be generated from probability distributions or
+ experiments
+diff --git a/python/test/CMakeLists.txt b/python/test/CMakeLists.txt
+index 374d3a1..b568f14 100644
+--- a/python/test/CMakeLists.txt
++++ b/python/test/CMakeLists.txt
+@@ -110,7 +110,8 @@ ot_pyinstallcheck_test (HermitianMatrix_std)
+ ot_pyinstallcheck_test (TriangularComplexMatrix_std)
+ ot_pyinstallcheck_test (Matrix_slice)
+ ot_pyinstallcheck_test (Matrix_operators)
+-if (NUMPY_FOUND)
++if (NUMPY_FOUND AND NOT NUMPY_VERSION_STRING STREQUAL "1.14.0")
++  # https://github.com/numpy/numpy/issues/10356
+   ot_pyinstallcheck_test (Matrix_numpy)
+ endif ()
+ 
+diff --git a/python/test/t_Matrix_numpy.py b/python/test/t_Matrix_numpy.py
+index 8145f1d..18e1d8d 100755
+--- a/python/test/t_Matrix_numpy.py
++++ b/python/test/t_Matrix_numpy.py
+@@ -3,6 +3,9 @@
+ from __future__ import print_function
+ from openturns import *
+ import numpy as np
++from distutils.version import LooseVersion
++if LooseVersion(np.__version__) >= '1.14':
++    np.set_printoptions(legacy='1.13')
+ 
+ TESTPREAMBLE()
+ 
+-- 
+2.7.4
+
