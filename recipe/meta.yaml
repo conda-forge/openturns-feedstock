@@ -34,6 +34,10 @@ source:
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   sha256: d185a7d798ca3a50c7c791a1f18ebc00c4f629627f10ca27955c033984ea2763  # [win64 and py36]
 
+  patches:
+    # http://trac.openturns.org/ticket/945
+    - 756.patch  # [not win]
+
 build:
   number: 200
   features:
