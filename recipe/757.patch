@@ -1,0 +1,27 @@
+From 981aa7cbff4beaa47d83008c27c7dc0cfdd5fd7c Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Fri, 13 Apr 2018 15:13:40 +0200
+Subject: [PATCH] Default R executable value
+
+Sets a reasonable default when R is not found instead of an empty value
+in the config file if R is found in the PATH at runtime.
+
+Adresses http://trac.openturns.org/ticket/946
+---
+ CMakeLists.txt | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 17dfcdc8b..891459168 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -247,6 +247,9 @@ endif ()
+ if (USE_R)
+   find_package (R COMPONENTS base rot)
+ endif ()
++if (NOT R_EXECUTABLE)
++  set (R_EXECUTABLE "R${CMAKE_EXECUTABLE_SUFFIX}")
++endif ()
+ 
+ if (USE_OPENMP)
+   find_package (OpenMP)

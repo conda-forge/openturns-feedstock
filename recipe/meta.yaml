@@ -37,9 +37,11 @@ source:
   patches:
     # http://trac.openturns.org/ticket/945
     - 756.patch  # [not win]
+    # http://trac.openturns.org/ticket/946
+    - 757.patch  # [not win]
 
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
 
