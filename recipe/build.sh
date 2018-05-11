@@ -1,5 +1,7 @@
 #!/bin/sh
 
+git clone https://github.com/sakra/cotire.git && cp cotire/CMake/cotire.cmake cmake
+
 mkdir build && cd build
 
 cmake \
