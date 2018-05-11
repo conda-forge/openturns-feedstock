@@ -14,14 +14,16 @@ Summary: Uncertainty treatment library
 Current build status
 ====================
 
-Linux: [![Circle CI](https://circleci.com/gh/conda-forge/openturns-feedstock.svg?style=shield)](https://circleci.com/gh/conda-forge/openturns-feedstock)
-OSX: [![TravisCI](https://travis-ci.org/conda-forge/openturns-feedstock.svg?branch=master)](https://travis-ci.org/conda-forge/openturns-feedstock)
-Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/conda-forge/openturns-feedstock?svg=True)](https://ci.appveyor.com/project/conda-forge/openturns-feedstock/branch/master)
+[![Linux](https://img.shields.io/circleci/project/github/conda-forge/openturns-feedstock/master.svg?label=Linux)](https://circleci.com/gh/conda-forge/openturns-feedstock)
+[![OSX](https://img.shields.io/travis/conda-forge/openturns-feedstock/master.svg?label=macOS)](https://travis-ci.org/conda-forge/openturns-feedstock)
+[![Windows](https://img.shields.io/appveyor/ci/conda-forge/openturns-feedstock/master.svg?label=Windows)](https://ci.appveyor.com/project/conda-forge/openturns-feedstock/branch/master)
 
 Current release info
 ====================
-Version: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/version.svg)](https://anaconda.org/conda-forge/openturns)
-Downloads: [![Anaconda-Server Badge](https://anaconda.org/conda-forge/openturns/badges/downloads.svg)](https://anaconda.org/conda-forge/openturns)
+
+| Name | Downloads | Version | Platforms |
+| --- | --- | --- | --- |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-openturns-green.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) |
 
 Installing openturns
 ====================
