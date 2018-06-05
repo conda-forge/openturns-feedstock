@@ -34,8 +34,12 @@ source:
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   sha256: 8813d990165748e486904246250a0e059415e2583a239d235fd78e19bbd0e10f  # [win64 and py36]
 
+  patches:
+    - 0001-Fix-Cobyla-optimal-point-query.patch  # [not win]
+    - 0001-Fix-Mesh-isRegular.patch  # [not win]
+
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
 
