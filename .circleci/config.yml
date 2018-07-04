@@ -22,11 +22,11 @@ jobs:
       - run:
           # Run, test and (if we have a BINSTAR_TOKEN) upload the distributions.
           command: ./ci_support/run_docker_build.sh
-  build__CONDA_PY_35:
+  build__CONDA_PY_37:
     working_directory: ~/test
     machine: true
     environment:
-      - CONDA_PY: "35"
+      - CONDA_PY: "37"
     steps:
       - checkout
       - run:
@@ -70,5 +70,5 @@ workflows:
   build_and_test:
     jobs:
       - build__CONDA_PY_27
-      - build__CONDA_PY_35
+      - build__CONDA_PY_37
       - build__CONDA_PY_36
