@@ -10,25 +10,13 @@ source:
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
   sha256: 0b5e572f0a1b3a7a73bc912836f2420bd565d606b3f6a62771cb998ad83eb47f  # [not win]
 
-  fn: openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-i686.exe  # [win32 and py27]
-  sha256: d6b1490d5a6292222a8f2f9a988bc16dedc3ab2a75cee40cc404467fd51f0be3  # [win32 and py27]
-
   fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
   sha256: 01e01291f9949ecd1d7f1b1f091a650df6efa364752f58372de4829437b44adb  # [win64 and py27]
 
-  fn: openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-i686.exe  # [win32 and py35]
-  sha256: c4b421e8bdaca1917b5cd199d590ee781e671d92b5e6f88cf2030157d8713564  # [win32 and py35]
-
   fn: openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
   sha256: 7267aa71cb897113ff5e960166dbbe244b2410b38afd94ed40c88f38fc2de3f2  # [win64 and py35]
-
-  fn: openturns-{{ version }}-py3.6-i686.exe  # [win32 and py36]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-i686.exe  # [win32 and py36]
-  sha256: aad4bb8f2427ad5ad67a0fa0e142406f76896c577e82fcde4f6af70b2de03e07  # [win32 and py36]
 
   fn: openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
@@ -39,20 +27,22 @@ source:
     - 0001-Fix-Mesh-isRegular.patch  # [not win]
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
 
 requirements:
   build:
-    - toolchain
-    - python
+    - {{ compiler('c') }}  # [not win]
+    - {{ compiler('cxx') }}  # [not win]
     - cmake  # [not win]
     - swig  # [not win]
-    - boost-cpp 1.66.0  # [not win]
+    - boost-cpp  # [not win]
+  host:
+    - python
     - blas 1.1 {{ variant }}  # [not win]
-    - openblas 0.2.20|0.2.20.*  # [not win]
-    - libxml2 2.9.*  # [not win]
+    - openblas  # [not win]
+    - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
@@ -60,8 +50,8 @@ requirements:
   run:
     - python
     - blas 1.1 {{ variant }}  # [not win]
-    - openblas 0.2.20|0.2.20.*  # [not win]
-    - libxml2 2.9.*  # [not win]
+    - openblas  # [not win]
+    - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
