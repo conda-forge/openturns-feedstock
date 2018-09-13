@@ -41,6 +41,7 @@ requirements:
   host:
     - python
     - blas 1.1 {{ variant }}  # [not win]
+    - openblas  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
@@ -49,6 +50,7 @@ requirements:
   run:
     - python
     - blas 1.1 {{ variant }}  # [not win]
+    - openblas  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
