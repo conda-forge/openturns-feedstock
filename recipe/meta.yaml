@@ -38,7 +38,6 @@ requirements:
     - cmake  # [not win]
     - swig  # [not win]
     - boost-cpp  # [not win]
-    - tbb-devel  # [not win]
   host:
     - python
     - blas 1.1 {{ variant }}  # [not win]
