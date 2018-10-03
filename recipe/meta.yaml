@@ -1,4 +1,4 @@
-{% set version = "1.11" %}
+{% set version = "1.12rc1" %}
 {% set variant = "openblas" %}
 
 package:
@@ -8,26 +8,22 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz  # [not win]
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
-  sha256: 0b5e572f0a1b3a7a73bc912836f2420bd565d606b3f6a62771cb998ad83eb47f  # [not win]
+  sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57  # [not win]
 
   fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
-  sha256: 01e01291f9949ecd1d7f1b1f091a650df6efa364752f58372de4829437b44adb  # [win64 and py27]
-
-  fn: openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.5-x86_64.exe  # [win64 and py35]
-  sha256: 7267aa71cb897113ff5e960166dbbe244b2410b38afd94ed40c88f38fc2de3f2  # [win64 and py35]
+  sha256: 82804b83b8ba99d4fa2435a7044a8c51864f2a19b52090af9ecf1fd0d3be25f1  # [win64 and py27]
 
   fn: openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
   url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
-  sha256: 8813d990165748e486904246250a0e059415e2583a239d235fd78e19bbd0e10f  # [win64 and py36]
+  sha256: 86cfc10557f7a95ed5127dfbcecb1fa697035327ae420f03b0f0b52a0214e719  # [win64 and py36]
 
-  patches:
-    - 0001-Fix-Cobyla-optimal-point-query.patch  # [not win]
-    - 0001-Fix-Mesh-isRegular.patch  # [not win]
+  fn: openturns-{{ version }}-py3.7-x86_64.exe  # [win64 and py37]
+  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.7-x86_64.exe  # [win64 and py37]
+  sha256: a2a73c06096751f7b821691fd94a764cc362334f6835af18be186cf88d0cd931  # [win64 and py37]
 
 build:
-  number: 202
+  number: 200
   features:
     - blas_{{ variant }}  # [not win]
 
@@ -56,6 +52,7 @@ requirements:
     - tbb  # [not win]
     - nlopt  # [not win]
     - hmat-oss  # [not win]
+    - psutil
 
 test:
   requires:
