@@ -12,6 +12,8 @@ docker_image:
 - condaforge/linux-anvil
 libxml2:
 - '2.9'
+openblas:
+- 0.2.20
 openturns:
 - '1.11'
 pin_run_as_build:
@@ -19,6 +21,8 @@ pin_run_as_build:
     max_pin: x.x.x
   libxml2:
     max_pin: x.x
+  openblas:
+    max_pin: x.x.x
   openturns:
     max_pin: x.x
   python:
