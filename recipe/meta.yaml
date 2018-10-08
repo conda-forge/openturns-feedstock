@@ -23,7 +23,7 @@ source:
   sha256: a2a73c06096751f7b821691fd94a764cc362334f6835af18be186cf88d0cd931  # [win64 and py37]
 
 build:
-  number: 200
+  number: 201
   features:
     - blas_{{ variant }}  # [not win]
 
@@ -41,7 +41,7 @@ requirements:
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
-    - nlopt  # [not win]
+    - nlopt 2.5.*  # [not win]
     - hmat-oss  # [not win]
   run:
     - python
@@ -50,7 +50,7 @@ requirements:
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
-    - nlopt  # [not win]
+    - nlopt 2.5.*  # [not win]
     - hmat-oss  # [not win]
     - psutil
 
