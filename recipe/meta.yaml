@@ -6,35 +6,25 @@ package:
   version: {{ version }}
 
 source:
-  fn: openturns-{{ version }}.tar.gz  # [not win]
-  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz  # [not win]
-  sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57  # [not win]
-
-  fn: openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py2.7-x86_64.exe  # [win64 and py27]
-  sha256: 82804b83b8ba99d4fa2435a7044a8c51864f2a19b52090af9ecf1fd0d3be25f1  # [win64 and py27]
-
-  fn: openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.6-x86_64.exe  # [win64 and py36]
-  sha256: 86cfc10557f7a95ed5127dfbcecb1fa697035327ae420f03b0f0b52a0214e719  # [win64 and py36]
-
-  fn: openturns-{{ version }}-py3.7-x86_64.exe  # [win64 and py37]
-  url: https://github.com/openturns/build/releases/download/v{{ version }}/openturns-{{ version }}-py3.7-x86_64.exe  # [win64 and py37]
-  sha256: a2a73c06096751f7b821691fd94a764cc362334f6835af18be186cf88d0cd931  # [win64 and py37]
+  fn: openturns-{{ version }}.tar.gz
+  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
+  sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57
 
 build:
-  number: 201
+  number: 202
   features:
     - blas_{{ variant }}  # [not win]
 
 requirements:
   build:
+    - cmake
+    - swig
     - {{ compiler('c') }}  # [not win]
     - {{ compiler('cxx') }}  # [not win]
-    - cmake  # [not win]
-    - swig  # [not win]
-    - boost-cpp  # [not win]
+    - {{ compiler('m2w64_c') }}  # [win]
+    - {{ compiler('m2w64_cxx') }}  # [win]
   host:
+    - boost-cpp
     - python
     - blas 1.1 {{ variant }}  # [not win]
     - openblas  # [not win]
@@ -43,8 +33,14 @@ requirements:
     - tbb  # [not win]
     - nlopt  # [not win]
     - hmat-oss  # [not win]
+    - libpython  # [win]
+    - m2w64-openblas  # [win]
+    - m2w64-muparser  # [win]
+    - m2w64-libxml2  # [win]
+    - m2w64-nlopt  # [win]
   run:
     - python
+    - psutil
     - blas 1.1 {{ variant }}  # [not win]
     - openblas  # [not win]
     - libxml2  # [not win]
@@ -52,7 +48,10 @@ requirements:
     - tbb  # [not win]
     - nlopt  # [not win]
     - hmat-oss  # [not win]
-    - psutil
+    - m2w64-openblas  # [win]
+    - m2w64-muparser  # [win]
+    - m2w64-libxml2  # [win]
+    - m2w64-nlopt  # [win]
 
 test:
   requires:
@@ -64,7 +63,7 @@ test:
 about:
   home: http://openturns.org/
   license: LGPL3
-  license_file: COPYING.LESSER  # [not win]
+  license_file: COPYING.LESSER
   summary: Uncertainty treatment library
 
 extra:
