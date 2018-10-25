@@ -11,7 +11,7 @@ cmake -G "MinGW Makefiles" ^
   -DLAPACK_LIBRARIES=%LIBRARY_PREFIX:\=/%/mingw-w64/lib/libopenblas.dll.a ^
   -DPYTHON_LIBRARY=%PREFIX:\=/%/libs/libpython%CONDA_PY%.dll.a ^
   -DCMAKE_C_FLAGS_RELEASE="-O2 -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4" ^
-  -DCMAKE_CXX_FLAGS_RELEASE="-O2 -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4" ^
+  -DCMAKE_CXX_FLAGS_RELEASE="-O2 -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions --param=ssp-buffer-size=4 -std=c++11 -D_GLIBCXX_USE_CXX11_ABI=1" ^
   -DPYTHON_SITE_PACKAGES="%SP_DIR:\=/%" ^
   -DUSE_COTIRE=ON -DCOTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES="-j16" ^
   -DUSE_EXPRTK=OFF ^
