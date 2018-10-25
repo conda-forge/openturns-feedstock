@@ -19,7 +19,7 @@ cmake -G "MinGW Makefiles" ^
 if errorlevel 1 exit 1
 
 :: Build.
-mingw32-make install -j %CPU_COUNT% VERBOSE=1
+mingw32-make install -j %CPU_COUNT%
 if errorlevel 1 exit 1
 
 ctest -R pyinstallcheck --output-on-failure -j %CPU_COUNT%
