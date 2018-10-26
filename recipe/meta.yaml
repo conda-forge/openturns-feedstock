@@ -11,7 +11,7 @@ source:
   sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57
 
 build:
-  number: 202
+  number: 203
   features:
     - blas_{{ variant }}  # [not win]
 
@@ -21,8 +21,8 @@ requirements:
     - swig
     - {{ compiler('c') }}  # [not win]
     - {{ compiler('cxx') }}  # [not win]
-    - {{ compiler('m2w64_c') }}  # [win]
-    - {{ compiler('m2w64_cxx') }}  # [win]
+    #- {{ compiler('m2w64_c') }}  # [win]
+    #- {{ compiler('m2w64_cxx') }}  # [win]
   host:
     - boost-cpp
     - python
@@ -32,11 +32,11 @@ requirements:
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
-    - libpython  # [win]
-    - m2w64-openblas  # [win]
-    - m2w64-muparser  # [win]
-    - m2w64-libxml2  # [win]
-    - m2w64-nlopt  # [win]
+    #- libpython  # [win]
+    #- m2w64-openblas  # [win]
+    #- m2w64-muparser  # [win]
+    #- m2w64-libxml2  # [win]
+    #- m2w64-nlopt  # [win]
   run:
     - python
     - psutil
@@ -46,10 +46,10 @@ requirements:
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
-    - m2w64-openblas  # [win]
-    - m2w64-muparser  # [win]
-    - m2w64-libxml2  # [win]
-    - m2w64-nlopt  # [win]
+    #- m2w64-openblas  # [win]
+    #- m2w64-muparser  # [win]
+    #- m2w64-libxml2  # [win]
+    #- m2w64-nlopt  # [win]
 
 test:
   requires:
