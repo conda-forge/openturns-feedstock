@@ -1,0 +1,28 @@
+From c845924cb915e2d69a654021549b7237cb6548a2 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Tue, 30 Oct 2018 08:27:37 +0100
+Subject: [PATCH] CMake: Set CMP0068
+
+---
+ CMakeLists.txt | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a19d33dba..a2641358d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -37,6 +37,11 @@ endif ()
+ # Defines our own module path
+ list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+ 
++if (POLICY CMP0068)
++  # RPATH settings on macOS do not affect install_name
++  cmake_policy (SET CMP0068 NEW)
++endif ()
++
+ if (USE_COTIRE)
+   if (POLICY CMP0058)
+     # Ninja requires custom command byproducts to be explicit
+-- 
+2.17.1
+

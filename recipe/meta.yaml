@@ -9,6 +9,8 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57
+  patches:
+    - 0001-CMake-Set-CMP0068.patch
 
 build:
   number: 203
