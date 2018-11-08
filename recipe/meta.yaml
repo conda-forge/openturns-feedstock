@@ -1,4 +1,4 @@
-{% set version = "1.12rc1" %}
+{% set version = "1.12" %}
 {% set variant = "openblas" %}
 
 package:
@@ -8,10 +8,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 72585bfdefc493855bfe519d0c25d417713630a42b47e0830ed998f3a0871c57
+  sha256: e759085d85083a426dd8bf110f8849220603ae9cf1331bc4b75a15d4c18f2294
 
 build:
-  number: 203
+  number: 200
   features:
     - blas_{{ variant }}  # [not win]
 
