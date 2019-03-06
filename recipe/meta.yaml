@@ -9,9 +9,13 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: e759085d85083a426dd8bf110f8849220603ae9cf1331bc4b75a15d4c18f2294
+  patches:
+    - 0001-Python-Install-wheel-metadata.patch
+    - boost_welch.patch
+    - 0001-t_coupling_tools-bin-kill-may-not-exist.patch
 
 build:
-  number: 1200
+  number: 1201
   features:
     - blas_{{ variant }}  # [not win]
 

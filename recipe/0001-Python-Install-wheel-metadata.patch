@@ -1,0 +1,89 @@
+From 405e38244d97681b1658847ddada174da233323e Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Thu, 17 Jan 2019 18:01:55 +0100
+Subject: [PATCH] Python: Install wheel metadata
+
+Allows for pip to detect that OpenTURNS is already installed.
+---
+ python/src/CMakeLists.txt |  7 +++++++
+ python/src/METADATA.in    | 41 +++++++++++++++++++++++++++++++++++++++
+ python/src/WHEEL.in       |  4 ++++
+ 3 files changed, 52 insertions(+)
+ create mode 100644 python/src/METADATA.in
+ create mode 100644 python/src/WHEEL.in
+
+diff --git a/python/src/CMakeLists.txt b/python/src/CMakeLists.txt
+index f9495503c..0e5c91bdc 100644
+--- a/python/src/CMakeLists.txt
++++ b/python/src/CMakeLists.txt
+@@ -1042,3 +1042,10 @@ if (SPHINX_FOUND)
+ 
+   install (DIRECTORY ${SPHINX_BINARY_DIR}/html DESTINATION ${OPENTURNS_DOC_PATH})
+ endif ()
++
++# wheel files
++configure_file (METADATA.in METADATA @ONLY)
++configure_file (WHEEL.in WHEEL @ONLY)
++install (DIRECTORY DESTINATION ${OPENTURNS_PYTHON_MODULE_PATH}/openturns-${PACKAGE_VERSION}.dist-info)
++install (FILES ${CMAKE_CURRENT_BINARY_DIR}/METADATA ${CMAKE_CURRENT_BINARY_DIR}/WHEEL
++	 DESTINATION ${OPENTURNS_PYTHON_MODULE_PATH}/openturns-${PACKAGE_VERSION}.dist-info)
+diff --git a/python/src/METADATA.in b/python/src/METADATA.in
+new file mode 100644
+index 000000000..aec54b3ca
+--- /dev/null
++++ b/python/src/METADATA.in
+@@ -0,0 +1,41 @@
++Metadata-Version: 2.0
++Name: openturns
++Version: @PACKAGE_VERSION@
++Summary: Uncertainty treatment library
++Home-page:  http://www.openturns.org
++Author: OpenTURNS Developers
++Author-email: users@openturns.org
++License: LGPL
++Keywords: probability reliability sensitivity metamodel
++Platform: any
++Classifier: Development Status :: 4 - Beta
++Classifier: License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)
++Classifier: Operating System :: Microsoft :: Windows
++Classifier: Operating System :: MacOS :: MacOS X
++Classifier: Operating System :: POSIX :: Linux
++Classifier: Programming Language :: C++
++Classifier: Programming Language :: Python
++Classifier: Programming Language :: Python :: 3
++Classifier: Programming Language :: Python :: 3.3
++Classifier: Programming Language :: Python :: 3.4
++Classifier: Programming Language :: Python :: 3.5
++Classifier: Programming Language :: Python :: 3.6
++Classifier: Programming Language :: Python :: 3.7
++Classifier: Programming Language :: Python :: 2
++Classifier: Programming Language :: Python :: 2.7
++Classifier: Topic :: Scientific/Engineering :: Information Analysis
++Classifier: Topic :: Scientific/Engineering :: Mathematics
++Classifier: Topic :: Scientific/Engineering :: Physics
++Classifier: Topic :: Software Development :: Libraries
++Classifier: Topic :: Software Development :: Libraries :: Python Modules
++Classifier: Intended Audience :: Developers
++Classifier: Intended Audience :: Financial and Insurance Industry
++Classifier: Intended Audience :: Information Technology
++Classifier: Intended Audience :: Science/Research
++
++OpenTURNS is a scientific C++ and Python library including an internal data model and algorithms
++dedicated to the treatment of uncertainties. The main goal of this library is giving
++to specific applications all the functionalities needed to treat uncertainties in studies.
++Targeted users are all engineers who want to introduce the probabilistic dimension
++in their so far deterministic studies. 
++
+diff --git a/python/src/WHEEL.in b/python/src/WHEEL.in
+new file mode 100644
+index 000000000..823cbf74f
+--- /dev/null
++++ b/python/src/WHEEL.in
+@@ -0,0 +1,4 @@
++Wheel-Version: 1.0
++Generator: custom
++Root-Is-Purelib: false
++Tag: @WHEEL_TAG@
+-- 
+2.17.1
+
