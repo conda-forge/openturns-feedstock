@@ -1,0 +1,47 @@
+From fcf593f5c75c216ccd40b723cdd95e904a7b75ff Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Sat, 26 Jan 2019 09:29:20 +0100
+Subject: [PATCH] Viewer: Dont use matplotlib 2-d input
+
+Breaks numpy's general broadcasting rules wth numpy >=1.16
+See https://github.com/matplotlib/matplotlib/issues/13286, cc @pcaclin
+---
+ python/src/viewer.py | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/python/src/viewer.py b/python/src/viewer.py
+index 13d6c0d81..687356ff2 100644
+--- a/python/src/viewer.py
++++ b/python/src/viewer.py
+@@ -299,9 +299,9 @@ def __init__(self,
+ 
+             # retrieve data
+             data = drawable.getData()
+-            x = data.getMarginal(0)
++            x = data.getMarginal(0).asPoint()
+             if data.getDimension() > 1:
+-                y = data.getMarginal(1)
++                y = data.getMarginal(1).asPoint()
+ 
+             # add label, title
+             if drawableKind != 'Pie':
+@@ -343,8 +343,8 @@ def __init__(self,
+                     if (i == 1) and ('label' in bar_kwargs):
+                         bar_kwargs.pop('label')
+                     self._ax[0].bar(
+-                        xi, height=y[i,0], width=x[i,0], align='edge', **bar_kwargs)
+-                    xi += x[i,0]
++                        xi, height=y[i], width=x[i], align='edge', **bar_kwargs)
++                    xi += x[i]
+ 
+             elif drawableKind == 'Cloud':
+                 plot_kwargs['linestyle'] = 'None'
+@@ -498,7 +498,7 @@ def __init__(self,
+                     elif positions[i] == 'bottom':
+                         vertical = 'top'
+                     self._ax[0].text(
+-                        x[i,0], y[i,0], text, horizontalalignment=horizontal, verticalalignment=vertical, **text_kwargs)
++                        x[i], y[i], text, horizontalalignment=horizontal, verticalalignment=vertical, **text_kwargs)
+ 
+             else:
+                 raise ValueError(

@@ -13,6 +13,8 @@ source:
     - 0001-Python-Install-wheel-metadata.patch
     - boost_welch.patch
     - 0001-t_coupling_tools-bin-kill-may-not-exist.patch
+    - barplot_fillstyle.patch
+    - viewer_no2d.patch
 
 build:
   number: 1201
@@ -30,6 +32,7 @@ requirements:
   host:
     - boost-cpp
     - python
+    - matplotlib
     - blas 1.1 {{ variant }}  # [not win]
     - openblas  # [not win]
     - libxml2  # [not win]
@@ -56,11 +59,8 @@ requirements:
     #- m2w64-nlopt  # [win]
 
 test:
-  requires:
-    - matplotlib
   imports:
     - openturns
-    - openturns.viewer
 
 about:
   home: http://openturns.org/
