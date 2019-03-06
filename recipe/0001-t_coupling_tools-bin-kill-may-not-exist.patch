@@ -1,0 +1,69 @@
+From c123477ed149a39521824d7ca36094a02ec62e6d Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Wed, 6 Mar 2019 14:11:59 +0100
+Subject: [PATCH 1/3] t_coupling_tools: /bin/kill may not exist
+
+---
+ python/test/t_coupling_tools.expout |  2 +-
+ python/test/t_coupling_tools.py     | 20 +++++++++-----------
+ 2 files changed, 10 insertions(+), 12 deletions(-)
+
+diff --git a/python/test/t_coupling_tools.expout b/python/test/t_coupling_tools.expout
+index d06514caa..4ed3f818a 100644
+--- a/python/test/t_coupling_tools.expout
++++ b/python/test/t_coupling_tools.expout
+@@ -1,5 +1,5 @@
+ === check_execute
+-/bin/kill
++/bin/echo
+ hi
+ hi
+ execute ok
+diff --git a/python/test/t_coupling_tools.py b/python/test/t_coupling_tools.py
+index f43eb9dac..b37317be8 100755
+--- a/python/test/t_coupling_tools.py
++++ b/python/test/t_coupling_tools.py
+@@ -556,31 +556,29 @@ def check_execute():
+     # ensure previous print is print before following command output
+     sys.stdout.flush()
+ 
+-    # Care with -darwin systems
+-
+-    if ('darwin' in sys.platform) or ('win' not in sys.platform):
+-        coupling_tools.execute('/bin/ls /bin/kill')
++    if not sys.platform.startswith('win'):
++        coupling_tools.execute('/bin/ls /bin/echo')
+         coupling_tools.execute('echo "hi"', is_shell=True)
+         coupling_tools.execute('echo "hi"', is_shell=True,
+                                shell_exe='/bin/bash')
+ 
+-        ret, stdout = coupling_tools.execute('/bin/ls /bin/kill',
++        ret, stdout = coupling_tools.execute('/bin/ls /bin/echo',
+                                              get_stdout=True)
+-        if stdout != b'/bin/kill\n':
++        if stdout != b'/bin/echo\n':
+             raise Exception("coupling_tools.execute error!")
+ 
+-        ret, stdout, stderr = coupling_tools.execute('/bin/ls /bin/kill',
++        ret, stdout, stderr = coupling_tools.execute('/bin/ls /bin/echo',
+                                                      get_stdout=True, get_stderr=True)
+-        if stdout != b'/bin/kill\n' and stderr != b'':
++        if stdout != b'/bin/echo\n' and stderr != b'':
+             raise Exception("coupling_tools.execute error!")
+ 
+-        ret, stderr = coupling_tools.execute('/bin/ls /bin/kill 1>&2',
++        ret, stderr = coupling_tools.execute('/bin/ls /bin/echo 1>&2',
+                                              is_shell=True,
+                                              get_stderr=True)
+-        if stderr != b'/bin/kill\n':
++        if stderr != b'/bin/echo\n':
+             raise Exception("coupling_tools.execute error!")
+     else:
+-        coupling_tools.execute('cmd.exe /c echo /bin/kill')
++        coupling_tools.execute('cmd.exe /c echo /bin/echo')
+         exec_in_wine = os.path.exists('/boot')
+         if exec_in_wine:
+             # command 'echo' do not work in python on wine for an unknown
+-- 
+2.17.1
+
