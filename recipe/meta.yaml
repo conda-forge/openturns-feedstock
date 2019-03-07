@@ -17,7 +17,7 @@ source:
     - viewer_no2d.patch
 
 build:
-  number: 1201
+  number: 1202
   features:
     - blas_{{ variant }}  # [not win]
 
@@ -39,6 +39,7 @@ requirements:
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
+    - hmat-oss  # [not win]
     #- libpython  # [win]
     #- m2w64-openblas  # [win]
     #- m2w64-muparser  # [win]
@@ -53,6 +54,7 @@ requirements:
     - muparser  # [not win]
     - tbb  # [not win]
     - nlopt  # [not win]
+    - hmat-oss  # [not win]
     #- m2w64-openblas  # [win]
     #- m2w64-muparser  # [win]
     #- m2w64-libxml2  # [win]
