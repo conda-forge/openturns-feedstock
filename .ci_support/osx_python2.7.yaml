@@ -4,12 +4,18 @@ boost_cpp:
 - 1.68.0
 c_compiler:
 - clang
+c_compiler_version:
+- '4'
 channel_sources:
 - conda-forge,defaults
 channel_targets:
 - conda-forge main
 cxx_compiler:
 - clangxx
+cxx_compiler_version:
+- '4'
+liblapack:
+- 3.8.0 *netlib
 libxml2:
 - '2.9'
 macos_machine:
@@ -18,8 +24,6 @@ macos_min_version:
 - '10.9'
 nlopt:
 - 2.5.*
-openblas:
-- 0.3.3
 openturns:
 - 1.12*
 pin_run_as_build:
@@ -28,8 +32,6 @@ pin_run_as_build:
   libxml2:
     max_pin: x.x
   nlopt:
-    max_pin: x.x.x
-  openblas:
     max_pin: x.x.x
   openturns:
     max_pin: x.x
