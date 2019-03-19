@@ -1,5 +1,4 @@
 {% set version = "1.12" %}
-{% set variant = "openblas" %}
 
 package:
   name: openturns
@@ -17,9 +16,8 @@ source:
     - viewer_no2d.patch
 
 build:
-  number: 1202
+  number: 1203
   features:
-    - blas_{{ variant }}  # [not win]
 
 requirements:
   build:
@@ -30,11 +28,11 @@ requirements:
     #- {{ compiler('m2w64_c') }}  # [win]
     #- {{ compiler('m2w64_cxx') }}  # [win]
   host:
+    - libblas
+    - libcblas
     - boost-cpp
     - python
     - matplotlib
-    - blas 1.1 {{ variant }}  # [not win]
-    - openblas  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
@@ -48,8 +46,6 @@ requirements:
   run:
     - python
     - psutil
-    - blas 1.1 {{ variant }}  # [not win]
-    - openblas  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
     - tbb  # [not win]
