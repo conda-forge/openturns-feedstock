@@ -1,4 +1,4 @@
-{% set version = "1.12" %}
+{% set version = "1.12.1" %}
 
 package:
   name: openturns
@@ -7,7 +7,7 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: e759085d85083a426dd8bf110f8849220603ae9cf1331bc4b75a15d4c18f2294
+  sha256: 482388bdd34211b02bf9e9421af58de63be2f7e112e699d2110cd69580011cef
   patches:
     - 0001-Python-Install-wheel-metadata.patch
     - boost_welch.patch
@@ -16,7 +16,7 @@ source:
     - viewer_no2d.patch
 
 build:
-  number: 1203
+  number: 0
 
 requirements:
   build:
