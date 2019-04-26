@@ -1,0 +1,13 @@
+diff --git a/lib/src/CMakeLists.txt b/lib/src/CMakeLists.txt
+index 188c374b2..c0e8f6626 100644
+--- a/lib/src/CMakeLists.txt
++++ b/lib/src/CMakeLists.txt
+@@ -57,7 +57,7 @@ if (CMAKE_VERSION VERSION_LESS 3)
+   set_target_properties (OT PROPERTIES INTERFACE_LINK_LIBRARIES "${OPENTURNS_LIBRARIES}")
+ else ()
+   target_link_libraries (OT PUBLIC ${OPENTURNS_LIBRARIES})
+-  target_link_libraries (OT PRIVATE ${OPENTURNS_PRIVATE_LIBRARIES})
++  target_link_libraries (OT PUBLIC ${OPENTURNS_PRIVATE_LIBRARIES})
+ endif ()
+ 
+ if (NOT CMAKE_VERSION VERSION_LESS 3.2)
