@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# overlink libs instead of using rpath-link
+echo "target_link_libraries (OT PUBLIC \${OPENTURNS_PRIVATE_LIBRARIES})" >> lib/src/CMakeLists.txt
+
 mkdir build && cd build
 
 cmake \

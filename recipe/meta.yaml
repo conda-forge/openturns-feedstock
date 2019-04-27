@@ -8,9 +8,6 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: ce643c8037d3324866868cfcedff1e192e3a42d056d96648c1ef932bba065ce0
-  patches:
-    # overlink libs instead of using rpath-link
-    - link_public.patch
 
 build:
   number: 0
