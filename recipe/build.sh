@@ -1,7 +1,9 @@
 #!/bin/sh
 
-# overlink libs instead of using rpath-link
-echo "target_link_libraries (OT PUBLIC \${OPENTURNS_PRIVATE_LIBRARIES})" >> lib/src/CMakeLists.txt
+if test `uname` = "Linux"
+then
+  export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
+fi
 
 mkdir build && cd build
 
