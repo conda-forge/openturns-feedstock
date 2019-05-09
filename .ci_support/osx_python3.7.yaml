@@ -23,9 +23,9 @@ macos_machine:
 macos_min_version:
 - '10.9'
 nlopt:
-- 2.5.*
+- 2.6.*
 openturns:
-- 1.12*
+- 1.13*
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x

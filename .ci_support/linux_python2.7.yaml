@@ -19,9 +19,9 @@ liblapack:
 libxml2:
 - '2.9'
 nlopt:
-- 2.5.*
+- 2.6.*
 openturns:
-- 1.12*
+- 1.13*
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
