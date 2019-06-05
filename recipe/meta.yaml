@@ -14,8 +14,8 @@ build:
 
 requirements:
   build:
-    - cmake
-    - swig
+    - cmake  # [not win]
+    - swig  # [not win]
     - {{ compiler('c') }}  # [not win]
     - {{ compiler('cxx') }}  # [not win]
   host:
