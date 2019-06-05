@@ -1,4 +1,4 @@
-{% set version = "1.13rc1" %}
+{% set version = "1.13" %}
 
 package:
   name: openturns
@@ -7,10 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: ce643c8037d3324866868cfcedff1e192e3a42d056d96648c1ef932bba065ce0
+  sha256: dcdc1b37f7171c4106fa6392cc240ef780198d377938169d3f9ac0e541453930
 
 build:
-  number: 2
+  number: 0
 
 requirements:
   build:
@@ -19,13 +19,13 @@ requirements:
     - {{ compiler('c') }}  # [not win]
     - {{ compiler('cxx') }}  # [not win]
   host:
-    - boost-cpp
+    - boost-cpp  # [not win]
     - python
     - matplotlib
     - liblapack  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
-    - tbb  # [not win]
+    - tbb-devel  # [not win]
     - nlopt  # [not win]
     - hmat-oss  # [not win]
     - cminpack  # [not win]
