@@ -8,10 +8,13 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: dcdc1b37f7171c4106fa6392cc240ef780198d377938169d3f9ac0e541453930
+  patches:
+    # https://github.com/openturns/openturns/pull/1183
+    - 0001-Fix-ANCOVA-for-sparse-decomposition.patch
+    - 0001-Add-UserDefined-setParameter.patch
 
 build:
-  number: 0
-
+  number: 1
 
 requirements:
   build:

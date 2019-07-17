@@ -1,0 +1,196 @@
+From edb8d6fdf9c0ad345f64f488941835692859e3e1 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Wed, 17 Jul 2019 10:33:36 +0200
+Subject: [PATCH] Add UserDefined::setParameter
+
+---
+ .../Uncertainty/Distribution/UserDefined.cxx  |  19 ++++
+ .../Distribution/openturns/UserDefined.hxx    |   1 +
+ python/test/t_UserDefined_std.expout          |   3 +
+ python/test/t_UserDefined_std.py              | 104 +++++++++---------
+ 4 files changed, 75 insertions(+), 52 deletions(-)
+
+diff --git a/lib/src/Uncertainty/Distribution/UserDefined.cxx b/lib/src/Uncertainty/Distribution/UserDefined.cxx
+index 80f9e25fa..5e5976d7c 100644
+--- a/lib/src/Uncertainty/Distribution/UserDefined.cxx
++++ b/lib/src/Uncertainty/Distribution/UserDefined.cxx
+@@ -468,6 +468,25 @@ Description UserDefined::getParameterDescription() const
+   return description;
+ }
+ 
++void UserDefined::setParameter(const Point & parameter)
++{
++  const UnsignedInteger dimension = getDimension();
++  const UnsignedInteger size = points_.getSize();
++  if (parameter.getSize() != (dimension + 1) * size)
++    throw InvalidArgumentException(HERE) << "Expected " << (dimension + 1) * size << " parameters";
++  for (UnsignedInteger i = 0; i < dimension; ++ i)
++  {
++    for (UnsignedInteger j = 0; j < size; ++ j)
++    {
++      points_(j, i) = parameter[i * size + j];
++    }
++  }
++  for (UnsignedInteger i = 0; i < size; ++ i)
++  {
++    probabilities_[i] = parameter[dimension * size + i];
++  }
++  setData(points_, probabilities_);
++}
+ 
+ /* Get the i-th marginal distribution */
+ Distribution UserDefined::getMarginal(const UnsignedInteger i) const
+diff --git a/lib/src/Uncertainty/Distribution/openturns/UserDefined.hxx b/lib/src/Uncertainty/Distribution/openturns/UserDefined.hxx
+index 9908eb5db..04eb203ac 100644
+--- a/lib/src/Uncertainty/Distribution/openturns/UserDefined.hxx
++++ b/lib/src/Uncertainty/Distribution/openturns/UserDefined.hxx
+@@ -105,6 +105,7 @@ public:
+   PointWithDescriptionCollection getParametersCollection() const;
+ 
+   /** Parameters value accessors */
++  void setParameter(const Point & parameter);
+   Point getParameter() const;
+ 
+   /** Parameters description accessor */
+diff --git a/python/test/t_UserDefined_std.expout b/python/test/t_UserDefined_std.expout
+index 7d3552ef5..cd1fcc6b2 100644
+--- a/python/test/t_UserDefined_std.expout
++++ b/python/test/t_UserDefined_std.expout
+@@ -14,6 +14,9 @@ standard moment n= 3  value= [20.9375]
+ standard moment n= 4  value= [61.9375]
+ standard moment n= 5  value= [184.438]
+ Standard representative= UserDefined({x = [1], p = 0.1875}, {x = [2], p = 0.0625}, {x = [3], p = 0.75})
++parameter= [1,2,3,0.1875,0.0625,0.75]
++parameterDescription= [X^0_0,X^0_1,X^0_2,probabilities_0,probabilities_1,probabilities_2]
++parameter= [1,2,3,0.340909,0.113636,0.545455]
+ Multivariate UserDefined= UserDefined({x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [0,0,0], p = 0.025}, {x = [10.1,10.2,10.3], p = 0.025}, {x = [10.1,10.2,10.3], p = 0.025}, {x = [10.1,10.2,10.3], p = 0.025}, {x = [20.1,20.2,20.3], p = 0.025})
+ Marginal 0= UserDefined({x = [0], p = 0.9}, {x = [10.1], p = 0.075}, {x = [20.1], p = 0.025})
+ Marginal (2, 0)= UserDefined({x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [0,0], p = 0.025}, {x = [10.3,10.1], p = 0.025}, {x = [10.3,10.1], p = 0.025}, {x = [10.3,10.1], p = 0.025}, {x = [20.3,20.1], p = 0.025})
+diff --git a/python/test/t_UserDefined_std.py b/python/test/t_UserDefined_std.py
+index 552f20e68..73289c66e 100755
+--- a/python/test/t_UserDefined_std.py
++++ b/python/test/t_UserDefined_std.py
+@@ -1,68 +1,68 @@
+ #! /usr/bin/env python
+ 
+ from __future__ import print_function
+-from openturns import *
++import openturns as ot
+ 
+-TESTPREAMBLE()
+-RandomGenerator.SetSeed(0)
++ot.TESTPREAMBLE()
+ 
+-try:
++# Instanciate one distribution object
++x = [[1.0], [2.0], [3.0], [3.0]]
++p = [0.3, 0.1, 0.6, 0.6]
++distribution = ot.UserDefined(x, p)
++print("Distribution ", repr(distribution))
++print("Distribution ", distribution)
+ 
+-    # Instanciate one distribution object
+-    x = [[1.0], [2.0], [3.0], [3.0]]
+-    p = [0.3, 0.1, 0.6, 0.6]
+-    distribution = UserDefined(x, p)
+-    print("Distribution ", repr(distribution))
+-    print("Distribution ", distribution)
++# Is this distribution elliptical ?
++print("Elliptical = ", distribution.isElliptical())
+ 
+-    # Is this distribution elliptical ?
+-    print("Elliptical = ", distribution.isElliptical())
++# Is this distribution continuous ?
++print("Continuous = ", distribution.isContinuous())
+ 
+-    # Is this distribution continuous ?
+-    print("Continuous = ", distribution.isContinuous())
++# Test for realization of distribution
++oneRealization = distribution.getRealization()
++print("oneRealization=", repr(oneRealization))
+ 
+-    # Test for realization of distribution
+-    oneRealization = distribution.getRealization()
+-    print("oneRealization=", repr(oneRealization))
++# Test for sampling
++size = 10
++oneSample = distribution.getSample(size)
++print("oneSample=Ok", repr(oneSample))
+ 
+-    # Test for sampling
+-    size = 10
+-    oneSample = distribution.getSample(size)
+-    print("oneSample=Ok", repr(oneSample))
++# Define a point
++point = ot.Point(distribution.getDimension(), 2.0)
+ 
+-    # Define a point
+-    point = Point(distribution.getDimension(), 2.0)
++# Show PDF and CDF of a point
++pointPDF = distribution.computePDF(point)
++pointCDF = distribution.computeCDF(point)
++print("point= ", repr(point), " pdf= %.12g" % pointPDF, " cdf=", pointCDF)
+ 
+-    # Show PDF and CDF of a point
+-    pointPDF = distribution.computePDF(point)
+-    pointCDF = distribution.computeCDF(point)
+-    print("point= ", repr(point), " pdf= %.12g" % pointPDF, " cdf=", pointCDF)
++# Get 95% quantile
++quantile = distribution.computeQuantile(0.95)
++print("Quantile=", repr(quantile))
++print("entropy=%.6f" % distribution.computeEntropy())
+ 
+-    # Get 95% quantile
+-    quantile = distribution.computeQuantile(0.95)
+-    print("Quantile=", repr(quantile))
+-    print("entropy=%.6f" % distribution.computeEntropy())
++for i in range(6):
++    print("standard moment n=", i, " value=",
++          distribution.getStandardMoment(i))
++print("Standard representative=", distribution.getStandardRepresentative())
++print("parameter=", distribution.getParameter())
++print("parameterDescription=", distribution.getParameterDescription())
++parameter = distribution.getParameter()
++parameter[-1] = 0.3
++distribution.setParameter(parameter)
++print("parameter=", distribution.getParameter())
+ 
+-    for i in range(6):
+-        print("standard moment n=", i, " value=",
+-              distribution.getStandardMoment(i))
+-    print("Standard representative=", distribution.getStandardRepresentative())
++# To prevent automatic compaction
++ot.ResourceMap.SetAsUnsignedInteger("UserDefined-SmallSize", 5)
++sample = ot.Sample(40, 3)
++for i in range(4):
++    for j in range(3):
++        sample[i, j] = 10 * (i // 3 + 1) + 0.1 * (j + 1)
+ 
+-    # To prevent automatic compaction
+-    ResourceMap.SetAsUnsignedInteger("UserDefined-SmallSize", 5)
+-    sample = Sample(40, 3)
+-    for i in range(4):
+-        for j in range(3):
+-            sample[i, j] = 10 * (i // 3 + 1) + 0.1 * (j + 1)
++multivariateUserDefined = ot.UserDefined(sample)
++print("Multivariate UserDefined=", multivariateUserDefined)
++print("Marginal 0=", multivariateUserDefined.getMarginal(0))
++indices = ot.Indices(2)
++indices[0] = 2
++indices[1] = 0
++print("Marginal (2, 0)=", multivariateUserDefined.getMarginal(indices))
+ 
+-    multivariateUserDefined = UserDefined(sample)
+-    print("Multivariate UserDefined=", multivariateUserDefined)
+-    print("Marginal 0=", multivariateUserDefined.getMarginal(0))
+-    indices = Indices(2)
+-    indices[0] = 2
+-    indices[1] = 0
+-    print("Marginal (2, 0)=", multivariateUserDefined.getMarginal(indices))
+-
+-except:
+-    import sys
+-    print("t_UserDefined_std.py", sys.exc_info()[0], sys.exc_info()[1])
+-- 
+2.17.1
+
