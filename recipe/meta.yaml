@@ -14,7 +14,7 @@ source:
     - 0001-Add-UserDefined-setParameter.patch
 
 build:
-  number: 1
+  number: 2
 
 requirements:
   build:
