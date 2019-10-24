@@ -37,6 +37,7 @@ requirements:
   run:
     - python
     - psutil
+    - hmat-oss  # [not win]
     - cminpack  # [not win]
     - dlib  # [not win]
 
