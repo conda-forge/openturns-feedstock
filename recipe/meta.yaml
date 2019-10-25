@@ -10,7 +10,7 @@ source:
   sha256: 4c0c24dc1b8307e344313475ced5a9a5971a7d2ba11d39e2c2876ac27cf1660e
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -40,6 +40,7 @@ requirements:
     - hmat-oss  # [not win]
     - cminpack  # [not win]
     - dlib  # [not win]
+    - tbb-devel  # [not win]
 
 test:
   imports:
