@@ -37,9 +37,6 @@ requirements:
   run:
     - python
     - psutil
-    - hmat-oss  # [not win]
-    - cminpack  # [not win]
-    - dlib  # [not win]
     - tbb-devel  # [not win]
 
 test:
