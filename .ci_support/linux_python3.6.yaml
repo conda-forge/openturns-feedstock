@@ -21,7 +21,7 @@ libxml2:
 nlopt:
 - 2.6.*
 openturns:
-- 1.13*
+- 1.14*
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x

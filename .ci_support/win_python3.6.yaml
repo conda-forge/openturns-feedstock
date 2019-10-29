@@ -3,7 +3,7 @@ channel_sources:
 channel_targets:
 - conda-forge main
 openturns:
-- 1.13*
+- 1.14*
 pin_run_as_build:
   openturns:
     max_pin: x.x
