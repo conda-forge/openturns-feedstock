@@ -15,5 +15,11 @@ cmake \
   -DSWIG_COMPILE_FLAGS="-O1" \
   ..
 make install -j${CPU_COUNT}
-rm -r ${PREFIX}/share/gdb
-ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT} -E docstring_model_copula
+
+${PYTHON} ../python/test/t_Function_python.py
+ctest -R Function_python
+
+ctest -R Function_python --output-on-failure -V
+
+#rm -r ${PREFIX}/share/gdb
+#ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT} -E docstring_model_copula
