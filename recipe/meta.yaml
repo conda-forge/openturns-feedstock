@@ -8,7 +8,8 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 4c0c24dc1b8307e344313475ced5a9a5971a7d2ba11d39e2c2876ac27cf1660e
-
+  patches:
+    - mp.patch
 build:
   number: 1
   run_exports:
