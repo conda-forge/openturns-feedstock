@@ -16,4 +16,4 @@ cmake \
   ..
 make install -j${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
-ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT} -E docstring_model_copula
+ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT} -E "docstring_model_copula|Function_python"
