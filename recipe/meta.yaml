@@ -8,9 +8,13 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 22f55bb3bc6e94a5308d94ad6b6272ea74145ba172746fdc1252a5869eb492a8
+  patches:
+    # fix dlib test
+    - a7c1dbdf8ff43e8140061a55df89052bdaa0c20f.patch
+    - 48f81dfcd404e621cb403d97c1dd82843320a5c7.patch
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -32,7 +36,7 @@ requirements:
     - hmat-oss  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
-    - dlib  # [not win]
+    - dlib-cpp  # [not win]
     - coinbonmin  # [not win]
   run:
     - python
