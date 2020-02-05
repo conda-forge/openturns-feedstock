@@ -27,7 +27,7 @@ requirements:
   host:
     - boost-cpp  # [not win]
     - python
-    - matplotlib
+    - matplotlib-base
     - liblapack  # [not win]
     - libxml2  # [not win]
     - muparser  # [not win]
