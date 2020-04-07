@@ -1,11 +1,5 @@
 #!/bin/sh
 
-# headers fix, see https://github.com/conda-forge/ipopt-feedstock/pull/42
-if test -d ${PREFIX}/include/coin/coin-or
-then
-  cp -v ${PREFIX}/include/coin/coin-or/* ${PREFIX}/include/coin/
-fi
-
 if test `uname` = "Linux"
 then
   export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
