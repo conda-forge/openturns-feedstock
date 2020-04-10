@@ -1,4 +1,4 @@
-{% set version = "1.14" %}
+{% set version = "1.15rc1" %}
 
 package:
   name: openturns
@@ -7,14 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 22f55bb3bc6e94a5308d94ad6b6272ea74145ba172746fdc1252a5869eb492a8
-  patches:
-    # fix dlib test
-    - a7c1dbdf8ff43e8140061a55df89052bdaa0c20f.patch
-    - 48f81dfcd404e621cb403d97c1dd82843320a5c7.patch
+  sha256: c96d1d4c2e06c5a976f09a2557f17bcfeb343f2c4d9c4307592594655e031d55
 
 build:
-  number: 6
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -30,14 +26,14 @@ requirements:
     - matplotlib-base
     - liblapack  # [not win]
     - libxml2  # [not win]
-    - muparser  # [not win]
     - tbb-devel  # [not win]
-    - nlopt  # [not win]
     - hmat-oss  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
+    - nlopt  # [not win]
     - dlib-cpp  # [not win]
     - coinbonmin  # [not win]
+    - spectralib  # [not win]
   run:
     - python
     - psutil
