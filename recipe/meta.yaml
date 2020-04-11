@@ -16,13 +16,13 @@ build:
 
 requirements:
   build:
-    - cmake  # [not win]
-    - swig  # [not win]
-    - {{ compiler('c') }}  # [not win]
-    - {{ compiler('cxx') }}  # [not win]
+    - cmake
+    - swig
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
   host:
-    - boost-cpp  # [not win]
     - python
+    - boost-cpp
     - matplotlib-base
     - liblapack  # [not win]
     - libxml2  # [not win]
