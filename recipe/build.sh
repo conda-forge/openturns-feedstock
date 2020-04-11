@@ -1,4 +1,6 @@
 #!/bin/sh
+python -c "import distutils.util; print(distutils.util.get_platform())"
+exit 1
 
 if test `uname` = "Linux"
 then
