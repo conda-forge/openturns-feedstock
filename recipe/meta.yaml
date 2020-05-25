@@ -20,6 +20,7 @@ requirements:
     - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
+    - curl  # [win]
   host:
     - python
     - boost-cpp
