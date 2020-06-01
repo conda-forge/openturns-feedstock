@@ -1,5 +1,7 @@
 #!/bin/sh
 
+otool -L $PREFIX/lib/libjpeg.dylib
+exit 1
 if test `uname` = "Linux"
 then
   export LDFLAGS="${LDFLAGS} -Wl,-rpath-link,${PREFIX}/lib"
