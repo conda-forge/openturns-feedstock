@@ -6,13 +6,17 @@ channel_sources:
 - conda-forge,defaults
 channel_targets:
 - conda-forge main
+curl:
+- '7'
 cxx_compiler:
 - vs2017
 openturns:
-- 1.14*
+- '1.15'
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
+  curl:
+    max_pin: x
   openturns:
     max_pin: x.x
   python:
