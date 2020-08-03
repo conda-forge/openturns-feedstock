@@ -1,0 +1,14 @@
+diff --git a/lib/src/Base/Stat/SampleImplementation.cxx b/lib/src/Base/Stat/SampleImplementation.cxx
+index 45bec125f..cbaa55826 100644
+--- a/lib/src/Base/Stat/SampleImplementation.cxx
++++ b/lib/src/Base/Stat/SampleImplementation.cxx
+@@ -2232,6 +2232,9 @@ SampleImplementation SampleImplementation::getMarginal(const Indices & indices)
+ {
+   if (!indices.check(dimension_)) throw InvalidArgumentException(HERE) << "The indices of a marginal sample must be in the range [0, dim-1] and must be different";
+ 
++  // Special case for dimension 0
++  if (!indices.getSize()) return SampleImplementation(size_, 0);
++
+   // Special case for dimension 1
+   if (dimension_ == 1) return *this;
+ 
