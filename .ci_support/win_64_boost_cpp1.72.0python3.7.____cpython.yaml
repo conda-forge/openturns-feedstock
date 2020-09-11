@@ -1,40 +1,28 @@
 boost_cpp:
-- '1.72'
+- 1.72.0
 c_compiler:
-- gcc
-c_compiler_version:
-- '7'
+- vs2017
 channel_sources:
 - conda-forge,defaults
 channel_targets:
 - conda-forge main
-cxx_compiler:
-- gxx
-cxx_compiler_version:
+curl:
 - '7'
-docker_image:
-- condaforge/linux-anvil-comp7
-liblapack:
-- 3.8.0 *netlib
-libxml2:
-- '2.9'
-nlopt:
-- 2.6.*
+cxx_compiler:
+- vs2017
 openturns:
 - '1.15'
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
-  libxml2:
-    max_pin: x.x
-  nlopt:
-    max_pin: x.x.x
+  curl:
+    max_pin: x
   openturns:
     max_pin: x.x
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.8.* *_cpython
+- 3.7.* *_cpython
 target_platform:
-- linux-64
+- win-64
