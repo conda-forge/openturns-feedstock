@@ -1,0 +1,41 @@
+From cf6c631ff5f50cc87f4c9d9ac47230452659c244 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Mon, 5 Oct 2020 17:58:05 +0200
+Subject: [PATCH] Mixture: Fix computePDFradient, computeCDFGradient
+
+---
+ lib/src/Uncertainty/Distribution/Mixture.cxx |   8 +-
+ python/test/t_Mixture_std.expout             |   2 +
+ python/test/t_Mixture_std.py                 | 383 +++++++++----------
+ 3 files changed, 196 insertions(+), 197 deletions(-)
+
+diff --git a/lib/src/Uncertainty/Distribution/Mixture.cxx b/lib/src/Uncertainty/Distribution/Mixture.cxx
+index d5a3ea591..ed9de22ca 100644
+--- a/lib/src/Uncertainty/Distribution/Mixture.cxx
++++ b/lib/src/Uncertainty/Distribution/Mixture.cxx
+@@ -379,7 +379,8 @@ Point Mixture::computePDFGradient(const Point & point) const
+ 
+   Point pdfGradientValue;
+   const UnsignedInteger size = distributionCollection_.getSize();
+-  for(UnsignedInteger i = 0; i < size; ++i) pdfGradientValue += distributionCollection_[i].getWeight() * distributionCollection_[i].computePDFGradient(point);
++  for(UnsignedInteger i = 0; i < size; ++i)
++    pdfGradientValue.add(distributionCollection_[i].getWeight() * distributionCollection_[i].computePDFGradient(point));
+   return pdfGradientValue;
+ }
+ 
+@@ -389,9 +390,10 @@ Point Mixture::computeCDFGradient(const Point & point) const
+   const UnsignedInteger dimension = getDimension();
+   if (point.getDimension() != dimension) throw InvalidArgumentException(HERE) << "Error: the given point must have dimension=" << dimension << ", here dimension=" << point.getDimension();
+ 
+-  Point cdfGradientValue(getDimension(), 0.0);
++  Point cdfGradientValue;
+   const UnsignedInteger size = distributionCollection_.getSize();
+-  for(UnsignedInteger i = 0; i < size; ++i) cdfGradientValue += distributionCollection_[i].getWeight() * distributionCollection_[i].computeCDFGradient(point);
++  for(UnsignedInteger i = 0; i < size; ++i)
++    cdfGradientValue.add(distributionCollection_[i].getWeight() * distributionCollection_[i].computeCDFGradient(point));
+   return cdfGradientValue;
+ }
+ 
+-- 
+2.17.1
+
