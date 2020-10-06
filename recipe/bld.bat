@@ -8,5 +8,5 @@ if errorlevel 1 exit 1
 cmake -LAH -G"NMake Makefiles" -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" -DBLAS_LIBRARIES=1 -DLAPACK_LIBRARIES=1 .
 if errorlevel 1 exit 1
 
-ctest -R pyinstallcheck --output-on-failure -E docstring
+ctest -R pyinstallcheck --output-on-failure -E docstring --timeout 60
 if errorlevel 1 exit 1
