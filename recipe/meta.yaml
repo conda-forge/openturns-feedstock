@@ -11,9 +11,10 @@ source:
   patches:
     - 0001-GLM-Fix-setOptimizationBounds.patch
     - 0001-GaussianNonLinearCalib-Fix-for-unobserved-inputs.patch
+    - 0001-Mixture-Fix-computePDFradient-computeCDFGradient.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
