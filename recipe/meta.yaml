@@ -14,7 +14,7 @@ source:
     - 0001-Mixture-Fix-computePDFradient-computeCDFGradient.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
