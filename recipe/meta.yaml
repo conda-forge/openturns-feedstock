@@ -1,4 +1,4 @@
-{% set version = "1.15" %}
+{% set version = "1.16rc1" %}
 
 package:
   name: openturns
@@ -7,14 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 116f30b36f5c1df15cffbbfa4b5dc103d42e746d85d5b9f9c7c3bcc02155934a
-  patches:
-    - 0001-GLM-Fix-setOptimizationBounds.patch
-    - 0001-GaussianNonLinearCalib-Fix-for-unobserved-inputs.patch
-    - 0001-Mixture-Fix-computePDFradient-computeCDFGradient.patch
+  sha256: 5a0dca787929e261d2a34e0eea19c5e9742ab05ae7aed023196d68a5a141f1bc
 
 build:
-  number: 4
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
