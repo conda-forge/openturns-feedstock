@@ -21,6 +21,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - curl  # [win]
+    - pkg-config  # [unix]
   host:
     - python
     - boost-cpp
