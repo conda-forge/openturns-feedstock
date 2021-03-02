@@ -10,7 +10,7 @@ source:
   sha256: 9ab4c0d8f68d54a87df1cc19975f78cf0a16d6401afa83459eed9613695995dc
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -21,6 +21,7 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - curl  # [win]
+    - bison  # [not win]
   host:
     - python
     - boost-cpp
