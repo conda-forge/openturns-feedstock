@@ -1,5 +1,3 @@
-boost_cpp:
-- 1.72.0
 c_compiler:
 - vs2017
 channel_sources:
@@ -11,10 +9,8 @@ curl:
 cxx_compiler:
 - vs2017
 openturns:
-- '1.15'
+- '1.16'
 pin_run_as_build:
-  boost-cpp:
-    max_pin: x.x.x
   curl:
     max_pin: x
   openturns:
