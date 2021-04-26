@@ -1,4 +1,4 @@
-{% set version = "1.16" %}
+{% set version = "1.17rc1" %}
 
 package:
   name: openturns
@@ -7,10 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 9ab4c0d8f68d54a87df1cc19975f78cf0a16d6401afa83459eed9613695995dc
+  sha256: a51653558e5a500a14dd04c6b6afaa798088e0888244d9ae879b34aa7b22cf80
 
 build:
-  number: 4
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -24,8 +24,9 @@ requirements:
     - bison  # [not win]
   host:
     - python
-    - boost-cpp
+    - boost-cpp  # [not win]
     - matplotlib-base
+    - mpc  # [not win]
     - liblapack  # [not win]
     - libxml2  # [not win]
     - tbb-devel  # [not win]
@@ -39,6 +40,7 @@ requirements:
     - hdf5  # [not win]
   run:
     - python
+    - dill
     - psutil
     - tbb-devel  # [not win]
 
