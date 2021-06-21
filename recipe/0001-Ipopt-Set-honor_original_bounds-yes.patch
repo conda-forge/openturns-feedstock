@@ -1,0 +1,37 @@
+From 60913a7ff14439df5d2c73648a5a6a27e5d3be5f Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Fri, 18 Jun 2021 12:44:18 +0200
+Subject: [PATCH] Ipopt: Set honor_original_bounds=yes
+
+---
+ lib/src/Base/Optim/Bonmin.cxx | 1 +
+ lib/src/Base/Optim/Ipopt.cxx  | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/lib/src/Base/Optim/Bonmin.cxx b/lib/src/Base/Optim/Bonmin.cxx
+index 0cf1b1e83..2faeb0483 100644
+--- a/lib/src/Base/Optim/Bonmin.cxx
++++ b/lib/src/Base/Optim/Bonmin.cxx
+@@ -166,6 +166,7 @@ void Bonmin::run()
+   app.options()->SetIntegerValue("max_iter", getMaximumIterationNumber());
+   app.options()->SetStringValue("sb", "yes"); // skip ipopt banner
+   app.options()->SetIntegerValue("print_level", 0);
++  app.options()->SetStringValue("honor_original_bounds", "yes");// disabled in ipopt 3.14
+   app.options()->SetIntegerValue("bonmin.bb_log_level", 0);
+   app.options()->SetIntegerValue("bonmin.nlp_log_level", 0);
+   app.options()->SetIntegerValue("bonmin.lp_log_level", 0);
+diff --git a/lib/src/Base/Optim/Ipopt.cxx b/lib/src/Base/Optim/Ipopt.cxx
+index 360d63c98..ee0c9f773 100644
+--- a/lib/src/Base/Optim/Ipopt.cxx
++++ b/lib/src/Base/Optim/Ipopt.cxx
+@@ -135,6 +135,7 @@ void Ipopt::run()
+   app->Options()->SetIntegerValue("print_level", 0);
+   app->Options()->SetIntegerValue("max_iter", getMaximumIterationNumber());
+   app->Options()->SetStringValue("sb", "yes"); // skip banner
++  app->Options()->SetStringValue("honor_original_bounds", "yes");// disabled in ipopt 3.14
+   GetOptionsFromResourceMap(app->Options());
+   String optlist;
+   app->Options()->PrintList(optlist);
+-- 
+2.25.1
+

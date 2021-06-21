@@ -8,9 +8,11 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 42f65701f7cbd0081362be56c8232ddadfc21f2a32f636fd460919cd8f10c84d
+  patches:
+    - 0001-Ipopt-Set-honor_original_bounds-yes.patch
 
 build:
-  number: 0
+  number: 1
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -30,7 +32,7 @@ requirements:
     - liblapack  # [not win]
     - libxml2  # [not win]
     - tbb-devel  # [not win]
-    - hmat-oss 1.6.* # [not win]
+    - hmat-oss 1.6.*  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
     - nlopt  # [not win]
