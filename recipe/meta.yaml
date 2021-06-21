@@ -32,7 +32,7 @@ requirements:
     - liblapack  # [not win]
     - libxml2  # [not win]
     - tbb-devel  # [not win]
-    - hmat-oss 1.6.* # [not win]
+    - hmat-oss 1.6.*  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
     - nlopt  # [not win]
