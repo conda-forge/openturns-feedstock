@@ -38,7 +38,7 @@ requirements:
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
     - coinbonmin  # [not win]
-    - spectralib  # [not win]
+    - spectralib 0.9.*  # [not win]
     - hdf5  # [not win]
   run:
     - python
