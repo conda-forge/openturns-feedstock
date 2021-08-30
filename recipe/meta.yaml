@@ -12,7 +12,7 @@ source:
     - 0001-Ipopt-Set-honor_original_bounds-yes.patch
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
