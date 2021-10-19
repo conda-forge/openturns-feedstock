@@ -1,4 +1,4 @@
-{% set version = "1.17" %}
+{% set version = "1.18rc1" %}
 
 package:
   name: openturns
@@ -7,12 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 42f65701f7cbd0081362be56c8232ddadfc21f2a32f636fd460919cd8f10c84d
-  patches:
-    - 0001-Ipopt-Set-honor_original_bounds-yes.patch
+  sha256: a8d1bac3c6917db775e38a91a4eb070b3773f5a2db7020a47c3326bb4f27d3cd
 
 build:
-  number: 3
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -32,14 +30,15 @@ requirements:
     - liblapack  # [not win]
     - libxml2  # [not win]
     - tbb-devel  # [not win]
-    - hmat-oss 1.6.*  # [not win]
+    - hmat-oss  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
     - coinbonmin  # [not win]
-    - spectralib 0.9.*  # [not win]
+    - spectralib  # [not win]
     - hdf5  # [not win]
+    - primesieve  # [not win]
   run:
     - python
     - dill
