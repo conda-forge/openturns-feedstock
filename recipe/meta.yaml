@@ -27,6 +27,7 @@ requirements:
     - boost-cpp  # [not win]
     - matplotlib-base
     - mpc  # [not win]
+    - libblas  # [not win]
     - liblapack  # [not win]
     - libxml2  # [not win]
     - tbb-devel  # [not win]
