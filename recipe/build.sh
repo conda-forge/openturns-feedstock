@@ -2,6 +2,12 @@
 
 mkdir build && cd build
 
+if test `uname` = "Darwin"
+then
+  export CXXFLAGS="${CXXFLAGS} -fno-aligned-allocation"
+fi
+
+
 cmake ${CMAKE_ARGS} -LAH \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
@@ -15,5 +21,5 @@ make install -j${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
-  ctest -R pyinstallcheck --output-on-failure -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std"
+  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|coupling_tools"
 fi
