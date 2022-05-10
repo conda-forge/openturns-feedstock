@@ -1,13 +1,6 @@
 #!/bin/sh
 
 mkdir build && cd build
-
-if test `uname` = "Darwin"
-then
-  export CXXFLAGS="${CXXFLAGS} -fno-aligned-allocation"
-fi
-
-
 cmake ${CMAKE_ARGS} -LAH \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
