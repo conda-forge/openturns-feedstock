@@ -21,5 +21,5 @@ make install -j${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
-  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|coupling_tools"
+  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std"
 fi
