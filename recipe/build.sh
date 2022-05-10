@@ -4,9 +4,10 @@ mkdir build && cd build
 
 if test `uname` = "Darwin"
 then
+  # tbb/detail/_task.h:216:13: error: aligned deallocation function of type 'void (void *, std::align_val_t) noexcept'
+  # is only available on macOS 10.14 or newer
   export CXXFLAGS="${CXXFLAGS} -fno-aligned-allocation"
 fi
-
 
 cmake ${CMAKE_ARGS} -LAH \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
