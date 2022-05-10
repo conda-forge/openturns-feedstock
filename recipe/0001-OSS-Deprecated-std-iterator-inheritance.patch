@@ -1,0 +1,37 @@
+From 43d4a1028e7af2a98f83f85471fd78129d40597d Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Tue, 10 May 2022 12:31:20 +0200
+Subject: [PATCH] OSS: Deprecated std::iterator inheritance
+
+---
+ lib/src/Base/Common/openturns/OSS.hxx | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/src/Base/Common/openturns/OSS.hxx b/lib/src/Base/Common/openturns/OSS.hxx
+index 451f8247d..32bc9b575 100644
+--- a/lib/src/Base/Common/openturns/OSS.hxx
++++ b/lib/src/Base/Common/openturns/OSS.hxx
+@@ -214,7 +214,6 @@ struct AllElementsPredicate
+ template < typename _Tp, typename _UnaryPredicate = AllElementsPredicate<_Tp>, typename _CharT = char,
+            typename _Traits = std::char_traits<_CharT> >
+ class OSS_iterator
+-  : public std::iterator<std::output_iterator_tag, void, void, void, void>
+ {
+ public:
+   //@{
+@@ -224,6 +223,12 @@ public:
+   typedef OSS                            ostream_type;
+   //@}
+ 
++  typedef std::output_iterator_tag iterator_category;
++  typedef void value_type;
++  typedef void difference_type;
++  typedef void pointer;
++  typedef void reference;
++
+ private:
+   ostream_type*     _M_stream;
+   String            _M_string;
+-- 
+2.25.1
+

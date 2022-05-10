@@ -8,6 +8,8 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 1d61cb6ce8ec1121db9f1e9fb490aaa056d2ff250db26df05d2e3e30ceb32344
+  patches:
+    - 0001-OSS-Deprecated-std-iterator-inheritance.patch
 
 build:
   number: 0
