@@ -10,7 +10,7 @@ source:
   sha256: 1d61cb6ce8ec1121db9f1e9fb490aaa056d2ff250db26df05d2e3e30ceb32344
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -39,7 +39,7 @@ requirements:
     - ceres-solver  # [not win]
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
-      #- coinbonmin  # [not (win or (osx and arm64))]
+    - coinbonmin  # [not (win or (osx and arm64))]
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
