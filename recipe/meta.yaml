@@ -10,7 +10,7 @@ source:
   sha256: 1d61cb6ce8ec1121db9f1e9fb490aaa056d2ff250db26df05d2e3e30ceb32344
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
