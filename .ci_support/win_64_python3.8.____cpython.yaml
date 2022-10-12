@@ -9,12 +9,8 @@ curl:
 cxx_compiler:
 - vs2019
 openturns:
-- '1.18'
+- '1.19'
 pin_run_as_build:
-  curl:
-    max_pin: x
-  openturns:
-    max_pin: x.x
   python:
     min_pin: x.x
     max_pin: x.x

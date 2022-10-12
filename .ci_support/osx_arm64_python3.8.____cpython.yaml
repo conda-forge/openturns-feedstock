@@ -27,16 +27,10 @@ macos_machine:
 nlopt:
 - '2.7'
 openturns:
-- '1.18'
+- '1.19'
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
-  libxml2:
-    max_pin: x.x
-  nlopt:
-    max_pin: x.x.x
-  openturns:
-    max_pin: x.x
   python:
     min_pin: x.x
     max_pin: x.x
