@@ -1,5 +1,5 @@
 MACOSX_DEPLOYMENT_TARGET:
-- '10.14'
+- '11.0'
 boost_cpp:
 - 1.78.0
 c_compiler:
@@ -23,7 +23,7 @@ liblapack:
 libxml2:
 - '2.10'
 macos_machine:
-- x86_64-apple-darwin13.4.0
+- arm64-apple-darwin20.0.0
 nlopt:
 - '2.7'
 openturns:
@@ -35,11 +35,11 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.7.* *_cpython
+- 3.11.* *_cpython
 python_impl:
 - cpython
 target_platform:
-- osx-64
+- osx-arm64
 tbb_devel:
 - '2021'
 zip_keys:
