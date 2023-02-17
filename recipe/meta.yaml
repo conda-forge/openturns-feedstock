@@ -10,7 +10,7 @@ source:
   sha256: 2be5247f0266d153619b35dfb1eeeb46736c502dad993b40aff8857d6314f293
 
 build:
-  number: 2
+  number: 3
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -28,7 +28,7 @@ requirements:
   host:
     - python
     - boost-cpp  # [not win]
-    - matplotlib-base  # [python_impl == 'cpython']
+    - matplotlib-base <3.7  # [python_impl == 'cpython']
     - mpc  # [not win]
     - libblas  # [not win]
     - liblapack  # [not win]
