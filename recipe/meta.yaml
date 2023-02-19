@@ -8,9 +8,12 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 2be5247f0266d153619b35dfb1eeeb46736c502dad993b40aff8857d6314f293
+  patches:
+    # https://github.com/openturns/openturns/issues/2240
+    - mpl37.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -28,7 +31,7 @@ requirements:
   host:
     - python
     - boost-cpp  # [not win]
-    - matplotlib-base <3.7  # [python_impl == 'cpython']
+    - matplotlib-base  # [python_impl == 'cpython']
     - mpc  # [not win]
     - libblas  # [not win]
     - liblapack  # [not win]
@@ -49,7 +52,6 @@ requirements:
     - dill
     - psutil
     - tbb-devel  # [not win]
-    - matplotlib-base <3.7  # [python_impl == 'cpython']
 
 test:
   imports:
