@@ -11,9 +11,10 @@ source:
   patches:
     # https://github.com/openturns/openturns/issues/2240
     - mpl37.patch
+    - 0001-Sample-Fix-pandas-2.0-compat.patch
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -42,7 +43,7 @@ requirements:
     - ceres-solver  # [not win]
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
-    - coinbonmin  # [not win]
+      #- coinbonmin  # [not win]
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
