@@ -43,7 +43,7 @@ requirements:
     - ceres-solver  # [not win]
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
-    - coinbonmin  # [not win]
+      #- coinbonmin  # [not win]
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
