@@ -14,7 +14,7 @@ source:
     - 0001-Sample-Fix-pandas-2.0-compat.patch
 
 build:
-  number: 6
+  number: 7
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -43,7 +43,8 @@ requirements:
     - ceres-solver  # [not win]
     - nlopt  # [not win]
     - dlib-cpp  # [not win]
-      #- coinbonmin  # [not win]
+    - ipopt  # [not win]
+    - coin-or-bonmin  # [not win]
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
