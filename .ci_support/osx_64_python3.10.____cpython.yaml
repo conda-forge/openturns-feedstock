@@ -16,6 +16,8 @@ cxx_compiler_version:
 - '15'
 hdf5:
 - 1.14.0
+ipopt:
+- 3.14.11
 libblas:
 - 3.9 *netlib
 liblapack:
