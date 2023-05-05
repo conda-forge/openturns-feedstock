@@ -1,4 +1,4 @@
-{% set version = "1.20" %}
+{% set version = "1.20.2" %}
 
 package:
   name: openturns
@@ -7,14 +7,14 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 2be5247f0266d153619b35dfb1eeeb46736c502dad993b40aff8857d6314f293
+  sha256: 39bac145f07fdd86a79fc114deb35f99d6e90e503f12084c661fb138caf775f6
   patches:
     # https://github.com/openturns/openturns/issues/2240
     - mpl37.patch
     - 0001-Sample-Fix-pandas-2.0-compat.patch
 
 build:
-  number: 7
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
