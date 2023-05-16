@@ -14,7 +14,7 @@ source:
     - 0001-Sample-Fix-pandas-2.0-compat.patch
 
 build:
-  number: 7
+  number: 8
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
