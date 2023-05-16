@@ -6,12 +6,8 @@ if errorlevel 1 exit 1
 openturns-%PKG_VERSION%-py%PY_VER%-x86_64.exe /userlevel=1 /S /FORCE /D=%PREFIX%
 if errorlevel 1 exit 1
 
-:: copy patched version
-xcopy python\src\viewer.py %SP_DIR%\openturns /y
-if errorlevel 1 exit 1
-
 cmake -LAH -G"NMake Makefiles" -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" -DBLAS_LIBRARIES=1 -DLAPACK_LIBRARIES=1 .
 if errorlevel 1 exit 1
 
-ctest -R pyinstallcheck --output-on-failure -E "docstring|example|PlotDesign" --timeout 1000
+ctest -R pyinstallcheck --output-on-failure --timeout 1000
 if errorlevel 1 exit 1
