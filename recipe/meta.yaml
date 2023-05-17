@@ -1,4 +1,4 @@
-{% set version = "1.20" %}
+{% set version = "1.21rc1" %}
 
 package:
   name: openturns
@@ -7,14 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 2be5247f0266d153619b35dfb1eeeb46736c502dad993b40aff8857d6314f293
-  patches:
-    # https://github.com/openturns/openturns/issues/2240
-    - mpl37.patch
-    - 0001-Sample-Fix-pandas-2.0-compat.patch
+  sha256: f5c910931196c0ce925f67b0bffe2e7716aa59513d71443dcb661695ffd5e6fe
 
 build:
-  number: 8
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -48,7 +44,7 @@ requirements:
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
-    - primesieve <11  # [not win]
+    - primesieve  # [not win]
   run:
     - python
     - dill
