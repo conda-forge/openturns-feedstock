@@ -1,13 +1,13 @@
-About openturns-feedstock
-=========================
+About persalys-feedstock
+========================
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/openturns-feedstock/blob/main/LICENSE.txt)
 
-Home: http://openturns.org/
+Home: https://www.persalys.fr/?la=en
 
 Package license: LGPL-3.0-or-later
 
-Summary: Uncertainty treatment library
+Summary: Uncertainty treatment GUI
 
 Current build status
 ====================
@@ -151,53 +151,53 @@ Current release info
 
 | Name | Downloads | Version | Platforms |
 | --- | --- | --- | --- |
-| [![Conda Recipe](https://img.shields.io/badge/recipe-openturns-green.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/openturns.svg)](https://anaconda.org/conda-forge/openturns) |
+| [![Conda Recipe](https://img.shields.io/badge/recipe-persalys-green.svg)](https://anaconda.org/conda-forge/persalys) | [![Conda Downloads](https://img.shields.io/conda/dn/conda-forge/persalys.svg)](https://anaconda.org/conda-forge/persalys) | [![Conda Version](https://img.shields.io/conda/vn/conda-forge/persalys.svg)](https://anaconda.org/conda-forge/persalys) | [![Conda Platforms](https://img.shields.io/conda/pn/conda-forge/persalys.svg)](https://anaconda.org/conda-forge/persalys) |
 
-Installing openturns
-====================
+Installing persalys
+===================
 
-Installing `openturns` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
+Installing `persalys` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
 
 ```
 conda config --add channels conda-forge
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `openturns` can be installed with `conda`:
+Once the `conda-forge` channel has been enabled, `persalys` can be installed with `conda`:
 
 ```
-conda install openturns
-```
-
-or with `mamba`:
-
-```
-mamba install openturns
-```
-
-It is possible to list all of the versions of `openturns` available on your platform with `conda`:
-
-```
-conda search openturns --channel conda-forge
+conda install persalys
 ```
 
 or with `mamba`:
 
 ```
-mamba search openturns --channel conda-forge
+mamba install persalys
+```
+
+It is possible to list all of the versions of `persalys` available on your platform with `conda`:
+
+```
+conda search persalys --channel conda-forge
+```
+
+or with `mamba`:
+
+```
+mamba search persalys --channel conda-forge
 ```
 
 Alternatively, `mamba repoquery` may provide more information:
 
 ```
 # Search all versions available on your platform:
-mamba repoquery search openturns --channel conda-forge
+mamba repoquery search persalys --channel conda-forge
 
-# List packages depending on `openturns`:
-mamba repoquery whoneeds openturns --channel conda-forge
+# List packages depending on `persalys`:
+mamba repoquery whoneeds persalys --channel conda-forge
 
-# List dependencies of `openturns`:
-mamba repoquery depends openturns --channel conda-forge
+# List dependencies of `persalys`:
+mamba repoquery depends persalys --channel conda-forge
 ```
 
 
@@ -242,17 +242,17 @@ Terminology
                   produce the finished article (built conda distributions)
 
 
-Updating openturns-feedstock
-============================
+Updating persalys-feedstock
+===========================
 
-If you would like to improve the openturns recipe or build a new
+If you would like to improve the persalys recipe or build a new
 package version, please fork this repository and submit a PR. Upon submission,
 your changes will be run on the appropriate platforms to give the reviewer an
 opportunity to confirm that the changes result in a successful build. Once
 merged, the recipe will be re-built and uploaded automatically to the
 `conda-forge` channel, whereupon the built conda packages will be available for
 everybody to install and use from the `conda-forge` channel.
-Note that all branches in the conda-forge/openturns-feedstock are
+Note that all branches in the conda-forge/persalys-feedstock are
 immediately built and any created packages are uploaded, so PRs should be based
 on branches in forks and branches in the main repository should only be used to
 build distinct package versions.
