@@ -27,6 +27,7 @@ requirements:
     - python
     - boost-cpp
     - openturns 1.21*  # [not win]
+    - otmorris  # [not win]
     - liblapack  # [win]
     - qt-main
     - libxml2
