@@ -5,7 +5,7 @@ package:
   version: {{ version }}
 
 source:
-  fn: openturns-{{ version }}.tar.gz
+  fn: persalys-{{ version }}.tar.gz
   url: https://github.com/persalys/persalys/archive/v{{ version }}.tar.gz
   sha256: fe8c645707ad3a21b7c720fd50f2b1ccb5f10510d7ce5431d6ca9cdff3cba1b6
 
@@ -28,7 +28,8 @@ requirements:
     - boost-cpp
     - openturns 1.21*  # [not win]
     - liblapack  # [win]
-    - qwt
+    - qt-main
+    - qwt 6.2.*
   run:
     - python
     - boost-cpp
