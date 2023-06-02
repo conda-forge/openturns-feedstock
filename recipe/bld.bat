@@ -22,6 +22,7 @@ cmake -LAH -G "Ninja" ^
     ..
 if errorlevel 1 exit 1
 
+
 cmake --build . --target install --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
