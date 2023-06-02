@@ -1,66 +1,48 @@
-{% set version = "1.21rc1" %}
+{% set version = "13.1.1" %}
 
 package:
-  name: openturns
+  name: persalys
   version: {{ version }}
 
 source:
   fn: openturns-{{ version }}.tar.gz
-  url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: f5c910931196c0ce925f67b0bffe2e7716aa59513d71443dcb661695ffd5e6fe
+  url: https://github.com/persalys/persalys/archive/v{{ version }}.tar.gz
+  sha256: fe8c645707ad3a21b7c720fd50f2b1ccb5f10510d7ce5431d6ca9cdff3cba1b6
 
 build:
-  number: 1
+  number: 0
   run_exports:
-    - {{ pin_subpackage('openturns', max_pin='x.x') }}
+    - {{ pin_subpackage('persalys', max_pin='x.x') }}
 
 requirements:
   build:
     - cmake
-    - make  # [unix]
+    - ninja
     - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - curl  # [win]
-    - bison  # [not win]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
     - python
-    - boost-cpp  # [not win]
-    - matplotlib-base  # [python_impl == 'cpython']
-    - mpc  # [not win]
-    - libblas  # [not win]
-    - liblapack  # [not win]
-    - libxml2  # [not win]
-    - tbb-devel  # [not win]
-    - hmat-oss  # [not win]
-    - cminpack  # [not win]
-    - ceres-solver  # [not win]
-    - nlopt  # [not win]
-    - dlib-cpp  # [not win]
-    - ipopt  # [not win]
-    - coin-or-bonmin  # [not win]
-    - spectralib  # [not win]
-    - hdf5  # [not win]
-    - pagmo-devel  # [not win]
-    - primesieve  # [not win]
+    - boost-cpp
+    - openturns 1.21*  # [not win]
+    - liblapack  # [win]
+    - qwt
   run:
     - python
-    - dill
-    - psutil
-    - tbb-devel  # [not win]
+    - boost-cpp
 
 test:
   imports:
-    - openturns
+    - persalys
 
 about:
-  home: http://openturns.org/
+  home: https://www.persalys.fr/?la=en
   license: LGPL-3.0-or-later
   license_family: LGPL
   license_file: COPYING.LESSER
-  summary: Uncertainty treatment library
+  summary: Uncertainty treatment GUI
 
 extra:
   recipe-maintainers:
