@@ -19,7 +19,6 @@ cmake -LAH -G "Ninja" ^
     -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 ^
     -DPython_FIND_STRATEGY=LOCATION ^
     -DPython_ROOT_DIR="%PREFIX%" ^
-    -DZZZSWIG_COMPILE_FLAGS="/bigobj" ^
     ..
 if errorlevel 1 exit 1
 
