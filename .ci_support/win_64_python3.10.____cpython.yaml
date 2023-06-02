@@ -10,6 +10,8 @@ cxx_compiler:
 - vs2019
 liblapack:
 - 3.9 *netlib
+libxml2:
+- '2.11'
 pin_run_as_build:
   boost-cpp:
     max_pin: x.x.x
@@ -18,5 +20,7 @@ pin_run_as_build:
     max_pin: x.x
 python:
 - 3.10.* *_cpython
+qt_main:
+- '5.15'
 target_platform:
 - win-64
