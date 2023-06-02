@@ -5,7 +5,7 @@ set "CXXFLAGS=-MD"
 :: from Azure
 set "Boost_ROOT="
 
-git clone -b 1.21 --depth 1 https://github.com/openturns/openturns.git
+git clone -b misc --depth 1 https://github.com/jschueller/openturns.git
 cd openturns
 
 mkdir build && cd build
@@ -16,10 +16,10 @@ cmake -LAH -G "Ninja" ^
     -DCMAKE_INSTALL_INCLUDEDIR="Library/include" ^
     -DCMAKE_INSTALL_DATAROOTDIR="Library/share" ^
     -DCMAKE_INSTALL_PREFIX="%PREFIX%" ^
-    -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=8 ^
+    -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 ^
     -DPython_FIND_STRATEGY=LOCATION ^
     -DPython_ROOT_DIR="%PREFIX%" ^
-    -DSWIG_COMPILE_FLAGS="/bigobj" ^
+    -DZZZSWIG_COMPILE_FLAGS="/bigobj" ^
     ..
 if errorlevel 1 exit 1
 

@@ -29,9 +29,10 @@ requirements:
     - openturns 1.21*  # [not win]
     - otmorris  # [not win]
     - liblapack  # [win]
-    - qt-main 5.15.8
+    - qt-main
     - libxml2
-    - qwt 6.*
+    - qwt
+    - hdf5
   run:
     - python
     - boost-cpp
