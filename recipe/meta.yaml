@@ -29,7 +29,7 @@ requirements:
     - openturns 1.21*  # [not win]
     - otmorris  # [not win]
     - liblapack  # [win]
-    - qt-main
+    - qt-main 5.15.8
     - libxml2
     - qwt 6.*
   run:
