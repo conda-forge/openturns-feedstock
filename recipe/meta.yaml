@@ -39,6 +39,8 @@ requirements:
     - hdf5
     - paraview
     - cli11
+    - nlohmann_json
+    - eigen
   run:
     - python
     - boost-cpp
