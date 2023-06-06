@@ -42,6 +42,7 @@ requirements:
     - nlohmann_json
     - eigen
     - cminpack
+    - expat
   run:
     - python
     - boost-cpp
