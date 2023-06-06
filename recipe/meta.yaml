@@ -25,8 +25,8 @@ requirements:
     - {{ cdt('mesa-libegl-devel') }}     # [linux]
     - {{ cdt('mesa-dri-drivers') }}      # [linux]
     - {{ cdt('libdrm-devel') }}          # [linux]
-    - {{ cdt('libglvnd-glx') }}          # [linux]
-    - {{ cdt('libglvnd-egl') }}          # [linux]
+    #- {{ cdt('libglvnd-glx') }}          # [linux]
+    #- {{ cdt('libglvnd-egl') }}          # [linux]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
@@ -38,6 +38,7 @@ requirements:
     - qwt
     - hdf5
     - paraview
+    - cli11
   run:
     - python
     - boost-cpp
