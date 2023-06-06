@@ -41,6 +41,7 @@ requirements:
     - cli11
     - nlohmann_json
     - eigen
+    - cminpack
   run:
     - python
     - boost-cpp
