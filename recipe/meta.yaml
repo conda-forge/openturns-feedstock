@@ -26,13 +26,12 @@ requirements:
   host:
     - python
     - boost-cpp
-    - openturns 1.21*  # [not win]
-    - otmorris  # [not win]
-    - liblapack  # [win]
+    - liblapack
     - qt-main
     - libxml2
     - qwt
     - hdf5
+    - paraview
   run:
     - python
     - boost-cpp
