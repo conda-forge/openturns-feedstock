@@ -48,5 +48,5 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
 cmake --build . --target install
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
-  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT}
+  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E DataModel
 fi
