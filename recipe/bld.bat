@@ -68,6 +68,7 @@ cmake -LAH -G "Ninja" ^
     -DPython_ROOT_DIR="%PREFIX%" ^
     -DPython3_FIND_STRATEGY=LOCATION ^
     -DPython3_ROOT_DIR="%PREFIX%" ^
+    -DUSE_SALOME=OFF -DUSE_PARAVIEW=OFF ^
     ..
 if errorlevel 1 exit 1
 
@@ -75,3 +76,5 @@ cmake --build . --target install --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
 xcopy /y /s /f %LIBRARY_PREFIX%\bin\persalys*.dll %SP_DIR%\persalys
+
+ctest -R pyinstallcheck --output-on-failure --schedule-random
