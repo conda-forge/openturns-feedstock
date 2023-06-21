@@ -6,7 +6,7 @@ if errorlevel 1 exit 1
 openturns-%PKG_VERSION%-py%PY_VER%-x86_64.exe /userlevel=1 /S /FORCE /D=%PREFIX%
 if errorlevel 1 exit 1
 
-cmake -LAH -G"NMake Makefiles" -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" -DBLAS_LIBRARIES=1 -DLAPACK_LIBRARIES=1 -DPython_FIND_STRATEGY=LOCATION -DPython_ROOT_DIR="%PREFIX%" .
+cmake -LAH -G "NMake Makefiles" -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" -DBLAS_LIBRARIES=1 -DLAPACK_LIBRARIES=1 -DPython_FIND_STRATEGY=LOCATION -DPython_ROOT_DIR="%PREFIX%" .
 if errorlevel 1 exit 1
 
 ctest -R pyinstallcheck --output-on-failure --timeout 1000 -E "docstring|example|PlotDesign"
