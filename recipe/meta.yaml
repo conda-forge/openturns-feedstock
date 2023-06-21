@@ -1,4 +1,4 @@
-{% set version = "1.21rc1" %}
+{% set version = "1.21" %}
 
 package:
   name: openturns
@@ -7,10 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: f5c910931196c0ce925f67b0bffe2e7716aa59513d71443dcb661695ffd5e6fe
+  sha256: f91f9b37c738c99761b3fd9eb2d50b2c1e3a8e4466f0f842fdc2445128cb5bda
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
