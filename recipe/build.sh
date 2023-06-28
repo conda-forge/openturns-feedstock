@@ -4,6 +4,7 @@ mkdir build && cd build
 
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
+  -DCMAKE_FIND_FRAMEWORK=NEVER \
   -DCMAKE_INSTALL_PREFIX=${PREFIX} \
   -DCMAKE_INSTALL_RPATH="${PREFIX}/lib" \
   -DPython_FIND_STRATEGY=LOCATION \
@@ -14,6 +15,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   ..
 cmake --build . --target install
 rm -r ${PREFIX}/share/gdb
+
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
   ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|ChaosSobol"
