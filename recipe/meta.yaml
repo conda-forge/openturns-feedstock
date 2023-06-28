@@ -10,7 +10,7 @@ source:
   sha256: f91f9b37c738c99761b3fd9eb2d50b2c1e3a8e4466f0f842fdc2445128cb5bda
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -38,7 +38,8 @@ requirements:
     - cminpack  # [not win]
     - ceres-solver  # [not win]
     - nlopt  # [not win]
-    - dlib-cpp  # [not win]
+    # temporarily disable dlib: https://github.com/openturns/openturns/issues/2348
+    #- dlib-cpp  # [not win]
     - ipopt  # [not win]
     - coin-or-bonmin  # [not win]
     - spectralib  # [not win]
