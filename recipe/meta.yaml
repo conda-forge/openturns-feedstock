@@ -10,7 +10,7 @@ source:
   sha256: f91f9b37c738c99761b3fd9eb2d50b2c1e3a8e4466f0f842fdc2445128cb5bda
 
 build:
-  number: 6
+  number: 7
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -21,36 +21,35 @@ requirements:
     - swig
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
-    - curl  # [win]
-    - bison  # [not win]
+    - bison
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
     - python
-    - boost-cpp  # [not win]
+    - boost-cpp
     - matplotlib-base  # [python_impl == 'cpython']
-    - mpc  # [not win]
-    - libblas  # [not win]
-    - libcblas  # [not win]
-    - liblapack  # [not win]
-    - libxml2  # [not win]
-    - tbb-devel  # [not win]
+    - mpc
+    - libblas
+    - libcblas
+    - liblapack
+    - libxml2
+    - tbb-devel
     - hmat-oss  # [not win]
-    - cminpack  # [not win]
-    - ceres-solver  # [not win]
-    - nlopt  # [not win]
-    - dlib-cpp  # [not win]
+    - cminpack
+    - ceres-solver
+    - nlopt
+    - dlib-cpp
     - ipopt  # [not win]
     - coin-or-bonmin  # [not win]
-    - spectralib  # [not win]
-    - hdf5  # [not win]
-    - pagmo-devel  # [not win]
-    - primesieve  # [not win]
+    - spectralib
+    - hdf5
+    - pagmo-devel
+    - primesieve
   run:
     - python
     - dill
     - psutil
-    - tbb-devel  # [not win]
+    - tbb-devel
 
 test:
   imports:
