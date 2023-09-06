@@ -23,3 +23,5 @@ if errorlevel 1 exit 1
 
 ctest --config Release -R pyinstallcheck --output-on-failure --timeout 1000
 if errorlevel 1 exit 1
+
+exit 1
