@@ -20,5 +20,3 @@ if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
   ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|ChaosSobol"
 fi
-
-exit 1

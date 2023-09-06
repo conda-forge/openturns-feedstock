@@ -1,0 +1,12 @@
+diff --git a/lib/src/Base/Optim/Ceres.cxx b/lib/src/Base/Optim/Ceres.cxx
+index b98230e91..04312759c 100644
+--- a/lib/src/Base/Optim/Ceres.cxx
++++ b/lib/src/Base/Optim/Ceres.cxx
+@@ -24,6 +24,7 @@
+ #include "openturns/Log.hxx"
+ #include "openturns/SpecFunc.hxx"
+ #ifdef OPENTURNS_HAVE_CERES
++#include "openturns/OTwindows.h" // ceres includes windows.h
+ #include <ceres/ceres.h>
+ #endif
+ 
