@@ -8,11 +8,7 @@ set "Boost_ROOT="
 mkdir build && cd build
 cmake -LAH -G "Ninja" ^
     -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" ^
-    -DCMAKE_INSTALL_LIBDIR="Library/lib" ^
-    -DCMAKE_INSTALL_BINDIR="Library/bin" ^
-    -DCMAKE_INSTALL_INCLUDEDIR="Library/include" ^
-    -DCMAKE_INSTALL_DATAROOTDIR="Library/share" ^
-    -DCMAKE_INSTALL_PREFIX="%PREFIX%" ^
+    -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
     -DPython_FIND_STRATEGY=LOCATION ^
     -DPython_ROOT_DIR="%PREFIX%" ^
     ..
