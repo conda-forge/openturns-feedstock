@@ -45,6 +45,7 @@ requirements:
     - hdf5
     - pagmo-devel
     - primesieve
+    - zlib  # [win]
   run:
     - python
     - dill
