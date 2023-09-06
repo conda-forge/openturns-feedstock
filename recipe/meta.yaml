@@ -39,7 +39,7 @@ requirements:
     - ceres-solver
     - nlopt
     - dlib-cpp
-    - ipopt  # [not win]
+    - ipopt
     - coin-or-bonmin  # [not win]
     - spectralib
     - hdf5
