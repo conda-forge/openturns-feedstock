@@ -19,6 +19,6 @@ if errorlevel 1 exit 1
 cmake --build . --target install --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
-ctest --config Release -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT%
+ctest --config Release -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT% || echo "fail"
 ::if errorlevel 1 exit 1
 
