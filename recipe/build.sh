@@ -13,7 +13,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_NLOPT_STOGO_RUNS=1 -D_NLOPT_AGS_RUNS=1 -D_HAVE_FR_LOC_RUNS=0 \
   ..
-cmake --build . --target install
+cmake --build . --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
 
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
