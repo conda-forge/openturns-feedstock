@@ -8,6 +8,16 @@ curl:
 - '8'
 cxx_compiler:
 - vs2019
+libblas:
+- 3.9 *netlib
+libcblas:
+- 3.9 *netlib
+liblapack:
+- 3.9 *netlib
+liblapacke:
+- 3.9 *netlib
+numpy:
+- '1.22'
 openturns:
 - '1.20'
 pin_run_as_build:
@@ -15,11 +25,12 @@ pin_run_as_build:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.8.* *_cpython
+- 3.9.* *_cpython
 python_impl:
 - cpython
 target_platform:
 - win-64
 zip_keys:
 - - python
+  - numpy
   - python_impl
