@@ -10,7 +10,7 @@ source:
   sha256: b090fa2903f6160e64eb7b260e0da5e9946639dd1d7c398d3079053098c1d9fe
 
 build:
-  number: 1
+  number: 2
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -30,9 +30,10 @@ requirements:
     - libboost-headers  # [not win]
     - matplotlib-base  # [python_impl == 'cpython']
     - mpc  # [not win]
-    - libblas  # [not win]
-    - libcblas  # [not win]
-    - liblapack  # [not win]
+    - libblas
+    - libcblas
+    - liblapack
+    - liblapacke
     - libxml2  # [not win]
     - tbb-devel  # [not win]
     - hmat-oss  # [not win]
@@ -53,8 +54,13 @@ requirements:
     - tbb-devel  # [not win]
 
 test:
+  requires:
+    - numpy
   imports:
     - openturns
+  commands:
+    # check the lapack libs conflict is solved
+    - python -c "import numpy; import openturns; print(openturns.__version__)"
 
 about:
   home: http://openturns.org/
