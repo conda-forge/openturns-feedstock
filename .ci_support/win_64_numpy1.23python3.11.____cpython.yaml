@@ -18,8 +18,6 @@ liblapacke:
 - 3.9 *netlib
 numpy:
 - '1.23'
-openturns:
-- '1.20'
 pin_run_as_build:
   python:
     min_pin: x.x
