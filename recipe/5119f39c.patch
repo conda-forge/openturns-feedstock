@@ -1,0 +1,65 @@
+From 5119f39cb7e55ad3d40954e19173fe6c22a17df7 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Fri, 29 Sep 2023 12:15:26 +0200
+Subject: [PATCH] CMake: Bump required matplotlib version
+
+---
+ CMakeLists.txt                              |  2 +-
+ python/doc/developer_guide/architecture.rst |  2 +-
+ python/src/viewer.py                        | 10 ++--------
+ 3 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 686aebd665..1cca446577 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -587,7 +587,7 @@ if (BUILD_PYTHON)
+     find_python_module (numpy)
+     find_python_module (scipy)
+     find_python_module (pandas)
+-    find_python_module (matplotlib 1.3.1)
++    find_python_module (matplotlib 3)
+     find_python_module (chaospy)
+     find_python_module (dill)
+ 
+diff --git a/python/doc/developer_guide/architecture.rst b/python/doc/developer_guide/architecture.rst
+index 39f8259edc..f67f9164fa 100644
+--- a/python/doc/developer_guide/architecture.rst
++++ b/python/doc/developer_guide/architecture.rst
+@@ -235,7 +235,7 @@ The tools chosen for the development of the platform are:
+ +---------------------------------------+---------------------------------------------------------------------------------+-------------------+
+ | Python support                        | `Python <http://www.python.org/>`_                                              | 3.6               |
+ +---------------------------------------+---------------------------------------------------------------------------------+-------------------+
+-| Plotting library (optional)           | `Matplotlib <http://matplotlib.org/>`_                                          | 1.3.1             |
++| Plotting library (optional)           | `Matplotlib <http://matplotlib.org/>`_                                          | 3.0               |
+ +---------------------------------------+---------------------------------------------------------------------------------+-------------------+
+ | C++/Python wrapper                    | `SWIG <http://www.swig.org/>`_                                                  | 3.0.0             |
+ +---------------------------------------+---------------------------------------------------------------------------------+-------------------+
+diff --git a/python/src/viewer.py b/python/src/viewer.py
+index a4edd981c2..3e38632018 100644
+--- a/python/src/viewer.py
++++ b/python/src/viewer.py
+@@ -16,11 +16,6 @@
+ import numpy as np
+ import matplotlib
+ import matplotlib.pyplot as plt
+-
+-try:
+-    from pkg_resources import parse_version as LooseVersion
+-except ImportError:
+-    from distutils.version import LooseVersion
+ import warnings
+ import io
+ 
+@@ -239,9 +234,8 @@ def __init__(
+                     axes[0].axison = graphij.getAxes()
+                     axes[0].set_title(self._ToUnicode(graphij.getTitle()))
+                     # hide frame top/right
+-                    if LooseVersion(matplotlib.__version__) > LooseVersion("3.0"):
+-                        axes[0].spines["right"].set_visible(False)
+-                        axes[0].spines["top"].set_visible(False)
++                    axes[0].spines["right"].set_visible(False)
++                    axes[0].spines["top"].set_visible(False)
+                     View(
+                         graphij,
+                         figure=self._fig,
