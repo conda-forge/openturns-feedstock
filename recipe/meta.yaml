@@ -12,7 +12,7 @@ source:
     - 5119f39c.patch
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
