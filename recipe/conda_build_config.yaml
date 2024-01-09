@@ -1,2 +1,3 @@
+# for tbb aligned deallocation
 MACOSX_DEPLOYMENT_TARGET:  # [osx and x86_64]
   - '10.14'                # [osx and x86_64]
