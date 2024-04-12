@@ -10,7 +10,7 @@ source:
   sha256: 487f7fc00f02eb91d264c8c9d78c2abba505ac6aaa5bc0328c04dddbe6d58741
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -20,6 +20,7 @@ requirements:
     - ninja
     - swig
     - {{ compiler('c') }}
+    - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - curl  # [win]
     - bison  # [not win]
