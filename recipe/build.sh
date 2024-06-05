@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
+CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
+
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \
@@ -10,6 +13,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_HAVE_FR_LOC_RUNS=0 \
+  -DUSE_BONMIN=OFF \
   .
 cmake --build . --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb

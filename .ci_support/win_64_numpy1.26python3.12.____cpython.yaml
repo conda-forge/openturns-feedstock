@@ -12,11 +12,7 @@ cxx_compiler:
 - vs2019
 libblas:
 - 3.9 *netlib
-libcblas:
-- 3.9 *netlib
 liblapack:
-- 3.9 *netlib
-liblapacke:
 - 3.9 *netlib
 numpy:
 - '1.26'
