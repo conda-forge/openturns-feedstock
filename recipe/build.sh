@@ -13,6 +13,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_HAVE_FR_LOC_RUNS=0 \
+  -DUSE_BONMIN=OFF \
   .
 cmake --build . --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
