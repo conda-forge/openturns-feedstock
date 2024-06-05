@@ -14,11 +14,11 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_HAVE_FR_LOC_RUNS=0 \
   -DUSE_BONMIN=OFF \
-  .
-cmake --build . --target install --parallel ${CPU_COUNT}
+  -B build .
+cmake --build build --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
 
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
-  ctest -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|ChaosSobol"
+  ctest --test-dir build -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "GeneralizedParetoFactory_std|KrigingAlgorithm_std|ChaosSobol"
 fi
