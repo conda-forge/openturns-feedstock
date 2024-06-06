@@ -19,6 +19,13 @@ make -j${CPU_COUNT}
 make install
 cd -
 
+git clone -b releases/2.10.11 https://github.com/coin-or/Cbc.git
+cd Cbc
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX} --enable-cbc-parallel --enable-gnu-packages
+make -j${CPU_COUNT}
+make install
+cd -
+
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \
