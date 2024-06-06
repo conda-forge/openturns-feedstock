@@ -25,12 +25,14 @@ cmake --build build --target t_Bonmin_std
 cd build
 
 if test `uname` = "Darwin"; then
-  macos-codesign-gdb.sh
+  lldb ./lib/test/t_Bonmin_std -o 'run' -k 'thread backtrace all'
+else
+  echo -e "run\nbt\n" > test.gdb
+  cat test.gdb
+  gdb --batch --command=test.gdb ./lib/test/t_Bonmin_std
 fi
 
-echo -e "run\nbt\n" > test.gdb
-cat test.gdb
-gdb --batch --command=test.gdb ./lib/test/t_Bonmin_std
+
 exit 1
 
 rm -r ${PREFIX}/share/gdb

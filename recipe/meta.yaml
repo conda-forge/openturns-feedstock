@@ -27,7 +27,8 @@ requirements:
     - bison  # [not win]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
-    - gdb
+    - gdb  # [linux]
+    - lldb  # [osx]
   host:
     - python
     - libboost-headers  # [not win]
