@@ -21,9 +21,8 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DBUILD_PYTHON=OFF \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -B build .
-cmake --build build --target install --parallel ${CPU_COUNT}
+cmake --build build --target t_Bonmin_std
 cd build
-make t_Bonmin_std
 ./lib/test/t_Bonmin_std
 exit 1
 
