@@ -23,6 +23,11 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -B build .
 cmake --build build --target t_Bonmin_std
 cd build
+
+if test `uname` = "Darwin"; then
+  macos-codesign-gdb.sh
+fi
+
 echo -e "run\nbt\n" > test.gdb
 cat test.gdb
 gdb --batch --command=test.gdb ./lib/test/t_Bonmin_std
