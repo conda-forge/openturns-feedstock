@@ -8,6 +8,14 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 #  CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
 #fi
 
+
+git clone -b releases/0.108.10 https://github.com/coin-or/Osi.git
+cd Osi
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX}
+make -j${CPU_COUNT}
+make install
+cd -
+
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \
