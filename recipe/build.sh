@@ -48,6 +48,22 @@ make -j${CPU_COUNT}
 make install
 cd -
 
+git clone -b releases/3.14.16 https://github.com/coin-or/Ipopt.git
+cd Ipopt
+CXXFLAGS="${CXXFLAGS} -g" ./configure \
+  --without-hsl \
+  --disable-java \
+  --with-mumps \
+  --with-mumps-cflags="-I${PREFIX}/include/mumps_seq" \
+  --with-mumps-lflags="-ldmumps_seq -lmumps_common_seq -lpord_seq -lmpiseq_seq -lesmumps -lscotch -lscotcherr -lmetis -lgfortran" \
+  --with-asl \
+  --with-asl-cflags="-I${PREFIX}/include/asl" \
+  --with-asl-lflags="-lasl" \
+  --prefix=${PREFIX}
+make -j${CPU_COUNT}
+make install
+cd -
+
 git clone -b releases/1.8.9 https://github.com/coin-or/Bonmin.git
 cd Bonmin
 CXXFLAGS="${CXXFLAGS} -g" LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix=${PREFIX} \
