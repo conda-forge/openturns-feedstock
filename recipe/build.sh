@@ -4,9 +4,9 @@
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
 # pyinstallcheck_Bonmin_std (SEGFAULT)
-if test `uname` = "Darwin"; then
-  CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
-fi
+#if test `uname` = "Darwin"; then
+#  CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
+#fi
 
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
@@ -18,8 +18,15 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_HAVE_FR_LOC_RUNS=0 \
+  -DBUILD_PYTHON=OFF \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -B build .
 cmake --build build --target install --parallel ${CPU_COUNT}
+cd build
+make t_Bonmin_std
+./lib/test/t_Bonmin_std
+exit 1
+
 rm -r ${PREFIX}/share/gdb
 
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
