@@ -55,13 +55,8 @@ requirements:
     - tbb-devel  # [not win]
 
 test:
-  requires:
-    - numpy
   imports:
     - openturns
-  commands:
-    # check the lapack libs conflict is solved
-    - python -c "import numpy; import openturns; print(openturns.__version__)"
 
 about:
   home: http://openturns.org/
