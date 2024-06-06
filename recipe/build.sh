@@ -9,7 +9,8 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 #fi
 
 if test `uname` = "Darwin"; then
-  CXXFLAGS="${CXXFLAGS} -march=nocona -mno-ssse3"
+  CFLAGS="${CFLAGS} -march=nocona -mtune=generic -mno-ssse3 -fno-tree-vectorize"
+  CXXFLAGS="${CXXFLAGS} -march=nocona -mtune=generic -mno-ssse3 -fno-tree-vectorize"
 fi
 
 git clone -b releases/0.108.10 https://github.com/coin-or/Osi.git
