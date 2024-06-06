@@ -32,8 +32,6 @@ libxml2:
 - '2'
 nlopt:
 - '2.7'
-numpy:
-- '1.23'
 pin_run_as_build:
   python:
     min_pin: x.x
@@ -52,5 +50,4 @@ zip_keys:
 - - c_stdlib_version
   - cdt_name
 - - python
-  - numpy
   - python_impl
