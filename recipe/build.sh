@@ -8,6 +8,9 @@ CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 #  CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
 #fi
 
+if test `uname` = "Darwin"; then
+  CXXFLAGS="${CXXFLAGS} -march=nocona"
+fi
 
 git clone -b releases/0.108.10 https://github.com/coin-or/Osi.git
 cd Osi
@@ -33,7 +36,8 @@ cmake --build build --target t_Bonmin_std
 cd build
 
 if test `uname` = "Darwin"; then
-  lldb ./lib/test/t_Bonmin_std -o 'run' -k 'thread backtrace all'
+  lldb ./lib/test/t_Bonmin_std -o 'run' -k 'disas' -o 'quit'
+  lldb ./lib/test/t_Bonmin_std -o 'run' -k 'thread backtrace all' -o 'quit'
 else
   echo -e "run\nbt\n" > test.gdb
   cat test.gdb
