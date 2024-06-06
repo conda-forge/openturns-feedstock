@@ -13,9 +13,30 @@ if test `uname` = "Darwin"; then
   CXXFLAGS="${CXXFLAGS} -march=nocona -mtune=generic -mno-ssse3 -O1"
 fi
 
+git clone -b releases/2.11.11 https://github.com/coin-or/CoinUtils.git
+cd CoinUtils
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX} --enable-gnu-packages
+make -j${CPU_COUNT}
+make install
+cd -
+
 git clone -b releases/0.108.10 https://github.com/coin-or/Osi.git
 cd Osi
 CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX}
+make -j${CPU_COUNT}
+make install
+cd -
+
+git clone -b releases/1.17.8 https://github.com/coin-or/Clp.git
+cd Clp
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX}
+make -j${CPU_COUNT}
+make install
+cd -
+
+git clone -b releases/0.60.7 https://github.com/coin-or/Cgl.git
+cd Cgl
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX} --enable-gnu-packages
 make -j${CPU_COUNT}
 make install
 cd -
