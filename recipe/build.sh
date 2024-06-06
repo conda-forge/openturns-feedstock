@@ -48,6 +48,13 @@ make -j${CPU_COUNT}
 make install
 cd -
 
+git clone -b releases/1.8.9 https://github.com/coin-or/Bonmin.git
+cd Bonmin
+CXXFLAGS="${CXXFLAGS} -g" ./configure --prefix=${PREFIX}
+make -j${CPU_COUNT}
+make install
+cd -
+
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \
