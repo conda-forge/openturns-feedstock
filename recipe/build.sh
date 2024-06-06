@@ -23,7 +23,9 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -B build .
 cmake --build build --target t_Bonmin_std
 cd build
-./lib/test/t_Bonmin_std
+echo -e "run\nbt\n" > test.gdb
+cat test.gdb
+gdb --batch --command=test.gdb ./lib/test/t_Bonmin_std
 exit 1
 
 rm -r ${PREFIX}/share/gdb
