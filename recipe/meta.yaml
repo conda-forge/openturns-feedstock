@@ -10,7 +10,7 @@ source:
   sha256: 4c7cfe5d2310933e3a2e91f7db9531d80e32157143157df80f6e93267c29f414
 
 build:
-  number: 2
+  number: 1
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -49,11 +49,13 @@ requirements:
     - primesieve  # [not win]
     - libcuba  # [not win]
     - nanoflann  # [not win]
+    - numpy <2
   run:
     - python
     - dill
     - psutil
     - tbb-devel  # [not win]
+    - numpy <2
 
 test:
   requires:
