@@ -35,13 +35,13 @@ macos_machine:
 nlopt:
 - '2.7'
 numpy:
-- '1.26'
+- '2.0'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.12.* *_cpython
+- 3.9.* *_cpython
 python_impl:
 - cpython
 target_platform:
