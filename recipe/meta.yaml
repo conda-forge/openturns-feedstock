@@ -8,9 +8,11 @@ source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
   sha256: 4c7cfe5d2310933e3a2e91f7db9531d80e32157143157df80f6e93267c29f414
+  patches:
+    - numpy2.patch
 
 build:
-  number: 3
+  number: 4
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -24,6 +26,8 @@ requirements:
     - {{ compiler('cxx') }}
     - curl  # [win]
     - bison  # [not win]
+    - m2-sed  # [win]
+    - m2-diffutils  # [win]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
@@ -49,13 +53,11 @@ requirements:
     - primesieve  # [not win]
     - libcuba  # [not win]
     - nanoflann  # [not win]
-    - numpy <2
   run:
     - python
     - dill
     - psutil
     - tbb-devel  # [not win]
-    - numpy <2
 
 test:
   requires:
