@@ -8,6 +8,9 @@ if test `uname` = "Darwin"; then
   CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
 fi
 
+# CMake: Find Boost in CONFIG mode
+curl -L https://github.com/openturns/openturns/commit/81df603.patch | patch -p1
+
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \

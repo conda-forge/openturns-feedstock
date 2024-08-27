@@ -19,6 +19,7 @@ build:
 requirements:
   build:
     - cmake
+    - curl
     - ninja
     - swig
     - {{ compiler('c') }}
