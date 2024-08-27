@@ -12,7 +12,7 @@ source:
     - numpy2.patch
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -32,7 +32,7 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
     - python
-    - libboost-headers  # [not win]
+    - libboost-devel  # [not win]
     - matplotlib-base  # [python_impl == 'cpython']
     - mpc  # [not win]
     - libblas
