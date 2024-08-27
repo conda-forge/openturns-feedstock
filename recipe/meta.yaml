@@ -50,6 +50,7 @@ requirements:
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
+    - libboost-devel  # [not win]
     - primesieve  # [not win]
     - libcuba  # [not win]
     - nanoflann  # [not win]
