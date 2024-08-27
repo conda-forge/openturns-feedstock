@@ -12,7 +12,7 @@ source:
     - numpy2.patch
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -50,6 +50,7 @@ requirements:
     - spectralib  # [not win]
     - hdf5  # [not win]
     - pagmo-devel  # [not win]
+    - libboost-devel  # [not win]
     - primesieve  # [not win]
     - libcuba  # [not win]
     - nanoflann  # [not win]
