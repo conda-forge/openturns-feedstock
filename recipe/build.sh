@@ -22,6 +22,7 @@ cd ..
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
+patch -p1 -i ${RECIPE_DIR}/bonmini_debug.patch
 LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-coinutils-lib="$(pkg-config --libs coinutils)" \
   --with-coinutils-incdir="${PREFIX}/include/coin/" \

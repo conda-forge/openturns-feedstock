@@ -1,0 +1,54 @@
+diff --git a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
+index ee31245..fa30569 100644
+--- a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
++++ b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
+@@ -23,6 +23,7 @@
+ #include <climits>
+ #include <string>
+ #include <sstream>
++#include <iostream>
+ #include "BonAuxInfos.hpp"
+ 
+ #include "Ipopt/BonIpoptSolver.hpp"
+@@ -424,6 +425,7 @@ OsiTMINLPInterface::OsiTMINLPInterface():
+     newCutoffDecr(COIN_DBL_MAX)
+ 
+ {
++   std::cout << "OsiTMINLPInterface() this="<<this<< std::endl<< std::flush;
+    oaHandler_ = new OaMessageHandler;
+    oaHandler_->setLogLevel(0);
+ }
+@@ -588,6 +590,8 @@ OsiTMINLPInterface::OsiTMINLPInterface (const OsiTMINLPInterface &source):
+     newCutoffDecr(source.newCutoffDecr),
+     strong_branching_solver_(source.strong_branching_solver_)
+ {
++
++  std::cout << "OsiTMINLPInterface(other) this="<<this<< std::endl<< std::flush;
+   if(IsValid(source.tminlp_)) {
+     problem_ = source.problem_->clone();
+     feasibilityProblem_ = new TNLP2FPNLP
+@@ -628,6 +632,7 @@ OsiTMINLPInterface::OsiTMINLPInterface (const OsiTMINLPInterface &source):
+ OsiSolverInterface * 
+ OsiTMINLPInterface::clone(bool copyData ) const
+ {
++  std::cout << "OsiTMINLPInterface::clone this="<<this<< std::endl<< std::flush;
+   if(copyData)
+     return new OsiTMINLPInterface(*this);
+   else return new OsiTMINLPInterface;
+@@ -636,6 +641,8 @@ OsiTMINLPInterface::clone(bool copyData ) const
+ /// Assignment operator
+ OsiTMINLPInterface & OsiTMINLPInterface::operator=(const OsiTMINLPInterface& rhs)
+ {
++
++  std::cout << "OsiTMINLPInterface::operator= this="<<this<< std::endl<< std::flush;
+   if(this!= &rhs) {
+     OsiSolverInterface::operator=(rhs);
+     OsiDualObjectiveLimit_ = rhs.OsiDualObjectiveLimit_;
+@@ -774,6 +781,7 @@ SmartPtr<OptionsList> OsiTMINLPInterface::options()
+ /// Destructor
+ OsiTMINLPInterface::~OsiTMINLPInterface ()
+ {
++  std::cout << "OsiTMINLPInterface::~OsiTMINLPInterface this="<<this<< std::endl<< std::flush;
+   freeCachedData();
+   delete [] jRow_;
+   delete [] jCol_;
