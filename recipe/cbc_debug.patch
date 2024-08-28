@@ -1,0 +1,109 @@
+diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
+index 235d8a72..3a40518d 100644
+--- a/Cbc/src/CbcModel.cpp
++++ b/Cbc/src/CbcModel.cpp
+@@ -2411,8 +2411,12 @@ void CbcModel::branchAndBound(int doStatistics)
+       Create a copy of the solver, thus capturing the original (root node)
+       constraint system (aka the continuous system).
+     */
++      std::cout << "CbcModel::branchAndBound1.0 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
++
+   delete continuousSolver_;
+   continuousSolver_ = solver_->clone();
++    std::cout << "CbcModel::branchAndBound1.1 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
++
+ #ifdef CONFLICT_CUTS
+   if ((moreSpecialOptions_ & 4194304) != 0) {
+ #ifdef COIN_HAS_CLP
+@@ -5600,6 +5604,8 @@ void CbcModel::branchAndBound(int doStatistics)
+   //delete persistentInfo;
+   // Get rid of characteristics
+   solverCharacteristics_ = NULL;
++    std::cout << "CbcModel::branchAndBound2 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
++
+   if (continuousSolver_) {
+     delete continuousSolver_;
+     continuousSolver_ = NULL;
+@@ -6635,6 +6641,7 @@ CbcModel::operator=(const CbcModel &rhs)
+       solver_ = 0;
+     }
+     ownership_ = 0x80000000;
++    std::cout << "CbcModel::operator= this="<<this<<" continuousSolver_=" << continuousSolver_ << std::endl<< std::flush;
+     delete continuousSolver_;
+     if (rhs.continuousSolver_) {
+       continuousSolver_ = rhs.continuousSolver_->clone();
+@@ -7049,7 +7056,9 @@ void CbcModel::resetModel()
+ {
+   delete emptyWarmStart_;
+   emptyWarmStart_ = NULL;
+-  delete continuousSolver_;
++  std::cout << "CbcModel::resetModel this="<<this<<" continuousSolver_=" << continuousSolver_ << std::endl<< std::flush;
++  
++  // delete continuousSolver_;
+   continuousSolver_ = NULL;
+   numberSavedSolutions_ = 0;
+   delete[] bestSolution_;
+@@ -18199,8 +18208,11 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+   }
+   solverCharacteristics_->setSolver(solver_);
+   // just point to solver_
++  std::cout << "CbcModel::integerPresolveThisModel this="<<this<<" continuousSolver_=" << continuousSolver_ << " solver_="<<solver_<< std::endl<< std::flush;
+   delete continuousSolver_;
+   continuousSolver_ = solver_;
++  
++  
+   // get a copy of original so we can fix bounds
+   OsiSolverInterface *cleanModel = originalSolver->clone();
+ #ifdef CBC_DEBUG
+@@ -19042,6 +19054,9 @@ CbcModel::strengthenedModel()
+   lastCut_ = NULL;
+   delete[] addedCuts_;
+   addedCuts_ = NULL;
++  
++      std::cout << "CbcModel::strengthenedModel this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
++
+   if (continuousSolver_) {
+     delete continuousSolver_;
+     continuousSolver_ = NULL;
+diff --git a/Cbc/src/CbcModel.hpp b/Cbc/src/CbcModel.hpp
+index 96e6ead6..61bf4f32 100644
+--- a/Cbc/src/CbcModel.hpp
++++ b/Cbc/src/CbcModel.hpp
+@@ -7,6 +7,7 @@
+ #define CbcModel_H
+ #include <string>
+ #include <vector>
++#include <iostream>
+ #include "CoinMessageHandler.hpp"
+ #include "OsiSolverInterface.hpp"
+ #include "OsiBranchingObject.hpp"
+@@ -2250,17 +2251,20 @@ public:
+   /// Returns solver with continuous state
+   inline OsiSolverInterface *continuousSolver() const
+   {
++    std::cout << "CbcModel::continuousSolver continuousSolver_=" << continuousSolver_ << std::endl<< std::flush;
+     return continuousSolver_;
+   }
+ 
+   /// Create solver with continuous state
+   inline void createContinuousSolver()
+   {
++    std::cout << "CbcModel::createContinuousSolver continuousSolver_=" << continuousSolver_ << std::endl<< std::flush;
+     continuousSolver_ = solver_->clone();
+   }
+   /// Clear solver with continuous state
+   inline void clearContinuousSolver()
+   {
++    std::cout << "CbcModel::clearContinuousSolver continuousSolver_=" << continuousSolver_ << std::endl<< std::flush;
+     delete continuousSolver_;
+     continuousSolver_ = NULL;
+   }
+@@ -2756,7 +2760,7 @@ private:
+   unsigned int ownership_;
+ 
+   /// A copy of the solver, taken at the continuous (root) node.
+-  OsiSolverInterface *continuousSolver_;
++  OsiSolverInterface *continuousSolver_ = NULL;
+ 
+   /// A copy of the solver, taken at constructor or by saveReferenceSolver
+   OsiSolverInterface *referenceSolver_;
