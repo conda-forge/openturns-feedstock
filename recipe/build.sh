@@ -11,6 +11,14 @@ make -j "${CPU_COUNT}"
 make install
 cd ..
 
+curl -L https://github.com/coin-or/Cbc/archive/releases/2.10.12.tar.gz | tar xz
+cd Cbc-releases-2.10.12/
+curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main/recipe/patches/0001-Patch-for-downstream.patch | patch -p1
+./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --enable-cbc-parallel --enable-gnu-packages
+make -j "${CPU_COUNT}"
+make install
+cd ..
+
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
