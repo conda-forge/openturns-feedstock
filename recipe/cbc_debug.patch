@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..bcd76d59 100644
+index 235d8a72..78c09c72 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -2411,8 +2411,12 @@ void CbcModel::branchAndBound(int doStatistics)
@@ -32,7 +32,7 @@ index 235d8a72..bcd76d59 100644
      delete continuousSolver_;
      if (rhs.continuousSolver_) {
        continuousSolver_ = rhs.continuousSolver_->clone();
-@@ -6963,6 +6970,7 @@ CbcModel::operator=(const CbcModel &rhs)
+@@ -6963,19 +6970,24 @@ CbcModel::operator=(const CbcModel &rhs)
  // Destructor
  CbcModel::~CbcModel()
  {
@@ -40,7 +40,65 @@ index 235d8a72..bcd76d59 100644
    if (defaultHandler_) {
      delete handler_;
      handler_ = NULL;
-@@ -7049,6 +7057,8 @@ void CbcModel::resetModel()
+   }
++  std::cout << "CbcModel::~CbcModel.1 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
+   delete tree_;
+   tree_ = NULL;
++  std::cout << "CbcModel::~CbcModel.2 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
+   if (modelOwnsSolver()) {
+     delete solver_;
+     solver_ = NULL;
+   }
++  std::cout << "CbcModel::~CbcModel.3 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
+   gutsOfDestructor();
+   delete eventHandler_;
+   eventHandler_ = NULL;
++  
+ #ifdef CBC_THREAD
+   // Get rid of all threaded stuff
+   delete master_;
+@@ -6984,8 +6996,10 @@ CbcModel::~CbcModel()
+ // Clears out as much as possible (except solver)
+ void CbcModel::gutsOfDestructor()
+ {
++  std::cout << "CbcModel::gutsOfDestructor.0 this="<<this<< std::endl<< std::flush;
+   delete referenceSolver_;
+   referenceSolver_ = NULL;
++  std::cout << "CbcModel::gutsOfDestructor.1 this="<<this<< std::endl<< std::flush;
+   int i;
+   for (i = 0; i < numberCutGenerators_; i++) {
+     delete generator_[i];
+@@ -7010,11 +7024,13 @@ void CbcModel::gutsOfDestructor()
+   updateItems_ = NULL;
+   numberUpdateItems_ = 0;
+   maximumNumberUpdateItems_ = 0;
++  std::cout << "CbcModel::gutsOfDestructor.10 this="<<this<< std::endl<< std::flush;
+   gutsOfDestructor2();
+ }
+ // Clears out enough to reset CbcModel
+ void CbcModel::gutsOfDestructor2()
+ {
++  std::cout << "CbcModel::gutsOfDestructor2.0 this="<<this<< std::endl<< std::flush;
+   delete[] integerInfo_;
+   integerInfo_ = NULL;
+   delete[] integerVariable_;
+@@ -7025,6 +7041,7 @@ void CbcModel::gutsOfDestructor2()
+       delete object_[i];
+     delete[] object_;
+   }
++  std::cout << "CbcModel::gutsOfDestructor2.5 this="<<this<< std::endl<< std::flush;
+   ownObjects_ = true;
+   object_ = NULL;
+   numberIntegers_ = 0;
+@@ -7036,6 +7053,7 @@ void CbcModel::gutsOfDestructor2()
+   delete cutModifier_;
+   cutModifier_ = NULL;
+   topOfTree_ = NULL;
++  std::cout << "CbcModel::gutsOfDestructor2.10 this="<<this<< std::endl<< std::flush;
+   resetModel();
+ #ifdef COIN_HAS_NTY
+   delete symmetryInfo_;
+@@ -7049,6 +7067,8 @@ void CbcModel::resetModel()
  {
    delete emptyWarmStart_;
    emptyWarmStart_ = NULL;
@@ -49,7 +107,7 @@ index 235d8a72..bcd76d59 100644
    delete continuousSolver_;
    continuousSolver_ = NULL;
    numberSavedSolutions_ = 0;
-@@ -18199,8 +18209,11 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18199,8 +18219,11 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    }
    solverCharacteristics_->setSolver(solver_);
    // just point to solver_
@@ -61,7 +119,7 @@ index 235d8a72..bcd76d59 100644
    // get a copy of original so we can fix bounds
    OsiSolverInterface *cleanModel = originalSolver->clone();
  #ifdef CBC_DEBUG
-@@ -19042,6 +19055,9 @@ CbcModel::strengthenedModel()
+@@ -19042,6 +19065,9 @@ CbcModel::strengthenedModel()
    lastCut_ = NULL;
    delete[] addedCuts_;
    addedCuts_ = NULL;
