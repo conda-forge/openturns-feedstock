@@ -16,6 +16,7 @@ build:
   skip: true  # [win and py>=313]
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
+  skip: true  # [not osx or py<312]
 
 requirements:
   build:
