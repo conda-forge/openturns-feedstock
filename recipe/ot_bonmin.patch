@@ -1,0 +1,18 @@
+diff --git a/lib/src/Base/Optim/Bonmin.cxx b/lib/src/Base/Optim/Bonmin.cxx
+index c17385aaf..fc15907a4 100644
+--- a/lib/src/Base/Optim/Bonmin.cxx
++++ b/lib/src/Base/Optim/Bonmin.cxx
+@@ -173,12 +173,12 @@ void Bonmin::run()
+   GetOptionsFromResourceMap(app.options());
+ 
+   // Update setup with BonminProblem
++  ::Bonmin::Bab solver;
+   try
+   {
+     app.initialize(GetRawPtr(tminlp));
+ 
+     // Solve problem
+-    ::Bonmin::Bab solver;
+     solver(app);
+   }
+   catch (::Bonmin::TNLPSolver::UnsolvedError *exc)
