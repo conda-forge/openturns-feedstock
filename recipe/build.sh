@@ -1,5 +1,16 @@
 #!/bin/sh
 
+CFLAGS="${CFLAGS} -g"
+CXXFLAGS="${CXXFLAGS} -g"
+
+curl -L https://github.com/coin-or/Osi/archive/releases/0.108.11.tar.gz | tar xz
+cd Osi-releases-0.108.11/
+curl -L https://raw.githubusercontent.com/conda-forge/coin-or-osi-feedstock/main/recipe/0001-Patch-for-downstream.patch | patch -p1
+./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}"
+make -j "${CPU_COUNT}"
+make install
+cd ..
+
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 

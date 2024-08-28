@@ -24,6 +24,9 @@ requirements:
     - cmake
     - ninja
     - swig
+    - curl
+    - pkg-config
+    - gnuconfig  # [unix]
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
