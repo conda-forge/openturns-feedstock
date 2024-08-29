@@ -1,7 +1,16 @@
 diff --git a/Bonmin/examples/CppExample/MyBonmin.cpp b/Bonmin/examples/CppExample/MyBonmin.cpp
-index 558bac5..0b7303f 100644
+index 558bac5..6245ce3 100644
 --- a/Bonmin/examples/CppExample/MyBonmin.cpp
 +++ b/Bonmin/examples/CppExample/MyBonmin.cpp
+@@ -53,7 +53,7 @@ int main (int argc, char *argv[])
+   
+   // Here we can change the default value of some Bonmin or Ipopt option
+   bonmin.options()->SetNumericValue("bonmin.time_limit", 5); //changes bonmin's time limit
+-  bonmin.options()->SetStringValue("mu_oracle","loqo");
++  // bonmin.options()->SetStringValue("mu_oracle","loqo");
+   
+   //Here we read several option files
+   bonmin.readOptionsFile("Mybonmin.opt");
 @@ -69,6 +69,11 @@ int main (int argc, char *argv[])
      tminlp->printSolutionAtEndOfAlgorithm();
    }
@@ -14,3 +23,13 @@ index 558bac5..0b7303f 100644
    //Now initialize from tminlp
    bonmin.initialize(GetRawPtr(tminlp));
  
+@@ -96,6 +101,9 @@ int main (int argc, char *argv[])
+ 	     <<E.message()<<std::endl;
+   }
+ 
++  std::string optionsLog;
++  bonmin.options()->PrintList(optionsLog);
++  std::cout << optionsLog << std::endl;
+ 
+   return 0;
+ }

@@ -73,7 +73,7 @@ cmake --build build --target t_Bonmin_std --parallel ${CPU_COUNT}
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
   ctest --test-dir build -R cppcheck_Bonmin_std --output-on-failure -V || echo "nope"
-  
+#   ./build/lib/test/t_Bonmin_std || echo "nope"
   if test `uname` = "Darwin"; then
 #     echo -e "run\n\bt" > test.gdb
 #     gdb --batch --command=test.gdb ./build/lib/test/t_Bonmin_std
