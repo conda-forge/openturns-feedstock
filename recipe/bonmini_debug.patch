@@ -46,3 +46,16 @@ index 558bac5..bfbd1c3 100644
  
    return 0;
  }
+diff --git a/Bonmin/examples/CppExample/MyTMINLP.cpp b/Bonmin/examples/CppExample/MyTMINLP.cpp
+index cf14b65..2df63f6 100644
+--- a/Bonmin/examples/CppExample/MyTMINLP.cpp
++++ b/Bonmin/examples/CppExample/MyTMINLP.cpp
+@@ -104,6 +104,8 @@ MyTMINLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
+ {
+   assert(n==4);
+   obj_value = - x[0] - x[1] - x[2];
++    std::cout <<"MyTMINLP::eval_f x=" <<x[0] <<"; "<< x[1]  <<"; "<< x[2]<<"; "<<x[3]<<" y=" << obj_value<< std::endl<< std::flush;
++
+   return true;
+ }
+ 
