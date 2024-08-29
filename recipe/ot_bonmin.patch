@@ -1,12 +1,12 @@
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..b1f878333 100644
+index 147ddd9ad..c90abd125 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -289,6 +289,8 @@ bool BonminProblem::eval_f(int n,
    else
      obj_value = -yPoint[0];
  
-+  std::cout <<"BonminProblem::eval_f x=" <<xPoint<<" y=" << obj_value<< std::endl<< std::flush;
++  // std::cout <<"BonminProblem::eval_f x=" <<xPoint<<" y=" << obj_value<< std::endl<< std::flush;
 +  
    // track input/outputs
    evaluationInputHistory_.add(xPoint);
@@ -15,7 +15,7 @@ index 147ddd9ad..b1f878333 100644
      return false;
    }
  
-+  std::cout <<"BonminProblem::eval_grad_f x=" <<xPoint<<" grad_f=";
++  // std::cout <<"BonminProblem::eval_grad_f x=" <<xPoint<<" grad_f=";
 +  
    // Conversion from OT::Matrix to double array
    for (int i = 0; i < n; ++i)
@@ -25,9 +25,9 @@ index 147ddd9ad..b1f878333 100644
      else
        grad_f[i] = -gradOT(i, 0);
 -
-+    std::cout << grad_f[i] << "; ";
++    // std::cout << grad_f[i] << "; ";
 +  }
-+  std::cout << std::endl<< std::flush;
++  // std::cout << std::endl<< std::flush;
 +  
    return true;
  }
