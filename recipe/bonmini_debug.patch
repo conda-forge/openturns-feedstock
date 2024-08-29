@@ -1,8 +1,8 @@
 diff --git a/Bonmin/examples/CppExample/MyBonmin.cpp b/Bonmin/examples/CppExample/MyBonmin.cpp
-index 558bac5..6245ce3 100644
+index 558bac5..bfbd1c3 100644
 --- a/Bonmin/examples/CppExample/MyBonmin.cpp
 +++ b/Bonmin/examples/CppExample/MyBonmin.cpp
-@@ -53,7 +53,7 @@ int main (int argc, char *argv[])
+@@ -53,21 +53,26 @@ int main (int argc, char *argv[])
    
    // Here we can change the default value of some Bonmin or Ipopt option
    bonmin.options()->SetNumericValue("bonmin.time_limit", 5); //changes bonmin's time limit
@@ -10,19 +10,32 @@ index 558bac5..6245ce3 100644
 +  // bonmin.options()->SetStringValue("mu_oracle","loqo");
    
    //Here we read several option files
-   bonmin.readOptionsFile("Mybonmin.opt");
-@@ -69,6 +69,11 @@ int main (int argc, char *argv[])
+-  bonmin.readOptionsFile("Mybonmin.opt");
+-  bonmin.readOptionsFile();// This reads the default file "bonmin.opt"
++  // bonmin.readOptionsFile("Mybonmin.opt");
++  // bonmin.readOptionsFile();// This reads the default file "bonmin.opt"
+   
+   // Options can also be set by using a string with a format similar to the bonmin.opt file
+   bonmin.readOptionsString("bonmin.algorithm B-BB\n");
+   
+   // Now we can obtain the value of the new option
+-  int printSolution;
+-  bonmin.options()->GetEnumValue("print_solution", printSolution,"");
+-  if(printSolution == 1){
++  // int printSolution;
++  // bonmin.options()->GetEnumValue("print_solution", printSolution,"");
++  // if(printSolution == 1){
      tminlp->printSolutionAtEndOfAlgorithm();
-   }
- 
+-  }
++  // }
++
 +  // extra options
 +  bonmin.options()->SetStringValue("honor_original_bounds", "yes");
 +  bonmin.options()->SetNumericValue("constr_viol_tol", 1e-5);
 +  bonmin.options()->SetNumericValue("bound_relax_factor", 0.0);
-+
+ 
    //Now initialize from tminlp
    bonmin.initialize(GetRawPtr(tminlp));
- 
 @@ -96,6 +101,9 @@ int main (int argc, char *argv[])
  	     <<E.message()<<std::endl;
    }
