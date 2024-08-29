@@ -18,6 +18,7 @@ git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
 patch -p1 -i ${RECIPE_DIR}/cbc_debug.patch
 curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main/recipe/patches/0001-Patch-for-downstream.patch | patch -p1
 ./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
+cat ./Cbc/src/config.h
 make -j "${CPU_COUNT}"
 make install
 # make test || "cbc test :["
