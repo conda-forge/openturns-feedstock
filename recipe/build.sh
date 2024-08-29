@@ -80,6 +80,8 @@ then
 
     # https://stackoverflow.com/questions/26812047/scripting-lldb-to-obtain-a-stack-trace-after-a-crash
     lldb ./build/lib/test/t_Bonmin_std --batch --one-line 'process launch' --one-line-on-crash 'bt' --one-line-on-crash 'quit'
+  else
+    ./build/lib/test/t_Bonmin_std
   fi
   
 fi
