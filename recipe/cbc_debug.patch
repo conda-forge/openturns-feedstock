@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..78c09c72 100644
+index 235d8a72..95d01565 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -2411,8 +2411,12 @@ void CbcModel::branchAndBound(int doStatistics)
@@ -44,7 +44,7 @@ index 235d8a72..78c09c72 100644
 +  std::cout << "CbcModel::~CbcModel.1 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
    delete tree_;
    tree_ = NULL;
-+  std::cout << "CbcModel::~CbcModel.2 this="<<this<<" continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
++  std::cout << "CbcModel::~CbcModel.2 this="<<this<<" solver_="<<solver_<<"continuousSolver_=" << continuousSolver_ <<  std::endl<< std::flush;
    if (modelOwnsSolver()) {
      delete solver_;
      solver_ = NULL;
