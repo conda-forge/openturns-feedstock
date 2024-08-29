@@ -24,6 +24,7 @@ requirements:
     - cmake
     - ninja
     - swig
+    - make  # [unix]
     - curl
     - pkg-config
     - gnuconfig  # [unix]
