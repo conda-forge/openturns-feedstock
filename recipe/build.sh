@@ -45,6 +45,10 @@ LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-asl-lib="$(pkg-config --libs ipoptamplinterface) -lasl"
 make -j ${CPU_COUNT}
 make install
+cd Bonmin/test
+make
+./CppExample
+cd ../..
 # make test || "bonmin test :["
 cd ..
 
