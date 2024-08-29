@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..56b5f8bf 100644
+index 235d8a72..527e97be 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -55,7 +55,15 @@ index 235d8a72..56b5f8bf 100644
      int numberOriginalRows = solverOriginal->getNumRows();
      OsiSolverInterface *solver = solverOriginal->clone();
      solver_ = solver;
-@@ -3836,6 +3843,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -3098,6 +3105,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       // have to switch nauty off totally!
+       moreSpecialOptions2_ &= ~(128 | 256);
+     }
++    std::cout << "CbcModel::branchAndBound this=" << this << " continuousSolver=" << continuousSolver << std::endl << std::flush;
+     continuousSolver_ = continuousSolver;
+     int numberRows = solver->getNumRows();
+     if (numberRows > numberOriginalRows) {
+@@ -3836,6 +3844,7 @@ void CbcModel::branchAndBound(int doStatistics)
      delete saveSolver;
      if (flipObjective)
        flipModel();
@@ -63,7 +71,7 @@ index 235d8a72..56b5f8bf 100644
      return;
    }
    /*
-@@ -5571,6 +5579,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5571,6 +5580,7 @@ void CbcModel::branchAndBound(int doStatistics)
      solver_ = continuousSolver_;
      setPointers(solver_);
      continuousSolver_ = NULL;
@@ -71,7 +79,7 @@ index 235d8a72..56b5f8bf 100644
    }
    /*
        Clean up dangling objects. continuousSolver_ may already be toast.
-@@ -5600,9 +5609,12 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5600,9 +5610,12 @@ void CbcModel::branchAndBound(int doStatistics)
    //delete persistentInfo;
    // Get rid of characteristics
    solverCharacteristics_ = NULL;
@@ -84,7 +92,7 @@ index 235d8a72..56b5f8bf 100644
    }
    /*
        Destroy global cuts by replacing with an empty OsiCuts object.
-@@ -5698,6 +5710,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5698,6 +5711,7 @@ void CbcModel::branchAndBound(int doStatistics)
    }
  #endif
    moreSpecialOptions_ = saveMoreSpecialOptions;
@@ -92,7 +100,12 @@ index 235d8a72..56b5f8bf 100644
    return;
  }
  
-@@ -6460,6 +6473,7 @@ CbcModel::CbcModel(const CbcModel &rhs, bool cloneHandler)
+@@ -6456,10 +6470,12 @@ CbcModel::CbcModel(const CbcModel &rhs, bool cloneHandler)
+     numberObjects_ = 0;
+     object_ = NULL;
+   }
++  std::cout << "CbcModel this=" << this << " rhs.continuousSolver_ ?" << (rhs.continuousSolver_!=NULL) <<  std::endl<< std::flush;
+   if (rhs.continuousSolver_) {
      continuousSolver_ = rhs.continuousSolver_->clone();
    } else {
      continuousSolver_ = NULL;
@@ -100,7 +113,7 @@ index 235d8a72..56b5f8bf 100644
    }
    if (rhs.referenceSolver_)
      referenceSolver_ = rhs.referenceSolver_->clone();
-@@ -6969,6 +6983,7 @@ CbcModel::~CbcModel()
+@@ -6969,6 +6985,7 @@ CbcModel::~CbcModel()
    }
    delete tree_;
    tree_ = NULL;
@@ -108,7 +121,7 @@ index 235d8a72..56b5f8bf 100644
    if (modelOwnsSolver()) {
      delete solver_;
      solver_ = NULL;
-@@ -7049,8 +7064,10 @@ void CbcModel::resetModel()
+@@ -7049,8 +7066,10 @@ void CbcModel::resetModel()
  {
    delete emptyWarmStart_;
    emptyWarmStart_ = NULL;
@@ -119,7 +132,23 @@ index 235d8a72..56b5f8bf 100644
    numberSavedSolutions_ = 0;
    delete[] bestSolution_;
    bestSolution_ = NULL;
-@@ -18484,6 +18501,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18200,6 +18219,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+   solverCharacteristics_->setSolver(solver_);
+   // just point to solver_
+   delete continuousSolver_;
++  std::cout << "CbcModel::integerPresolveThisModel this=" << this << " solver_=" << solver_ << std::endl<< std::flush;
+   continuousSolver_ = solver_;
+   // get a copy of original so we can fix bounds
+   OsiSolverInterface *cleanModel = originalSolver->clone();
+@@ -18361,6 +18381,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+         }
+         synchronizeModel(); // make sure everything that needs solver has it
+         // just point to solver_
++        std::cout << "CbcModel::integerPresolveThisModel this=" << this << " solver_=" << solver_ << std::endl << std::flush;
+         continuousSolver_ = solver_;
+         feasible = (resolve(NULL, 3) != 0);
+         if (!feasible || !doIntegerPresolve || weak)
+@@ -18484,6 +18505,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    deleteObjects();
    synchronizeModel(); // make sure everything that needs solver has it
    continuousSolver_ = NULL;
@@ -127,7 +156,7 @@ index 235d8a72..56b5f8bf 100644
    currentNumberCuts_ = 0;
    return feasible;
  }
-@@ -19045,6 +19063,7 @@ CbcModel::strengthenedModel()
+@@ -19045,6 +19067,7 @@ CbcModel::strengthenedModel()
    if (continuousSolver_) {
      delete continuousSolver_;
      continuousSolver_ = NULL;
