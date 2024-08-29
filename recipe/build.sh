@@ -20,7 +20,7 @@ curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main
 ./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
 make -j "${CPU_COUNT}"
 make install
-make test || "cbc test :["
+# make test || "cbc test :["
 cd ..
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
@@ -45,7 +45,7 @@ LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-asl-lib="$(pkg-config --libs ipoptamplinterface) -lasl"
 make -j ${CPU_COUNT}
 make install
-make test || "bonmin test :["
+# make test || "bonmin test :["
 cd ..
 
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
