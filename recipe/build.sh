@@ -11,11 +11,10 @@ make -j "${CPU_COUNT}"
 make install
 cd ..
 
-mkdir Data
-git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
-
 curl -L https://github.com/coin-or/Cbc/archive/releases/2.10.12.tar.gz | tar xz
 cd Cbc-releases-2.10.12/
+mkdir Data
+git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
 patch -p1 -i ${RECIPE_DIR}/cbc_debug.patch
 curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main/recipe/patches/0001-Patch-for-downstream.patch | patch -p1
 ./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
@@ -26,6 +25,8 @@ cd ..
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
+mkdir Data
+git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
 patch -p1 -i ${RECIPE_DIR}/bonmini_debug.patch
 LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-coinutils-lib="$(pkg-config --libs coinutils)" \
