@@ -47,9 +47,33 @@ index 558bac5..bfbd1c3 100644
    return 0;
  }
 diff --git a/Bonmin/examples/CppExample/MyTMINLP.cpp b/Bonmin/examples/CppExample/MyTMINLP.cpp
-index cf14b65..2df63f6 100644
+index cf14b65..42ae795 100644
 --- a/Bonmin/examples/CppExample/MyTMINLP.cpp
 +++ b/Bonmin/examples/CppExample/MyTMINLP.cpp
+@@ -23,10 +23,10 @@ MyTMINLP::get_variables_types(Index n, VariableType* var_types)
+ bool 
+ MyTMINLP::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_types)
+ {
+-  var_types[0] = Ipopt::TNLP::LINEAR;
++  var_types[0] = Ipopt::TNLP::NON_LINEAR;
+   var_types[1] = Ipopt::TNLP::NON_LINEAR;
+   var_types[2] = Ipopt::TNLP::NON_LINEAR;
+-  var_types[3] = Ipopt::TNLP::LINEAR;
++  var_types[3] = Ipopt::TNLP::NON_LINEAR;
+   return true;
+ }
+ 
+@@ -36,8 +36,8 @@ MyTMINLP::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_t
+ {
+   assert (m==3);
+   const_types[0] = Ipopt::TNLP::NON_LINEAR;
+-  const_types[1] = Ipopt::TNLP::LINEAR;
+-  const_types[2] = Ipopt::TNLP::LINEAR;
++  const_types[1] = Ipopt::TNLP::NON_LINEAR;
++  const_types[2] = Ipopt::TNLP::NON_LINEAR;
+   return true;
+ }
+ bool 
 @@ -104,6 +104,8 @@ MyTMINLP::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
  {
    assert(n==4);
@@ -59,3 +83,53 @@ index cf14b65..2df63f6 100644
    return true;
  }
  
+diff --git a/Bonmin/src/Algorithms/BonSubMipSolver.cpp b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
+index 01843e8..56eb46a 100644
+--- a/Bonmin/src/Algorithms/BonSubMipSolver.cpp
++++ b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
+@@ -208,7 +208,7 @@ namespace Bonmin {
+       cbc.setMaximumSolutions(1);
+       cbc.setCutoff(cutoff);
+ 
+-      
++      std::cout << "SubMipSolver::find_good_sol cbc.branchAndBound" << std::endl << std::flush;
+       cbc.branchAndBound();
+       lowBound_ = cbc.getBestPossibleObjValue();
+ 
+@@ -319,6 +319,7 @@ namespace Bonmin {
+   void
+   SubMipSolver::optimize(double cutoff, int loglevel, double maxTime)
+   {
++    std::cout << "SubMipSolver::optimize0" << std::endl << std::flush;
+     if (clp_) {
+       assert(strategy_);
+       CbcStrategyDefault * strat_default = dynamic_cast<CbcStrategyDefault *>(strategy_->clone());
+@@ -343,6 +344,7 @@ namespace Bonmin {
+       cbc.setDblParam( CbcModel::CbcAllowableFractionGap, gap_tol_);
+ 
+       //cbc.solver()->writeMpsNative("FP.mps", NULL, NULL, 1);
++      std::cout << "SubMipSolver::optimize cbc.branchAndBound" << std::endl << std::flush;
+       cbc.branchAndBound();
+       lowBound_ = cbc.getBestPossibleObjValue();
+ 
+diff --git a/Bonmin/src/CbcBonmin/BonCbc.cpp b/Bonmin/src/CbcBonmin/BonCbc.cpp
+index 5c10cbd..fcb8fdd 100644
+--- a/Bonmin/src/CbcBonmin/BonCbc.cpp
++++ b/Bonmin/src/CbcBonmin/BonCbc.cpp
+@@ -104,7 +104,7 @@ namespace Bonmin
+   void
+   Bab::branchAndBound(BabSetupBase & s)
+   {
+-
++    std::cout << "Bab::branchAndBound0" << std::endl << std::flush;
+     double remaining_time = s.getDoubleParameter(BabSetupBase::MaxTime) + CoinCpuTime();
+     /* Put a link to this into solver.*/
+     OsiBabSolver *  babInfo = dynamic_cast<OsiBabSolver *>(s.continuousSolver()->getAuxiliaryInfo());
+@@ -521,6 +521,7 @@ namespace Bonmin
+     //model_.branchAndBound(3);
+     remaining_time -= CoinCpuTime();
+     model_.setDblParam(CbcModel::CbcMaximumSeconds, remaining_time);
++    std::cout << "Bab::branchAndBound model_.branchAndBound" << std::endl << std::flush;
+     if(remaining_time > 0.)
+       model_.branchAndBound();
+     }
