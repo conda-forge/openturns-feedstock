@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..3f89d1a1 100644
+index 235d8a72..50a73e70 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -714,7 +714,7 @@ index 235d8a72..3f89d1a1 100644
              if (bestObjective_ < getCutoff())
                foundSolution = 1;
            }
-+          std::cout << "CbcModel::doOneNode18.11 this="<<this <<" found="<<found<<std::endl<< std::flush;
++          std::cout << "CbcModel::doOneNode18.11 this="<<this <<" parallelMode="<<parallelMode()<<std::endl<< std::flush;
            //assert(nodeInfo->numberPointingToThis() <= 2) ;
            if (parallelMode() >= 0) {
              // avoid accidental pruning, if newNode was final branch arm
