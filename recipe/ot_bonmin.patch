@@ -1,7 +1,34 @@
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..c90abd125 100644
+index 147ddd9ad..126339f9d 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
+@@ -212,7 +212,7 @@ bool BonminProblem::get_bounds_info( int n,
+         x_l[i] = bounds.getLowerBound()[i];
+ 
+       if (!bounds.getFiniteUpperBound()[i])
+-        x_u[i] =  SpecFunc::MaxScalar;
++        x_u[i] =  SpecFunc::ActualMaxScalar;
+       else
+         x_u[i] = bounds.getUpperBound()[i];
+     }
+@@ -222,7 +222,7 @@ bool BonminProblem::get_bounds_info( int n,
+     for (int i = 0; i < n; ++i)
+     {
+       x_l[i] = SpecFunc::LowestScalar;
+-      x_u[i] =  SpecFunc::MaxScalar;
++      x_u[i] =  SpecFunc::ActualMaxScalar;
+     }
+   }
+ 
+@@ -240,7 +240,7 @@ bool BonminProblem::get_bounds_info( int n,
+     for (UnsignedInteger i = 0; i < optimProblem_.getInequalityConstraint().getOutputDimension(); ++i)
+     {
+       g_l[k] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
+-      g_u[k] = SpecFunc::MaxScalar;
++      g_u[k] = SpecFunc::ActualMaxScalar;
+       ++k;
+     }
+ 
 @@ -289,6 +289,8 @@ bool BonminProblem::eval_f(int n,
    else
      obj_value = -yPoint[0];

@@ -84,7 +84,7 @@ index cf14b65..42ae795 100644
  }
  
 diff --git a/Bonmin/src/Algorithms/BonSubMipSolver.cpp b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
-index 01843e8..56eb46a 100644
+index 01843e8..a8c55df 100644
 --- a/Bonmin/src/Algorithms/BonSubMipSolver.cpp
 +++ b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
 @@ -208,7 +208,7 @@ namespace Bonmin {
@@ -108,28 +108,36 @@ index 01843e8..56eb46a 100644
        cbc.setDblParam( CbcModel::CbcAllowableFractionGap, gap_tol_);
  
        //cbc.solver()->writeMpsNative("FP.mps", NULL, NULL, 1);
-+      std::cout << "SubMipSolver::optimize cbc.branchAndBound" << std::endl << std::flush;
++      std::cout << "SubMipSolver::optimize cbc.branchAndBound cbc=" << (&cbc) << std::endl << std::flush;
        cbc.branchAndBound();
        lowBound_ = cbc.getBestPossibleObjValue();
  
 diff --git a/Bonmin/src/CbcBonmin/BonCbc.cpp b/Bonmin/src/CbcBonmin/BonCbc.cpp
-index 5c10cbd..fcb8fdd 100644
+index 5c10cbd..6cb0b5d 100644
 --- a/Bonmin/src/CbcBonmin/BonCbc.cpp
 +++ b/Bonmin/src/CbcBonmin/BonCbc.cpp
-@@ -104,7 +104,7 @@ namespace Bonmin
+@@ -84,6 +84,7 @@ namespace Bonmin
+   /** Destructor.*/
+   Bab::~Bab()
+   {
++    std::cout << "Bab:::~Bab model_=" << (&model_) << std::endl << std::flush;
+     if (bestSolution_) delete [] bestSolution_;
+     bestSolution_ = NULL;
+     for ( int i = 0 ; i < nObjects_ ; i++) {
+@@ -104,7 +105,7 @@ namespace Bonmin
    void
    Bab::branchAndBound(BabSetupBase & s)
    {
 -
-+    std::cout << "Bab::branchAndBound0" << std::endl << std::flush;
++    std::cout << "Bab::branchAndBound0 model_=" << (&model_) << std::endl << std::flush;
      double remaining_time = s.getDoubleParameter(BabSetupBase::MaxTime) + CoinCpuTime();
      /* Put a link to this into solver.*/
      OsiBabSolver *  babInfo = dynamic_cast<OsiBabSolver *>(s.continuousSolver()->getAuxiliaryInfo());
-@@ -521,6 +521,7 @@ namespace Bonmin
+@@ -521,6 +522,7 @@ namespace Bonmin
      //model_.branchAndBound(3);
      remaining_time -= CoinCpuTime();
      model_.setDblParam(CbcModel::CbcMaximumSeconds, remaining_time);
-+    std::cout << "Bab::branchAndBound model_.branchAndBound" << std::endl << std::flush;
++    std::cout << "Bab::branchAndBound model_.branchAndBound remaining_time=" << remaining_time << " model_=" << (&model_) << std::endl << std::flush;
      if(remaining_time > 0.)
        model_.branchAndBound();
      }
