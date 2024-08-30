@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..446cb6c4 100644
+index 235d8a72..632a9b5d 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -244,17 +244,127 @@ index 235d8a72..446cb6c4 100644
    /*
        At last, the actual branch-and-cut search loop, which will iterate until
        the live set is empty or we hit some limit (integrality gap, time, node
-@@ -4535,7 +4569,8 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -4510,6 +4544,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       //abort();
+     }
+   }
++  std::cout << "CbcModel::branchAndBound23.1 this="<<this << std::endl<< std::flush;
+   {
+     // may be able to change cutoff now
+     double cutoff = getCutoff();
+@@ -4519,6 +4554,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       setCutoff(cutoff);
+     }
+   }
++  std::cout << "CbcModel::branchAndBound23.2 this="<<this << std::endl<< std::flush;
+ #ifdef CBC_THREAD
+   bool goneParallel = false;
+ #endif
+@@ -4535,7 +4571,9 @@ void CbcModel::branchAndBound(int doStatistics)
    if ((moreSpecialOptions_ & 262144) != 0)
      specialOptions_ |= 131072;
  #endif
 -  while (true) {
 +  while (true)
 +  {
++    std::cout << "CbcModel::branchAndBound23.3 this="<<this << std::endl<< std::flush;
      lockThread();
  #ifdef COIN_HAS_CLP
      // See if we want dantzig row choice
-@@ -5186,6 +5221,8 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -4660,6 +4698,7 @@ void CbcModel::branchAndBound(int doStatistics)
+     break;
+ #endif
+     } else {
++      std::cout << "CbcModel::branchAndBound23.5 this="<<this << std::endl<< std::flush;
+       unlockThread();
+     }
+     // If done 50/100 nodes see if worth trying reduction
+@@ -4764,6 +4803,7 @@ void CbcModel::branchAndBound(int doStatistics)
+               delete temp;
+               saveSolver->writeMps("reduced");
+             } else {
++              std::cout << "CbcModel::branchAndBound23.6 abort this="<<this << std::endl<< std::flush;
+               abort();
+             }
+           }
+@@ -4830,6 +4870,7 @@ void CbcModel::branchAndBound(int doStatistics)
+             delete[] newSolution;
+ #ifdef CBC_THREAD
+             if (master_) {
++              std::cout << "CbcModel::branchAndBound23.6 lockThread this="<<this << std::endl<< std::flush;
+               lockThread();
+               if (parallelMode() > 0) {
+                 while (master_->waitForThreadsInTree(0)) {
+@@ -4842,6 +4883,7 @@ void CbcModel::branchAndBound(int doStatistics)
+                 double dummyBest;
+                 tree_->cleanTree(this, -COIN_DBL_MAX, dummyBest);
+               }
++              std::cout << "CbcModel::branchAndBound23.6 waitForThreadsInTree this="<<this << std::endl<< std::flush;
+               master_->waitForThreadsInTree(2);
+               delete master_;
+               master_ = NULL;
+@@ -4859,6 +4901,7 @@ void CbcModel::branchAndBound(int doStatistics)
+         saveSolver = NULL;
+       }
+     }
++    std::cout << "CbcModel::branchAndBound23.7 this="<<this << std::endl<< std::flush;
+     /*
+           Check for abort on limits: node count, solution count, time, integrality gap.
+         */
+@@ -4953,6 +4996,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       if (tree_->empty()) {
+         continue;
+       }
++       std::cout << "CbcModel::branchAndBound23.8 unlockThread this="<<this << std::endl<< std::flush;
+       unlockThread();
+     }
+     cutoff = getCutoff();
+@@ -4976,6 +5020,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       // redo tree if requested
+       if (redoTree)
+         tree_->setComparison(*nodeCompare_);
++      std::cout << "CbcModel::branchAndBound23.9 unlockThread this="<<this << std::endl<< std::flush;
+       unlockThread();
+     }
+     // Had hotstart before, now switched off
+@@ -4989,6 +5034,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       tree_->setComparison(*nodeCompare_);
+       unlockThread();
+     }
++    std::cout << "CbcModel::branchAndBound23.10 this="<<this << std::endl<< std::flush;
+     if (numberNodes_ >= lastPrintEvery) {
+       lastPrintEvery = numberNodes_ + printFrequency_;
+       lockThread();
+@@ -5084,10 +5130,12 @@ void CbcModel::branchAndBound(int doStatistics)
+           represents, and then execute the current arm of the branch to create the
+           active subproblem.
+         */
++    std::cout << "CbcModel::branchAndBound23.11 this="<<this << std::endl<< std::flush;
+     CbcNode *node = NULL;
+ #ifdef CBC_THREAD
+     if (!parallelMode() || parallelMode() == -1) {
+ #endif
++      std::cout << "CbcModel::branchAndBound23.12 this="<<this << std::endl<< std::flush;
+       node = tree_->bestNode(cutoff);
+       // Possible one on tree worse than cutoff
+       // Weird comparison function can leave ineligible nodes on tree
+@@ -5119,6 +5167,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       //numberConsecutiveInfeasible++;
+ #ifdef CBC_THREAD
+     } else if (parallelMode() > 0) {
++      std::cout << "CbcModel::branchAndBound23.13 this="<<this << std::endl<< std::flush;
+       //lockThread();
+       //node = tree_->bestNode(cutoff) ;
+       // Possible one on tree worse than cutoff
+@@ -5136,6 +5185,7 @@ void CbcModel::branchAndBound(int doStatistics)
+       }
+       //unlockThread();
+     } else {
++      std::cout << "CbcModel::branchAndBound23.14 this="<<this << std::endl<< std::flush;
+       // Deterministic parallel
+       if ((tree_->size() < CoinMax(numberThreads_, 8) || hotstartSolution_) && !goneParallel) {
+         node = tree_->bestNode(cutoff);
+@@ -5186,6 +5236,8 @@ void CbcModel::branchAndBound(int doStatistics)
      }
  #endif
    }
@@ -263,7 +373,7 @@ index 235d8a72..446cb6c4 100644
    if (nDeleteNode) {
      for (int i = 0; i < nDeleteNode; i++) {
        delete delNode[i];
-@@ -5261,6 +5298,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5261,6 +5313,7 @@ void CbcModel::branchAndBound(int doStatistics)
        status_ = 5;
      }
    }
@@ -271,7 +381,7 @@ index 235d8a72..446cb6c4 100644
  #ifdef CBC_THREAD
    if (master_) {
  #ifdef COIN_HAS_NTY
-@@ -5358,6 +5396,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5358,6 +5411,7 @@ void CbcModel::branchAndBound(int doStatistics)
          obj->print();
      }
    }
@@ -279,7 +389,7 @@ index 235d8a72..446cb6c4 100644
    if (statistics_) {
      // report in some way
      int *lookup = new int[numberObjects_];
-@@ -5521,6 +5560,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5521,6 +5575,7 @@ void CbcModel::branchAndBound(int doStatistics)
      maximumStatistics_ = 0;
      delete[] lookup;
    }
@@ -287,7 +397,7 @@ index 235d8a72..446cb6c4 100644
    /*
        If we think we have a solution, restore and confirm it with a call to
        setBestSolution().  We need to reset the cutoff value so as not to fathom
-@@ -5571,7 +5611,9 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5571,7 +5626,9 @@ void CbcModel::branchAndBound(int doStatistics)
      solver_ = continuousSolver_;
      setPointers(solver_);
      continuousSolver_ = NULL;
@@ -297,7 +407,7 @@ index 235d8a72..446cb6c4 100644
    /*
        Clean up dangling objects. continuousSolver_ may already be toast.
      */
-@@ -5600,9 +5642,12 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5600,9 +5657,12 @@ void CbcModel::branchAndBound(int doStatistics)
    //delete persistentInfo;
    // Get rid of characteristics
    solverCharacteristics_ = NULL;
@@ -310,7 +420,7 @@ index 235d8a72..446cb6c4 100644
    }
    /*
        Destroy global cuts by replacing with an empty OsiCuts object.
-@@ -5698,6 +5743,7 @@ void CbcModel::branchAndBound(int doStatistics)
+@@ -5698,6 +5758,7 @@ void CbcModel::branchAndBound(int doStatistics)
    }
  #endif
    moreSpecialOptions_ = saveMoreSpecialOptions;
@@ -318,7 +428,7 @@ index 235d8a72..446cb6c4 100644
    return;
  }
  
-@@ -6456,10 +6502,12 @@ CbcModel::CbcModel(const CbcModel &rhs, bool cloneHandler)
+@@ -6456,10 +6517,12 @@ CbcModel::CbcModel(const CbcModel &rhs, bool cloneHandler)
      numberObjects_ = 0;
      object_ = NULL;
    }
@@ -331,7 +441,7 @@ index 235d8a72..446cb6c4 100644
    }
    if (rhs.referenceSolver_)
      referenceSolver_ = rhs.referenceSolver_->clone();
-@@ -6639,6 +6687,7 @@ CbcModel::operator=(const CbcModel &rhs)
+@@ -6639,6 +6702,7 @@ CbcModel::operator=(const CbcModel &rhs)
      if (rhs.continuousSolver_) {
        continuousSolver_ = rhs.continuousSolver_->clone();
      } else {
@@ -339,7 +449,7 @@ index 235d8a72..446cb6c4 100644
        continuousSolver_ = 0;
      }
      delete referenceSolver_;
-@@ -6969,6 +7018,7 @@ CbcModel::~CbcModel()
+@@ -6969,6 +7033,7 @@ CbcModel::~CbcModel()
    }
    delete tree_;
    tree_ = NULL;
@@ -347,7 +457,7 @@ index 235d8a72..446cb6c4 100644
    if (modelOwnsSolver()) {
      delete solver_;
      solver_ = NULL;
-@@ -7049,8 +7099,10 @@ void CbcModel::resetModel()
+@@ -7049,8 +7114,10 @@ void CbcModel::resetModel()
  {
    delete emptyWarmStart_;
    emptyWarmStart_ = NULL;
@@ -358,7 +468,7 @@ index 235d8a72..446cb6c4 100644
    numberSavedSolutions_ = 0;
    delete[] bestSolution_;
    bestSolution_ = NULL;
-@@ -18200,6 +18252,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18200,6 +18267,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    solverCharacteristics_->setSolver(solver_);
    // just point to solver_
    delete continuousSolver_;
@@ -366,7 +476,7 @@ index 235d8a72..446cb6c4 100644
    continuousSolver_ = solver_;
    // get a copy of original so we can fix bounds
    OsiSolverInterface *cleanModel = originalSolver->clone();
-@@ -18361,6 +18414,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18361,6 +18429,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
          }
          synchronizeModel(); // make sure everything that needs solver has it
          // just point to solver_
@@ -374,7 +484,7 @@ index 235d8a72..446cb6c4 100644
          continuousSolver_ = solver_;
          feasible = (resolve(NULL, 3) != 0);
          if (!feasible || !doIntegerPresolve || weak)
-@@ -18484,6 +18538,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18484,6 +18553,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    deleteObjects();
    synchronizeModel(); // make sure everything that needs solver has it
    continuousSolver_ = NULL;
@@ -382,7 +492,7 @@ index 235d8a72..446cb6c4 100644
    currentNumberCuts_ = 0;
    return feasible;
  }
-@@ -19045,6 +19100,7 @@ CbcModel::strengthenedModel()
+@@ -19045,6 +19115,7 @@ CbcModel::strengthenedModel()
    if (continuousSolver_) {
      delete continuousSolver_;
      continuousSolver_ = NULL;
