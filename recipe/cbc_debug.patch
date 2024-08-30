@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..50a73e70 100644
+index 235d8a72..d176874a 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -485,7 +485,19 @@ index 235d8a72..50a73e70 100644
    numberSavedSolutions_ = 0;
    delete[] bestSolution_;
    bestSolution_ = NULL;
-@@ -16432,6 +16503,7 @@ void CbcModel::setCutModifier(CbcCutModifier &modifier)
+@@ -14650,9 +14721,11 @@ void CbcModel::setStrategy(CbcStrategy &strategy)
+ // Increases usedInSolution for nonzeros
+ void CbcModel::incrementUsed(const double *solution)
+ {
++  std::cout << "CbcModel::incrementUsed this="<<this <<" solution="<<solution<<" usedInSolution_="<<usedInSolution_<<std::endl<< std::flush;
+   if (usedInSolution_) {
+     // might as well mark all including continuous
+     int numberColumns = solver_->getNumCols();
++    std::cout << "CbcModel::incrementUsed this="<<this <<" numberColumns="<<numberColumns<<std::endl<< std::flush;
+     for (int i = 0; i < numberColumns; i++) {
+       if (solution[i])
+         usedInSolution_[i]++;
+@@ -16432,6 +16505,7 @@ void CbcModel::setCutModifier(CbcCutModifier &modifier)
  */
  int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
  {
@@ -493,7 +505,7 @@ index 235d8a72..50a73e70 100644
    int foundSolution = 0;
    int saveNumberCutGenerators = numberCutGenerators_;
    if ((moreSpecialOptions_ & 33554432) != 0 && (specialOptions_ & 2048) == 0) {
-@@ -16452,7 +16524,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16452,7 +16526,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
      node->numberUnsatisfied());
    //node->columnNumber()) ;
  #endif
@@ -502,7 +514,7 @@ index 235d8a72..50a73e70 100644
    /*
        Rebuild the subproblem for this node:	 Call addCuts() to adjust the model
        to recreate the subproblem for this node (set proper variable bounds, add
-@@ -16476,7 +16548,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16476,7 +16550,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
      newNode = new CbcNode();
    bool feasible = true;
    CoinWarmStartBasis *lastws = new CoinWarmStartBasis();
@@ -512,7 +524,7 @@ index 235d8a72..50a73e70 100644
    // point to genuine ones
    //int save1 = maximumNumberCuts_;
    //maximumNumberCuts_ = baseModel->maximumNumberCuts_;
-@@ -16494,6 +16568,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16494,6 +16570,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
  #ifdef SWITCH_VARIABLES
    fixAssociated(solver_, 0);
  #endif
@@ -520,7 +532,7 @@ index 235d8a72..50a73e70 100644
    //if (save1<maximumNumberCuts_) {
    // increased
    //baseModel->maximumNumberCuts_ = maximumNumberCuts_;
-@@ -16509,7 +16584,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16509,7 +16586,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
      baseModel->lastNumberCuts2_ = lastNumberCuts2_;
    }
    int branchesLeft = 0;
@@ -530,7 +542,7 @@ index 235d8a72..50a73e70 100644
      unlockThread();
      int i;
      const double *lower = getColLower();
-@@ -16523,6 +16600,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16523,6 +16602,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
        solverCharacteristics_->setBeforeUpper(upperBefore);
      }
      lockThread();
@@ -538,7 +550,7 @@ index 235d8a72..50a73e70 100644
      assert(node->objectiveValue() < 1.0e200);
      if (messageHandler()->logLevel() > 2)
        node->modifiableBranchingObject()->print();
-@@ -16608,6 +16686,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16608,6 +16688,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
          }
        }
      } else {
@@ -546,7 +558,7 @@ index 235d8a72..50a73e70 100644
        // normal
        if (false) {
          const double *lower = solver_->getColLower();
-@@ -16658,6 +16737,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16658,6 +16739,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
  #ifndef COIN_HAS_CPX
            specialOptions_ &= ~16384;
  #endif
@@ -554,7 +566,7 @@ index 235d8a72..50a73e70 100644
            if ((specialOptions_ & 16384) == 0) {
              info->integerTolerance_ = getIntegerTolerance();
              info->integerIncrement_ = getCutoffIncrement();
-@@ -16784,6 +16864,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16784,6 +16866,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                  fastNodeDepth_, FATHOM_BIAS - fastNodeDepth_);
  #endif
              }
@@ -562,7 +574,7 @@ index 235d8a72..50a73e70 100644
              if (info->nNodes_ < 0) {
                // we gave up
                //abort();
-@@ -16798,6 +16879,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16798,6 +16881,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                printf("gave up fastNodeDepth now %d - so at depth >= %d\n",
                  fastNodeDepth_, FATHOM_BIAS - fastNodeDepth_);
  #endif
@@ -570,7 +582,7 @@ index 235d8a72..50a73e70 100644
                if (feasible) {
                  // Save bounds round bestSolution
                  //double * saveLower = CoinCopyOfArray(solver_->getColLower(),
-@@ -16824,6 +16906,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16824,6 +16908,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                // say feasible so will redo node
                feasible = true;
              } else {
@@ -578,7 +590,7 @@ index 235d8a72..50a73e70 100644
                if (feasible) {
                  clpSolver->setWarmStart(NULL);
                  // try and do solution
-@@ -16845,6 +16928,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16845,6 +16930,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                    solver_->setColUpper(saveUpper);
                  }
                }
@@ -586,7 +598,7 @@ index 235d8a72..50a73e70 100644
                // update pseudo costs
                double smallest = 1.0e50;
                double largest = -1.0;
-@@ -16877,6 +16961,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16877,6 +16963,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
              simplex->setLogLevel(saveLevel);
  #ifdef COIN_HAS_CPX
            } else {
@@ -594,7 +606,7 @@ index 235d8a72..50a73e70 100644
              // try cplex
              OsiCpxSolverInterface cpxSolver;
              double direction = clpSolver->getObjSense();
-@@ -16960,6 +17045,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -16960,6 +17047,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
        feasible = solveWithCuts(cuts, maximumCutPasses_, node);
  #endif
      }
@@ -602,7 +614,7 @@ index 235d8a72..50a73e70 100644
      if ((specialOptions_ & 1) != 0 && onOptimalPath) {
        if (solver_->getRowCutDebuggerAlways()->optimalValue() < getCutoff()) {
          if (!solver_->getRowCutDebugger() || !feasible) {
-@@ -17030,6 +17116,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17030,6 +17118,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
        }
      }
      bool checkingNode = false;
@@ -610,7 +622,7 @@ index 235d8a72..50a73e70 100644
      if (feasible) {
  #ifdef FUNNY_BRANCHING2
        // Far too clever
-@@ -17124,6 +17211,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17124,6 +17213,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                dj[iColumn1], nodeInfo->numberBranchesLeft());
  #endif
              while (nodeInfo->parent()) {
@@ -618,7 +630,7 @@ index 235d8a72..50a73e70 100644
                nodeInfo = nodeInfo->parent();
                CbcNode *nodeLook = nodeInfo->mutableOwner();
                if (!nodeLook || nodeLook->objectiveValue() == 0.5 * COIN_DBL_MAX)
-@@ -17353,6 +17441,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17353,6 +17443,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
        }
        unlockThread();
      }
@@ -626,7 +638,7 @@ index 235d8a72..50a73e70 100644
      /*
            At this point, there are three possibilities:
            * newNode is live and will require further branching to resolve
-@@ -17407,6 +17496,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17407,6 +17498,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
          numberUpdateItems_ = 0;
        }
      }
@@ -634,7 +646,7 @@ index 235d8a72..50a73e70 100644
      if (newNode)
        if (newNode && newNode->active()) {
          if (newNode->branchingObject() == NULL) {
-@@ -17441,6 +17531,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17441,6 +17533,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
              }
            }
          }
@@ -642,7 +654,7 @@ index 235d8a72..50a73e70 100644
          if (newNode->branchingObject()) {
            handler_->message(CBC_BRANCH, messages_)
              << numberNodes_ << trueObjValue(newNode->objectiveValue())
-@@ -17457,7 +17548,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17457,7 +17550,9 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                addedCuts_[i]->increment(numberLeft - 1);
              }
            }
@@ -652,7 +664,7 @@ index 235d8a72..50a73e70 100644
            locked = false;
            double estValue = newNode->guessedObjectiveValue();
            int found = -1;
-@@ -17468,6 +17561,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17468,6 +17563,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
            // allow more heuristics
            currentPassNumber_ = 0;
            for (iHeur = 0; iHeur < numberHeuristics_; iHeur++) {
@@ -660,7 +672,7 @@ index 235d8a72..50a73e70 100644
              // skip if can't run here
              if (!heuristic_[iHeur]->shouldHeurRun(whereFrom))
                continue;
-@@ -17496,6 +17590,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17496,6 +17592,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                heurValue = saveValue;
              }
            }
@@ -668,7 +680,7 @@ index 235d8a72..50a73e70 100644
            if (found >= 0 && parallelMode() > 0) {
              lastHeuristic_ = heuristic_[found];
  #if CBC_USEFUL_PRINTING > 1
-@@ -17505,12 +17600,14 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17505,12 +17602,14 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
              setBestSolution(CBC_ROUNDING, heurValue, newSolution);
              foundSolution = 1;
            }
@@ -683,7 +695,7 @@ index 235d8a72..50a73e70 100644
            if (statistics_) {
              if (numberNodes2_ == maximumStatistics_) {
                maximumStatistics_ = 2 * maximumStatistics_;
-@@ -17523,15 +17620,17 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17523,15 +17622,17 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
              assert(!statistics_[numberNodes2_]);
              statistics_[numberNodes2_] = new CbcStatistics(newNode, this);
            }
@@ -702,15 +714,24 @@ index 235d8a72..50a73e70 100644
              std::cerr << "You should never get here" << std::endl;
              throw CoinError("Nodes should not be fathomed on integer infeasibility in this setting",
                "branchAndBound", "CbcModel");
-@@ -17544,6 +17643,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17544,17 +17645,24 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
                }
              }
            }
 +          std::cout << "CbcModel::doOneNode18.10 this="<<this <<std::endl<< std::flush;
            double objectiveValue = newNode->objectiveValue();
            lastHeuristic_ = NULL;
++          std::cout << "CbcModel::doOneNode18.101  this="<<this <<" objectiveValue="<<objectiveValue<<" cutoff="<<getCutoff()<<std::endl<< std::flush;
            // Just possible solver did not know about a solution from another thread!
-@@ -17555,6 +17655,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+           if (objectiveValue < getCutoff()) {
++            std::cout << "CbcModel::doOneNode18.102 this="<<this <<std::endl<< std::flush;
+             incrementUsed(solver_->getColSolution());
++            std::cout << "CbcModel::doOneNode18.103 this="<<this <<std::endl<< std::flush;
+             setBestSolution(CBC_SOLUTION, objectiveValue,
+               solver_->getColSolution());
++            std::cout << "CbcModel::doOneNode18.104 this="<<this <<std::endl<< std::flush;
+             // Check if was found
++            std::cout << "CbcModel::doOneNode18.105 this="<<this <<" bestObjective_="<<bestObjective_<<std::endl<< std::flush;
              if (bestObjective_ < getCutoff())
                foundSolution = 1;
            }
@@ -718,7 +739,7 @@ index 235d8a72..50a73e70 100644
            //assert(nodeInfo->numberPointingToThis() <= 2) ;
            if (parallelMode() >= 0) {
              // avoid accidental pruning, if newNode was final branch arm
-@@ -17567,6 +17668,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17567,6 +17675,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
            }
          }
        }
@@ -726,7 +747,7 @@ index 235d8a72..50a73e70 100644
      if (branchesLeft) {
        // set nodenumber correctly
        if (node->nodeInfo())
-@@ -17639,6 +17741,8 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17639,6 +17748,8 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
        node->setActive(false);
      }
    }
@@ -735,7 +756,7 @@ index 235d8a72..50a73e70 100644
    /*
        Delete cuts to get back to the original system.
  
-@@ -17691,6 +17795,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
+@@ -17691,6 +17802,7 @@ int CbcModel::doOneNode(CbcModel *baseModel, CbcNode *&node, CbcNode *&newNode)
      unlockThread();
    }
    numberCutGenerators_ = saveNumberCutGenerators;
@@ -743,7 +764,7 @@ index 235d8a72..50a73e70 100644
    return foundSolution;
  }
  // Adds an update information object
-@@ -18200,6 +18305,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18200,6 +18312,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    solverCharacteristics_->setSolver(solver_);
    // just point to solver_
    delete continuousSolver_;
@@ -751,7 +772,7 @@ index 235d8a72..50a73e70 100644
    continuousSolver_ = solver_;
    // get a copy of original so we can fix bounds
    OsiSolverInterface *cleanModel = originalSolver->clone();
-@@ -18361,6 +18467,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18361,6 +18474,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
          }
          synchronizeModel(); // make sure everything that needs solver has it
          // just point to solver_
@@ -759,7 +780,7 @@ index 235d8a72..50a73e70 100644
          continuousSolver_ = solver_;
          feasible = (resolve(NULL, 3) != 0);
          if (!feasible || !doIntegerPresolve || weak)
-@@ -18484,6 +18591,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
+@@ -18484,6 +18598,7 @@ bool CbcModel::integerPresolveThisModel(OsiSolverInterface *originalSolver,
    deleteObjects();
    synchronizeModel(); // make sure everything that needs solver has it
    continuousSolver_ = NULL;
@@ -767,7 +788,7 @@ index 235d8a72..50a73e70 100644
    currentNumberCuts_ = 0;
    return feasible;
  }
-@@ -19045,6 +19153,7 @@ CbcModel::strengthenedModel()
+@@ -19045,6 +19160,7 @@ CbcModel::strengthenedModel()
    if (continuousSolver_) {
      delete continuousSolver_;
      continuousSolver_ = NULL;
