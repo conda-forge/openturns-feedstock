@@ -141,3 +141,203 @@ index 5c10cbd..6cb0b5d 100644
      if(remaining_time > 0.)
        model_.branchAndBound();
      }
+diff --git a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
+index ee31245..15fba38 100644
+--- a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
++++ b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
+@@ -988,6 +988,7 @@ OsiTMINLPInterface::resolveForCost(int numsolve, bool keepWarmStart)
+ void
+ OsiTMINLPInterface::resolveForRobustness(int numsolve)
+ {
++  std::cout << "OsiTMINLPInterface::resolveForRobustness0 this="<<this <<std::endl<< std::flush;
+   // This method assumes that a problem has just been solved and we try for a
+   // different solution. So disregard (in fact, clear out) any warmstart info
+   // we might have, and acquire a new one before returning.
+@@ -1009,7 +1010,7 @@ OsiTMINLPInterface::resolveForRobustness(int numsolve)
+       messages_)
+   <<1<< CoinMessageEol ;
+   solveAndCheckErrors(0,0,"resolve robustness");
+-
++std::cout << "OsiTMINLPInterface::resolveForRobustness1 this="<<this <<std::endl<< std::flush;
+ 
+   char c='*';
+   if(isAbandoned()) {
+@@ -1030,6 +1031,7 @@ OsiTMINLPInterface::resolveForRobustness(int numsolve)
+     }
+     return; //we won go on
+   }
++std::cout << "OsiTMINLPInterface::resolveForRobustness2 this="<<this <<std::endl<< std::flush;
+ 
+   //still unsolved try again with different random starting points
+   for(int f = 0; f < numsolve ; f++) {
+@@ -1067,6 +1069,7 @@ OsiTMINLPInterface::resolveForRobustness(int numsolve)
+       return; //we have found a solution and continue
+     }
+   }
++std::cout << "OsiTMINLPInterface::resolveForRobustness3 this="<<this <<std::endl<< std::flush;
+ 
+ 
+   if(warmStartMode_ < Optimum){
+@@ -1084,11 +1087,15 @@ OsiTMINLPInterface::resolveForRobustness(int numsolve)
+     return;
+   }
+   else {
++      std::cout << "OsiTMINLPInterface::resolveForRobustness4 this="<<this <<std::endl<< std::flush;
++
+     std::string probName;
+     getStrParam(OsiProbName,probName);
+     throw newUnsolvedError(app_->errorCode(), problem_,
+                            probName);
+   }
++  std::cout << "OsiTMINLPInterface::resolveForRobustness5 this="<<this <<std::endl<< std::flush;
++
+   // Do NOT get warmstart in other cases
+ }
+ 
+@@ -2608,6 +2615,7 @@ void
+ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+     const char * whereFrom)
+ {
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0 this="<<this <<std::endl<< std::flush;
+   if (BonminAbortAll == true) return;
+   totalNlpSolveTime_-=CoinCpuTime();
+   if(warmStarted)
+@@ -2624,22 +2632,26 @@ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+          std::string probName;
+          getStrParam(OsiProbName, probName);
+          fprintf(stderr, "Problem on optimal path is infeasible!\n");
++           std::cout << "OsiTMINLPInterface::solveAndCheckErrors0.1 this="<<this <<std::endl<< std::flush;
++
+          throw newUnsolvedError(app_->errorCode(), problem_, probName);
+       }
+    }
+-
+   //Options should have been printed if not done already turn off Ipopt output
+   if(!hasPrintedOptions) {
+     hasPrintedOptions = 1;
+     //app_->Options()->SetIntegerValue("print_level",0, true, true);
+     app_->options()->SetStringValue("print_user_options","no", false, true);
+   }
+-  
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors1 this="<<this <<std::endl<< std::flush;
++
+   bool otherDisagree = false ;
+     if(!app_->isRecoverable(optimizationStatus_))//Solver failed and the error can not be recovered, throw it
+     {
+       std::string probName;
+       getStrParam(OsiProbName, probName);
++        std::cout << "OsiTMINLPInterface::solveAndCheckErrors1.1 this="<<this <<std::endl<< std::flush;
++
+       throw newUnsolvedError(app_->errorCode(), problem_, probName);
+     }
+     else if(testOthers_ && !app_->isError(optimizationStatus_)){
+@@ -2680,6 +2692,8 @@ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+           <<(*i)->IterationCount()<<(*i)->CPUTime()<<"retry with "+(*i)->solverName()<<CoinMessageEol;
+       }
+   }
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors2 this="<<this <<std::endl<< std::flush;
++
+   try{
+     totalIterations_ += app_->IterationCount();
+   }
+@@ -2687,12 +2701,16 @@ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+   {
+     if (throwOnFailure)//something failed throw
+     {
++          std::cout << "OsiTMINLPInterface::solveAndCheckErrors2.1 this="<<this <<std::endl<< std::flush;
++
+       throw SimpleError("No statistics available from Ipopt",whereFrom);
+     }
+     else {
+       return;
+     }
+   }
++    std::cout << "OsiTMINLPInterface::solveAndCheckErrors3 this="<<this <<std::endl<< std::flush;
++
+   if(problem_->hasUpperBoundingObjective()){//Check if solution is integer and recompute objective value using alternative objective function
+     const double * sol = getColSolution();
+     bool integerSol = true;
+@@ -2743,6 +2761,7 @@ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+       }
+     }
+   }
++    std::cout << "OsiTMINLPInterface::solveAndCheckErrors4 this="<<this <<std::endl<< std::flush;
+ 
+   messageHandler()->message(IPOPT_SUMMARY, messages_)
+     <<whereFrom<<optimizationStatus_<<app_->IterationCount()<<app_->CPUTime()<<CoinMessageEol;
+@@ -2762,7 +2781,7 @@ OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
+     subProbName+=os.str();
+     problem_->outputDiffs(subProbName, NULL/*getVarNames()*/);
+   }
+-  
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors5 this="<<this <<std::endl<< std::flush;
+ }
+ 
+ ////////////////////////////////////////////////////////////////////
+@@ -2778,31 +2797,35 @@ void OsiTMINLPInterface::initialSolve()
+ ////////////////////////////////////////////////////////////////////
+ void OsiTMINLPInterface::initialSolve(const char * whereFrom)
+ {
++  std::cout << "OsiTMINLPInterface::initialSolve0 this="<<this <<std::endl<< std::flush;
+   assert(IsValid(app_));
+   assert(IsValid(problem_));
++  std::cout << "OsiTMINLPInterface::initialSolve1 this="<<this <<std::endl<< std::flush;
+ 
+   if (BonminAbortAll == true) return;
+   // Discard warmstart_ if we had one
+   delete warmstart_;
+   warmstart_ = NULL;
+-  
++  std::cout << "OsiTMINLPInterface::initialSolve2 this="<<this <<std::endl<< std::flush;
+   if(!hasPrintedOptions) {
+     int printOptions;
+     app_->options()->GetEnumValue("print_user_options",printOptions,app_->prefix());
+     if(printOptions)
+       app_->options()->SetStringValue("print_user_options","yes",true,true);
+   }
++  std::cout << "OsiTMINLPInterface::initialSolve3 this="<<this <<std::endl<< std::flush;
+   if(warmStartMode_ >= Optimum)
+-    app_->disableWarmStart(); 
++    app_->disableWarmStart();
++  std::cout << "OsiTMINLPInterface::initialSolve4 this="<<this <<std::endl<< std::flush;
+   solveAndCheckErrors(0,1,"initialSolve");
+-  
++  std::cout << "OsiTMINLPInterface::initialSolve5 this="<<this <<std::endl<< std::flush;
+   //Options should have been printed if not done already turn off Ipopt output
+   if(!hasPrintedOptions) {
+     hasPrintedOptions = 1;
+     app_->options()->SetStringValue("print_user_options","no");
+     app_->options()->SetIntegerValue("print_level",0);
+   }
+-  
++  std::cout << "OsiTMINLPInterface::initialSolve6 this="<<this <<std::endl<< std::flush;
+   messageHandler()->message(LOG_LINE, messages_)<<' '<<nCallOptimizeTNLP_
+ 						      <<statusAsString()
+                                                       <<getObjValue()
+@@ -2813,7 +2836,9 @@ void OsiTMINLPInterface::initialSolve(const char * whereFrom)
+   if(BonminAbortAll){
+     return;
+   }
++  
+   int numRetry = firstSolve_ ? numRetryInitial_ : numRetryResolve_;
++  std::cout << "OsiTMINLPInterface::initialSolve7 this="<<this <<std::endl<< std::flush;
+   if(isAbandoned() ||
+     ( isProvenPrimalInfeasible() && getObjValue() < infeasibility_epsilon_)) {
+     resolveForRobustness(numRetryUnsolved_);
+@@ -2825,7 +2850,7 @@ void OsiTMINLPInterface::initialSolve(const char * whereFrom)
+       numRetryInitial_ = 0;
+     }
+   firstSolve_ = false;
+-
++std::cout << "OsiTMINLPInterface::initialSolve8 this="<<this <<std::endl<< std::flush;
+   // if warmstart_ is not empty then had to use resolveFor... and that created
+   // the warmstart at the end, and we have nothing to do here. Otherwise...
+   if (! warmstart_ && ! isAbandoned()) {
+@@ -2833,6 +2858,7 @@ void OsiTMINLPInterface::initialSolve(const char * whereFrom)
+       warmstart_ = app_->getWarmStart(problem_);
+     }
+   }
++  std::cout << "OsiTMINLPInterface::initialSolve9 this="<<this <<std::endl<< std::flush;
+ }
+ 
+ /** Resolve the continuous relaxation after problem modification. */
