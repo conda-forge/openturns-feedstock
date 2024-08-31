@@ -24,6 +24,24 @@ make install
 # make test || "cbc test :["
 cd ..
 
+curl -L https://github.com/coin-or/Ipopt/archive/refs/tags/releases/3.14.16.tar.gz | tar xz
+cd Ipopt-releases-3.14.16/
+curl -L https://raw.githubusercontent.com/conda-forge/ipopt-feedstock/main/recipe/pkg-config-do-not-add-requires-private.patch | patch -p1
+./configure \
+  --without-hsl \
+  --disable-java \
+  --with-mumps \
+  --with-mumps-cflags="-I${PREFIX}/include/mumps_seq" \
+  --with-mumps-lflags="-ldmumps_seq -lmumps_common_seq -lpord_seq -lmpiseq_seq -lesmumps -lscotch -lscotcherr -lmetis -lgfortran" \
+  --with-asl \
+  --with-asl-cflags="-I${PREFIX}/include/asl" \
+  --with-asl-lflags="-lasl" \
+  --prefix=${PREFIX}
+make -j "${CPU_COUNT}"
+make install
+make test || "ipopt test :["
+cd ..
+
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
 mkdir Data
@@ -52,6 +70,9 @@ make
 cd ../..
 # make test || "bonmin test :["
 cd ..
+
+# compat
+cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
