@@ -363,3 +363,58 @@ index d070ee5..82a2d8f 100644
      return (r >=0 || (r != illDefinedProblem && r != notEnoughFreedom && r != illegalOption && r != computationError && r != timeLimit) );
    }
  
+diff --git a/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp b/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
+index 6969595..0921dc2 100644
+--- a/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
++++ b/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
+@@ -208,6 +208,7 @@ namespace Bonmin
+   TNLPSolver::ReturnStatus
+   BqpdSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP>& tnlp)
+   {
++    std::cout << "BqpdSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
+     BranchingTQP* tqp = dynamic_cast<BranchingTQP*>(GetRawPtr(tnlp));
+     if (!tqp) {
+       Ipopt::IpoptException E("BqpdSolver called with object other than a BranchingTQP",
+diff --git a/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp b/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
+index 85812e1..e1b7255 100644
+--- a/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
++++ b/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
+@@ -363,6 +363,7 @@ namespace Bonmin
+   TNLPSolver::ReturnStatus
+   FilterSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP> & tnlp)
+   {
++    std::cout << "FilterSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
+     if (cached_.IsNull() || !cached_->use_warm_start_in_cache_) {
+       cached_ = new cachedInfo(tnlp, options_);
+     }
+diff --git a/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp b/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
+index 22d2d6b..64deae0 100644
+--- a/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
++++ b/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
+@@ -8,6 +8,7 @@
+ // Date : 26/09/2006
+ 
+ 
++#include <iostream>
+ #include "BonIpoptSolver.hpp"
+ #include "IpSolveStatistics.hpp"
+ #include "CoinError.hpp"
+@@ -134,6 +135,7 @@ namespace Bonmin
+   TNLPSolver::ReturnStatus
+   IpoptSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP> &tnlp)
+   {
++    std::cout << "IpoptSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
+ #if 0
+     printf("Global Time limit set to %g\n", time_limit_);
+     double local_time_limit = time_limit_ - 
+@@ -307,7 +309,10 @@ namespace Bonmin
+     case Ipopt::Error_In_Step_Computation:
+     case Ipopt::Unrecoverable_Exception:
+     case Ipopt::Insufficient_Memory:
++    {
++      std::cout << "IpoptSolver::solverReturnStatus Ipopt::Insufficient_Memory" << std::endl << std::flush;
+       return computationError;
++    }
+     case Ipopt::Not_Enough_Degrees_Of_Freedom:
+       return notEnoughFreedom;
+     case Ipopt::Invalid_Problem_Definition:
