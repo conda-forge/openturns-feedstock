@@ -142,7 +142,7 @@ index 5c10cbd..6cb0b5d 100644
        model_.branchAndBound();
      }
 diff --git a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
-index ee31245..ded1885 100644
+index ee31245..53b3394 100644
 --- a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
 +++ b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
 @@ -988,6 +988,7 @@ OsiTMINLPInterface::resolveForCost(int numsolve, bool keepWarmStart)
@@ -198,7 +198,7 @@ index ee31245..ded1885 100644
  OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
      const char * whereFrom)
  {
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0 this="<<this <<" warmStarted="<<warmStarted<<std::endl<< std::flush;
    if (BonminAbortAll == true) return;
    totalNlpSolveTime_-=CoinCpuTime();
    if(warmStarted)
