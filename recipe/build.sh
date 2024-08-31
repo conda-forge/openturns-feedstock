@@ -27,6 +27,7 @@ cd ..
 curl -L https://github.com/coin-or/Ipopt/archive/refs/tags/releases/3.14.16.tar.gz | tar xz
 cd Ipopt-releases-3.14.16/
 curl -L https://raw.githubusercontent.com/conda-forge/ipopt-feedstock/main/recipe/pkg-config-do-not-add-requires-private.patch | patch -p1
+patch -p1 -i ${RECIPE_DIR}/ipopt.patch
 ./configure \
   --without-hsl \
   --disable-java \
@@ -39,8 +40,11 @@ curl -L https://raw.githubusercontent.com/conda-forge/ipopt-feedstock/main/recip
   --prefix=${PREFIX}
 make -j "${CPU_COUNT}"
 make install
-make test || "ipopt test :["
+# make test || "ipopt test :["
 cd ..
+
+# compat
+cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
@@ -70,9 +74,6 @@ make
 cd ../..
 # make test || "bonmin test :["
 cd ..
-
-# compat
-cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"

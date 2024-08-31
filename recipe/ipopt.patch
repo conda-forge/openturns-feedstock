@@ -1,0 +1,76 @@
+diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
+index 44525aea..6df93a61 100644
+--- a/src/Interfaces/IpIpoptApplication.cpp
++++ b/src/Interfaces/IpIpoptApplication.cpp
+@@ -29,6 +29,7 @@
+ #include <cassert>
+ #include <cmath>
+ #include <fstream>
++#include <iostream>
+ 
+ // Factory to facilitate creating IpoptApplication objects from within a DLL
+ 
+@@ -105,6 +106,7 @@ IpoptApplication::IpoptApplication(
+    catch( std::overflow_error& )
+    {
+       jnlst_->Printf(J_ERROR, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
++      
+       THROW_EXCEPTION(IPOPT_APPLICATION_ERROR, "Not enough memory");
+    }
+    catch( ... )
+@@ -270,11 +272,13 @@ ApplicationReturnStatus IpoptApplication::Initialize(
+    }
+    catch( std::bad_alloc& )
+    {
++      std::cout << "IpoptApplication::Initialize1 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+       return Insufficient_Memory;
+    }
+    catch( std::overflow_error& )
+    {
++         std::cout << "IpoptApplication::Initialize1 Integer type too small for required memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+       return Insufficient_Memory;
+    }
+@@ -309,10 +313,12 @@ ApplicationReturnStatus IpoptApplication::Initialize(
+       catch( std::bad_alloc& )
+       {
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
++         std::cout << "IpoptApplication::Initialize2 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+          return Insufficient_Memory;
+       }
+       catch( std::overflow_error& )
+       {
++            std::cout << "IpoptApplication::Initialize2 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+          return Insufficient_Memory;
+       }
+@@ -551,11 +557,13 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    catch( std::bad_alloc& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize3 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+    }
+    catch( std::overflow_error& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize3 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+    }
+    catch( ... )
+@@ -860,12 +868,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    catch( std::bad_alloc& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize4 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+       status = OUT_OF_MEMORY;
+    }
+    catch( std::overflow_error& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize4 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+       status = OUT_OF_MEMORY;
+    }
