@@ -1,5 +1,5 @@
 diff --git a/src/Algorithm/IpBacktrackingLineSearch.cpp b/src/Algorithm/IpBacktrackingLineSearch.cpp
-index 6782ac59..9e25642d 100644
+index 6782ac59..29edce5b 100644
 --- a/src/Algorithm/IpBacktrackingLineSearch.cpp
 +++ b/src/Algorithm/IpBacktrackingLineSearch.cpp
 @@ -14,6 +14,7 @@
@@ -18,7 +18,24 @@ index 6782ac59..9e25642d 100644
           THROW_EXCEPTION(STEP_COMPUTATION_FAILED,
                           "We are in an emergency mode, but no restoration phase or other fall back is available.");
        }
-@@ -581,6 +583,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -566,11 +568,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+             }
+ 
+             // ToDo make the 1e-2 below a parameter?
++            
++            std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint curr_constraint_violation="<<IpCq().curr_constraint_violation()<< std::endl << std::flush;
++            std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint unscaled_curr_nlp_constraint_violation="<<IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX)<< std::endl << std::flush;
++
+             // added second criteria to cover cases where tol has been set to a large value
+             if( IpCq().curr_constraint_violation() <= 1e-2 * IpData().tol() &&
+                 IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX) <= 1e-1 * constr_viol_tol_ )
+             {
+                bool found_acceptable = RestoreAcceptablePoint();
++               std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint found_acceptable="<<found_acceptable<< std::endl << std::flush;
+                if( found_acceptable )
+                {
+                   Jnlst().Printf(J_WARNING, J_LINE_SEARCH,
+@@ -581,6 +588,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
                 }
                 else
                 {
@@ -26,6 +43,23 @@ index 6782ac59..9e25642d 100644
                    Jnlst().Printf(J_STRONGWARNING, J_LINE_SEARCH,
                                   "Cannot call restoration phase at point that is almost feasible %s(violation %e).\nAbort in line search due to no other fall back.\n",
                                   dynamic_cast<OrigIpoptNLP*>(GetRawPtr(IpCq().GetIpoptNLP())) == NULL ? "for the restoration NLP " : "",
+@@ -1289,13 +1297,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
+ 
+    if( !IsValid(acceptable_iterate_) )
+    {
++          std::cout << "BacktrackingLineSearch::RestoreAcceptablePoint false="<< std::endl << std::flush;
++
+       return false;
+    }
+ 
+    SmartPtr<IteratesVector> prev_iterate = acceptable_iterate_->MakeNewContainer();
+    IpData().set_trial(prev_iterate);
+    IpData().AcceptTrialPoint();
+-
++std::cout << "BacktrackingLineSearch::RestoreAcceptablePoint true="<< std::endl << std::flush;
+    return true;
+ }
+ 
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
 index d9092e5c..8ee0c029 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
