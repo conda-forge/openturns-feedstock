@@ -1,5 +1,33 @@
+diff --git a/src/Algorithm/IpBacktrackingLineSearch.cpp b/src/Algorithm/IpBacktrackingLineSearch.cpp
+index 6782ac59..9e25642d 100644
+--- a/src/Algorithm/IpBacktrackingLineSearch.cpp
++++ b/src/Algorithm/IpBacktrackingLineSearch.cpp
+@@ -14,6 +14,7 @@
+ 
+ #include <cmath>
+ #include <limits>
++#include <iostream>
+ 
+ namespace Ipopt
+ {
+@@ -317,6 +318,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       }
+       else
+       {
++          std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint throw STEP_COMPUTATION_FAILED1"<< std::endl << std::flush;
+          THROW_EXCEPTION(STEP_COMPUTATION_FAILED,
+                          "We are in an emergency mode, but no restoration phase or other fall back is available.");
+       }
+@@ -581,6 +583,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+                }
+                else
+                {
++                    std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint throw STEP_COMPUTATION_FAILED2"<< std::endl << std::flush;
+                   Jnlst().Printf(J_STRONGWARNING, J_LINE_SEARCH,
+                                  "Cannot call restoration phase at point that is almost feasible %s(violation %e).\nAbort in line search due to no other fall back.\n",
+                                  dynamic_cast<OrigIpoptNLP*>(GetRawPtr(IpCq().GetIpoptNLP())) == NULL ? "for the restoration NLP " : "",
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
-index d9092e5c..e7516672 100644
+index d9092e5c..8ee0c029 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
 +++ b/src/Algorithm/IpIpoptAlg.cpp
 @@ -18,6 +18,7 @@
@@ -18,7 +46,25 @@ index d9092e5c..e7516672 100644
     DBG_START_METH("IpoptAlgorithm::Optimize", dbg_verbosity);
  
     // Start measuring CPU time
-@@ -524,6 +526,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -379,6 +381,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+          // If we are in the emergency mode, ask the line search object
+          // to go to the fallback options.  If that isn't possible,
+          // issue error message
++         
+          if( emergency_mode )
+          {
+             if( line_search_->ActivateFallbackMechanism() )
+@@ -388,6 +391,9 @@ SolverReturn IpoptAlgorithm::Optimize(
+             }
+             else
+             {
++                  
++                  std::cout << "IpoptAlgorithm::Optimize1 throw STEP_COMPUTATION_FAILED"<< std::endl << std::flush;
++                  
+                Jnlst().Printf(J_ERROR, J_MAIN,
+                               "ERROR: Problem in step computation, but emergency mode cannot be activated.\n");
+                THROW_EXCEPTION(STEP_COMPUTATION_FAILED, "Step computation failed.");
+@@ -524,6 +530,7 @@ SolverReturn IpoptAlgorithm::Optimize(
     }
     catch( STEP_COMPUTATION_FAILED& exc )
     {
@@ -26,7 +72,7 @@ index d9092e5c..e7516672 100644
        exc.ReportException(Jnlst(), J_MOREDETAILED);
        IpData().TimingStats().ComputeAcceptableTrialPoint().EndIfStarted();
        retval = ERROR_IN_STEP_COMPUTATION;
-@@ -559,6 +562,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -559,6 +566,7 @@ SolverReturn IpoptAlgorithm::Optimize(
     }
  
     DBG_ASSERT(retval != UNASSIGNED && "Unknown return code in the algorithm");
