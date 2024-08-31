@@ -1,5 +1,5 @@
 diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
-index 44525aea..6df93a61 100644
+index 44525aea..0f5ea92a 100644
 --- a/src/Interfaces/IpIpoptApplication.cpp
 +++ b/src/Interfaces/IpIpoptApplication.cpp
 @@ -29,6 +29,7 @@
@@ -45,7 +45,46 @@ index 44525aea..6df93a61 100644
           jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
           return Insufficient_Memory;
        }
-@@ -551,11 +557,13 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+@@ -469,6 +475,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeTNLP(
+    const SmartPtr<TNLP>& tnlp
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeTNLP" << std::endl << std::flush;
+    nlp_adapter_ = new TNLPAdapter(GetRawPtr(tnlp), ConstPtr(jnlst_));
+    return OptimizeNLP(nlp_adapter_);
+ }
+@@ -489,6 +496,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    const SmartPtr<NLP>& nlp
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeNLP" << std::endl << std::flush;
+    SmartPtr<AlgorithmBuilder> alg_builder = NULL;
+    return OptimizeNLP(nlp, alg_builder);
+ }
+@@ -498,6 +506,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    SmartPtr<AlgorithmBuilder>& alg_builder
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeNLP alg_builder" << std::endl << std::flush;
+    ApplicationReturnStatus retValue = Internal_Error;
+ 
+    // Prepare internal data structures of the algorithm
+@@ -538,12 +547,14 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    }
+    catch( OPTION_INVALID& exc )
+    {
++         std::cout << "IpoptApplication::OptimizeNLP OPTION_INVALID" << std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid option encountered.\n");
+       retValue = Invalid_Option;
+    }
+    catch( IpoptException& exc )
+    {
++         std::cout << "IpoptApplication::OptimizeNLP IpoptException" << std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Some uncaught Ipopt exception encountered.\n");
+       retValue = Unrecoverable_Exception;
+@@ -551,23 +562,28 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
     catch( std::bad_alloc& )
     {
        retValue = Insufficient_Memory;
@@ -59,18 +98,188 @@ index 44525aea..6df93a61 100644
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
     }
     catch( ... )
-@@ -860,12 +868,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    {
++         std::cout << "IpoptApplication::OptimizeNLP ..." << std::endl << std::flush;
+       if( !rethrow_nonipoptexception_ )
+       {
+          IpoptException exc("Unknown Exception caught in Ipopt", "Unknown File", -1);
+          exc.ReportException(*jnlst_, J_ERROR);
++         std::cout << "IpoptApplication::OptimizeNLP NonIpopt_Exception_Thrown" << std::endl << std::flush;
+          retValue = NonIpopt_Exception_Thrown;
+       }
+       else
+       {
++            std::cout << "IpoptApplication::OptimizeNLP throw" << std::endl << std::flush;
+          throw;
+       }
+    }
+@@ -581,6 +597,7 @@ ApplicationReturnStatus IpoptApplication::ReOptimizeNLP(
+    const SmartPtr<NLP>& nlp
+ )
+ {
++      std::cout << "IpoptApplication::ReOptimizeNLP0" << std::endl << std::flush;
+    ASSERT_EXCEPTION(IsValid(alg_), INVALID_WARMSTART, "ReOptimizeNLP called before OptimizeNLP.");
+    OrigIpoptNLP* orig_nlp = static_cast<OrigIpoptNLP*>(GetRawPtr(ip_nlp_));
+    DBG_ASSERT(dynamic_cast<OrigIpoptNLP*> (GetRawPtr(ip_nlp_)));
+@@ -591,6 +608,7 @@ ApplicationReturnStatus IpoptApplication::ReOptimizeNLP(
+ 
+ ApplicationReturnStatus IpoptApplication::call_optimize()
+ {
++      std::cout << "IpoptApplication::call_optimize0" << std::endl << std::flush;
+    // Reset the print-level for the screen output
+    Index ivalue;
+    options_->GetIntegerValue("print_level", ivalue, "");
+@@ -622,6 +640,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+ 
+    ApplicationReturnStatus retValue = Internal_Error;
+    SolverReturn status = INTERNAL_ERROR;
++   std::cout << "IpoptApplication::call_optimize0.1" << std::endl << std::flush;
+    try
+    {
+       // check whether timing statistics need to be printed
+@@ -656,7 +675,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+ 
+       // Run the algorithm
+       status = p2alg->Optimize();
+-
++std::cout << "IpoptApplication::call_optimize1 status=" <<status<< std::endl << std::flush;
+       // Since all the output below doesn't make any sense in this
+       // case, we rethrow the TOO_FEW_DOF exception here
+       ASSERT_EXCEPTION(status != TOO_FEW_DEGREES_OF_FREEDOM, TOO_FEW_DOF, "Too few degrees of freedom (rethrown)!");
+@@ -686,6 +705,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+          }
+          catch( IpoptNLP::Eval_Error& exc )
+          {
++               std::cout << "IpoptApplication::call_optimize Eval_Error"<< std::endl << std::flush;
+             // this can happen if the final point was accepted because functions can be evaluated,
+             // but functions are not differentiable, so dual infeasibility cannot be computed
+             status = INVALID_NUMBER_DETECTED;
+@@ -751,16 +771,19 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       }
+       else if( status == MAXITER_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize MAXITER_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_Iterations_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum Number of Iterations Exceeded.\n");
+       }
+       else if( status == CPUTIME_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize CPUTIME_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_CpuTime_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum CPU time exceeded.\n");
+       }
+       else if( status == WALLTIME_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize WALLTIME_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_WallTime_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum wallclock time exceeded.\n");
+       }
+@@ -796,6 +819,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       }
+       else if( status == LOCAL_INFEASIBILITY )
+       {
++            std::cout << "IpoptApplication::call_optimize LOCAL_INFEASIBILITY"<< std::endl << std::flush;
+          retValue = Infeasible_Problem_Detected;
+          jnlst_->Printf(J_SUMMARY, J_MAIN,
+                         "\nEXIT: Converged to a point of local infeasibility. Problem may be infeasible.\n");
+@@ -807,11 +831,13 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       }
+       else if( status == INVALID_NUMBER_DETECTED )
+       {
++            std::cout << "IpoptApplication::call_optimize INVALID_NUMBER_DETECTED"<< std::endl << std::flush;
+          retValue = Invalid_Number_Detected;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid number in NLP function or derivative detected.\n");
+       }
+       else
+       {
++            std::cout << "IpoptApplication::call_optimize Internal_Error"<< std::endl << std::flush;
+          retValue = Internal_Error;
+          jnlst_->Printf(J_SUMMARY, J_MAIN,
+                         "\nEXIT: INTERNAL ERROR: Unknown SolverReturn value - Notify IPOPT Authors.\n");
+@@ -826,6 +852,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( TOO_FEW_DOF& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize TOO_FEW_DOF"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_STRONGWARNING);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has too few degrees of freedom.\n");
+       retValue = Not_Enough_Degrees_Of_Freedom;
+@@ -833,6 +860,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( OPTION_INVALID& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize OPTION_INVALID"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid option encountered.\n");
+       retValue = Invalid_Option;
+@@ -840,12 +868,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( DYNAMIC_LIBRARY_FAILURE& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize DYNAMIC_LIBRARY_FAILURE"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Library loading failure.\n");
+       retValue = Invalid_Option;
+    }
+    catch( INCONSISTENT_BOUNDS& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize INCONSISTENT_BOUNDS"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_MOREDETAILED);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has inconsistent variable bounds or constraint sides.\n");
+       retValue = Invalid_Problem_Definition;
+@@ -853,6 +883,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( IpoptException& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize IpoptException"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Some uncaught Ipopt exception encountered.\n");
+       retValue = Unrecoverable_Exception;
+@@ -860,25 +891,30 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     catch( std::bad_alloc& )
     {
        retValue = Insufficient_Memory;
-+      std::cout << "IpoptApplication::Initialize4 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
++      std::cout << "IpoptApplication::call_optimize Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
        status = OUT_OF_MEMORY;
     }
     catch( std::overflow_error& )
     {
        retValue = Insufficient_Memory;
-+      std::cout << "IpoptApplication::Initialize4 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
++      std::cout << "IpoptApplication::call_optimize Insufficient_Memory std::overflow_error" << std::endl << std::flush;
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
        status = OUT_OF_MEMORY;
     }
+    catch( ... )
+    {
++         std::cout << "IpoptApplication::call_optimize ..." << std::endl << std::flush;
+       if( !rethrow_nonipoptexception_ )
+       {
+          IpoptException exc("Unknown Exception caught in Ipopt", "Unknown File", -1);
+          exc.ReportException(*jnlst_, J_ERROR);
+          retValue = NonIpopt_Exception_Thrown;
++         std::cout << "IpoptApplication::call_optimize NonIpopt_Exception_Thrown" << std::endl << std::flush;
+       }
+       else
+       {
++            std::cout << "IpoptApplication::call_optimize throw" << std::endl << std::flush;
+          jnlst_->FlushBuffer();
+          throw;
+       }
+@@ -923,6 +959,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+             break;
+          default:
+          {
++               std::cout << "IpoptApplication::call_optimize status.default" << std::endl << std::flush;
+             SmartPtr<Vector> tmp = p2ip_data->curr()->y_c()->MakeNew();
+             tmp->Set(0.);
+             c = ConstPtr(tmp);
+@@ -944,7 +981,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+ 
+    jnlst_->FlushBuffer();
+-
++std::cout << "IpoptApplication::call_optimize final retValue="<< retValue<< std::endl << std::flush;
+    return retValue;
+ }
+ 
