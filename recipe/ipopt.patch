@@ -1,5 +1,41 @@
+diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
+index d9092e5c..e7516672 100644
+--- a/src/Algorithm/IpIpoptAlg.cpp
++++ b/src/Algorithm/IpIpoptAlg.cpp
+@@ -18,6 +18,7 @@
+ #if IPOPT_CHECKLEVEL > 1 && defined(IPOPT_HAS_FEENABLEEXCEPT)
+ #include <cfenv>
+ #endif
++#include <iostream>
+ 
+ namespace Ipopt
+ {
+@@ -293,6 +294,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    bool isResto /*= false */
+ )
+ {
++      std::cout << "IpoptAlgorithm::Optimize0"<< std::endl << std::flush;
+    DBG_START_METH("IpoptAlgorithm::Optimize", dbg_verbosity);
+ 
+    // Start measuring CPU time
+@@ -524,6 +526,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    }
+    catch( STEP_COMPUTATION_FAILED& exc )
+    {
++         std::cout << "IpoptAlgorithm::Optimize STEP_COMPUTATION_FAILED"<< std::endl << std::flush;
+       exc.ReportException(Jnlst(), J_MOREDETAILED);
+       IpData().TimingStats().ComputeAcceptableTrialPoint().EndIfStarted();
+       retval = ERROR_IN_STEP_COMPUTATION;
+@@ -559,6 +562,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    }
+ 
+    DBG_ASSERT(retval != UNASSIGNED && "Unknown return code in the algorithm");
++   std::cout << "IpoptAlgorithm::Optimize retval="<<retval<< std::endl << std::flush;
+    return retval;
+ }
+ 
 diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
-index 44525aea..0f5ea92a 100644
+index 44525aea..422add7e 100644
 --- a/src/Interfaces/IpIpoptApplication.cpp
 +++ b/src/Interfaces/IpIpoptApplication.cpp
 @@ -29,6 +29,7 @@
@@ -154,7 +190,7 @@ index 44525aea..0f5ea92a 100644
              // this can happen if the final point was accepted because functions can be evaluated,
              // but functions are not differentiable, so dual infeasibility cannot be computed
              status = INVALID_NUMBER_DETECTED;
-@@ -751,16 +771,19 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -751,67 +771,80 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
        }
        else if( status == MAXITER_EXCEEDED )
        {
@@ -174,7 +210,41 @@ index 44525aea..0f5ea92a 100644
           retValue = Maximum_WallTime_Exceeded;
           jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum wallclock time exceeded.\n");
        }
-@@ -796,6 +819,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       else if( status == STOP_AT_TINY_STEP )
+       {
++            std::cout << "IpoptApplication::call_optimize STOP_AT_TINY_STEP"<< std::endl << std::flush;
+          retValue = Search_Direction_Becomes_Too_Small;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Search Direction is becoming Too Small.\n");
+       }
+       else if( status == STOP_AT_ACCEPTABLE_POINT )
+       {
++            std::cout << "IpoptApplication::call_optimize STOP_AT_ACCEPTABLE_POINT"<< std::endl << std::flush;
+          retValue = Solved_To_Acceptable_Level;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Solved To Acceptable Level.\n");
+       }
+       else if( status == FEASIBLE_POINT_FOUND )
+       {
++            std::cout << "IpoptApplication::call_optimize FEASIBLE_POINT_FOUND"<< std::endl << std::flush;
+          retValue = Feasible_Point_Found;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Feasible point for square problem found.\n");
+       }
+       else if( status == DIVERGING_ITERATES )
+       {
++            std::cout << "IpoptApplication::call_optimize DIVERGING_ITERATES"<< std::endl << std::flush;
+          retValue = Diverging_Iterates;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Iterates diverging; problem might be unbounded.\n");
+       }
+       else if( status == RESTORATION_FAILURE )
+       {
++            std::cout << "IpoptApplication::call_optimize RESTORATION_FAILURE"<< std::endl << std::flush;
+          retValue = Restoration_Failed;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Restoration Failed!\n");
+       }
+       else if( status == ERROR_IN_STEP_COMPUTATION )
+       {
++            std::cout << "IpoptApplication::call_optimize ERROR_IN_STEP_COMPUTATION"<< std::endl << std::flush;
+          retValue = Error_In_Step_Computation;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Error in step computation!\n");
        }
        else if( status == LOCAL_INFEASIBILITY )
        {
@@ -182,7 +252,12 @@ index 44525aea..0f5ea92a 100644
           retValue = Infeasible_Problem_Detected;
           jnlst_->Printf(J_SUMMARY, J_MAIN,
                          "\nEXIT: Converged to a point of local infeasibility. Problem may be infeasible.\n");
-@@ -807,11 +831,13 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       }
+       else if( status == USER_REQUESTED_STOP )
+       {
++            std::cout << "IpoptApplication::call_optimize USER_REQUESTED_STOP"<< std::endl << std::flush;
+          retValue = User_Requested_Stop;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Stopping optimization at current point as requested by user.\n");
        }
        else if( status == INVALID_NUMBER_DETECTED )
        {
@@ -196,7 +271,7 @@ index 44525aea..0f5ea92a 100644
           retValue = Internal_Error;
           jnlst_->Printf(J_SUMMARY, J_MAIN,
                          "\nEXIT: INTERNAL ERROR: Unknown SolverReturn value - Notify IPOPT Authors.\n");
-@@ -826,6 +852,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -826,6 +859,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     }
     catch( TOO_FEW_DOF& exc )
     {
@@ -204,7 +279,7 @@ index 44525aea..0f5ea92a 100644
        exc.ReportException(*jnlst_, J_STRONGWARNING);
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has too few degrees of freedom.\n");
        retValue = Not_Enough_Degrees_Of_Freedom;
-@@ -833,6 +860,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -833,6 +867,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     }
     catch( OPTION_INVALID& exc )
     {
@@ -212,7 +287,7 @@ index 44525aea..0f5ea92a 100644
        exc.ReportException(*jnlst_, J_ERROR);
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid option encountered.\n");
        retValue = Invalid_Option;
-@@ -840,12 +868,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -840,12 +875,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     }
     catch( DYNAMIC_LIBRARY_FAILURE& exc )
     {
@@ -227,7 +302,7 @@ index 44525aea..0f5ea92a 100644
        exc.ReportException(*jnlst_, J_MOREDETAILED);
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has inconsistent variable bounds or constraint sides.\n");
        retValue = Invalid_Problem_Definition;
-@@ -853,6 +883,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -853,6 +890,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     }
     catch( IpoptException& exc )
     {
@@ -235,7 +310,7 @@ index 44525aea..0f5ea92a 100644
        exc.ReportException(*jnlst_, J_ERROR);
        jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Some uncaught Ipopt exception encountered.\n");
        retValue = Unrecoverable_Exception;
-@@ -860,25 +891,30 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -860,25 +898,30 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     catch( std::bad_alloc& )
     {
        retValue = Insufficient_Memory;
@@ -266,7 +341,7 @@ index 44525aea..0f5ea92a 100644
           jnlst_->FlushBuffer();
           throw;
        }
-@@ -923,6 +959,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -923,6 +966,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
              break;
           default:
           {
@@ -274,7 +349,7 @@ index 44525aea..0f5ea92a 100644
              SmartPtr<Vector> tmp = p2ip_data->curr()->y_c()->MakeNew();
              tmp->Set(0.);
              c = ConstPtr(tmp);
-@@ -944,7 +981,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+@@ -944,7 +988,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
     }
  
     jnlst_->FlushBuffer();
