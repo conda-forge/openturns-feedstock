@@ -13,7 +13,7 @@ source:
 
 build:
   number: 8
-  skip: true  # [win and py313]
+  skip: true  # [win and py>=313]
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
