@@ -3,11 +3,6 @@
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
-# pyinstallcheck_Bonmin_std (SEGFAULT)
-if test `uname` = "Darwin"; then
-  CMAKE_ARGS="${CMAKE_ARGS} -DUSE_BONMIN=OFF"
-fi
-
 cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DCMAKE_PREFIX_PATH=${PREFIX} \
   -DCMAKE_FIND_FRAMEWORK=NEVER \
@@ -19,6 +14,9 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DSWIG_COMPILE_FLAGS="-O1" \
   -D_HAVE_FR_LOC_RUNS=0 \
   -B build .
+cmake --build build --target t_Bonmin_std
+./build/lib/test/t_Bonmin_std
+exit 0
 cmake --build build --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
 
