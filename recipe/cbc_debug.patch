@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..afced5d9 100644
+index 235d8a72..94b657f6 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -171,7 +171,7 @@ index 235d8a72..afced5d9 100644
        // have to switch nauty off totally!
        moreSpecialOptions2_ &= ~(128 | 256);
      }
-+    std::cout << "CbcModel::branchAndBound"<< " continuousSolver=" << continuousSolver << std::endl << std::flush;
++    std::cout << "CbcModel::branchAndBound"<< " continuousSolver=" << (continuousSolver!=NULL) << std::endl << std::flush;
      continuousSolver_ = continuousSolver;
      int numberRows = solver->getNumRows();
      if (numberRows > numberOriginalRows) {
@@ -448,7 +448,7 @@ index 235d8a72..afced5d9 100644
  // Solve the initial LP relaxation
  void CbcModel::initialSolve()
  {
-+  std::cout << "CbcModel::initialSolve0"<< " solver_=" << std::endl<< std::flush;
++  std::cout << "CbcModel::initialSolve0"<< " solver_=" <<(solver_!=NULL)<< std::endl<< std::flush;
    assert(solver_);
    // Double check optimization directions line up
    dblParam_[CbcOptimizationDirection] = solver_->getObjSense();
@@ -518,7 +518,7 @@ index 235d8a72..afced5d9 100644
    }
    delete tree_;
    tree_ = NULL;
-+  std::cout << "CbcModel::~CbcModel.2 solver_="<<solver_<<" continuousSolver_=" << std::endl<< std::flush;
++  std::cout << "CbcModel::~CbcModel.2 solver_="<<(solver_ != NULL)<<" continuousSolver_=" << (continuousSolver_=!=NULL) << std::endl<< std::flush;
    if (modelOwnsSolver()) {
      delete solver_;
      solver_ = NULL;
@@ -638,7 +638,7 @@ index 235d8a72..afced5d9 100644
 +      std::cout << "CbcModel::checkSolution7.4"<< std::endl<< std::flush;
  #endif
        solver_->setHintParam(OsiDoDualInInitial, true, OsiHintTry);
-+      std::cout << "CbcModel::checkSolution7.5"<<" solver_="<<solver_<< std::endl<< std::flush;
++      std::cout << "CbcModel::checkSolution7.5"<<" solver_="<<(solver_!=NULL)<< std::endl<< std::flush;
        solver_->initialSolve();
 +      std::cout << "CbcModel::checkSolution7.6"<< std::endl<< std::flush;
  #ifdef SWITCH_VARIABLES
@@ -1101,7 +1101,7 @@ index 235d8a72..afced5d9 100644
            printf("Node %x pushed on tree c\n", newNode);
  #endif
          } else {
-+          std::cout << "CbcModel::doOneNode18.8"<<" solverCharacteristics_="<<solverCharacteristics_<<std::endl<< std::flush;
++          std::cout << "CbcModel::doOneNode18.8"<<" solverCharacteristics_="<<(solverCharacteristics_!=NULL)<<std::endl<< std::flush;
            if (solverCharacteristics_ && //we may be in a non standard bab
              solverCharacteristics_->solutionAddsCuts() // we are in some kind of OA based bab.
            ) {
@@ -1172,7 +1172,7 @@ index 235d8a72..afced5d9 100644
          }
          synchronizeModel(); // make sure everything that needs solver has it
          // just point to solver_
-+        std::cout << "CbcModel::integerPresolveThisModel"<< " solver_=" << std::endl << std::flush;
++        std::cout << "CbcModel::integerPresolveThisModel"<< " solver_=" <<(solver_!=NULL)<< std::endl << std::flush;
          continuousSolver_ = solver_;
          feasible = (resolve(NULL, 3) != 0);
          if (!feasible || !doIntegerPresolve || weak)

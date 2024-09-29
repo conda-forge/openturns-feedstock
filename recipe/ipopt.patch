@@ -61,7 +61,7 @@ index 6782ac59..29edce5b 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
-index d9092e5c..8ee0c029 100644
+index d9092e5c..351b0f96 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
 +++ b/src/Algorithm/IpIpoptAlg.cpp
 @@ -18,6 +18,7 @@
@@ -80,15 +80,23 @@ index d9092e5c..8ee0c029 100644
     DBG_START_METH("IpoptAlgorithm::Optimize", dbg_verbosity);
  
     // Start measuring CPU time
-@@ -379,6 +381,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -341,6 +343,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+ 
+       IpData().TimingStats().CheckConvergence().Start();
+       ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence();
++      std::cout << "IpoptAlgorithm::Optimize1 conv_status"<<conv_status<< std::endl << std::flush;
+       IpData().TimingStats().CheckConvergence().End();
+ 
+       // main loop
+@@ -379,6 +382,7 @@ SolverReturn IpoptAlgorithm::Optimize(
           // If we are in the emergency mode, ask the line search object
           // to go to the fallback options.  If that isn't possible,
           // issue error message
-+         
++         std::cout << "IpoptAlgorithm::Optimize2 emergency_mode"<<emergency_mode<< std::endl << std::flush;
           if( emergency_mode )
           {
              if( line_search_->ActivateFallbackMechanism() )
-@@ -388,6 +391,9 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -388,6 +392,9 @@ SolverReturn IpoptAlgorithm::Optimize(
              }
              else
              {
@@ -98,7 +106,15 @@ index d9092e5c..8ee0c029 100644
                 Jnlst().Printf(J_ERROR, J_MAIN,
                                "ERROR: Problem in step computation, but emergency mode cannot be activated.\n");
                 THROW_EXCEPTION(STEP_COMPUTATION_FAILED, "Step computation failed.");
-@@ -524,6 +530,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -413,6 +420,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+ 
+          IpData().TimingStats().CheckConvergence().Start();
+          conv_status = conv_check_->CheckConvergence();
++         std::cout << "IpoptAlgorithm::Optimize2 conv_status"<<conv_status<< std::endl << std::flush;
+          IpData().TimingStats().CheckConvergence().End();
+       }
+ 
+@@ -524,6 +532,7 @@ SolverReturn IpoptAlgorithm::Optimize(
     }
     catch( STEP_COMPUTATION_FAILED& exc )
     {
@@ -106,7 +122,7 @@ index d9092e5c..8ee0c029 100644
        exc.ReportException(Jnlst(), J_MOREDETAILED);
        IpData().TimingStats().ComputeAcceptableTrialPoint().EndIfStarted();
        retval = ERROR_IN_STEP_COMPUTATION;
-@@ -559,6 +566,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+@@ -559,6 +568,7 @@ SolverReturn IpoptAlgorithm::Optimize(
     }
  
     DBG_ASSERT(retval != UNASSIGNED && "Unknown return code in the algorithm");
@@ -114,6 +130,113 @@ index d9092e5c..8ee0c029 100644
     return retval;
  }
  
+@@ -658,11 +668,14 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    {
+       Jnlst().Printf(J_SUMMARY, J_MAIN,
+                      "Line search didn't find acceptable trial point.\n");
++
+       return;
+    }
++   
+ 
+    // Adjust the bounds if necessary
+    Index adjusted_slacks = IpCq().AdjustedTrialSlacks();
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint0 adjusted_slacks="<<adjusted_slacks<< std::endl << std::flush;
+    DBG_PRINT((1, "adjusted_slacks = %" IPOPT_INDEX_FORMAT "\n", adjusted_slacks));
+    if( adjusted_slacks > 0 )
+    {
+@@ -720,6 +733,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<const Vector> new_z_L;
+    max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *IpCq().trial_slack_x_L(),
+                     *IpCq().trial_compl_x_L(), new_z_L);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.1 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -730,6 +744,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<const Vector> new_z_U;
+    max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *IpCq().trial_slack_x_U(),
+                     *IpCq().trial_compl_x_U(), new_z_U);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.2 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -740,6 +755,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<const Vector> new_v_L;
+    max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *IpCq().trial_slack_s_L(),
+                     *IpCq().trial_compl_s_L(), new_v_L);
++std::cout << "IpoptAlgorithm::AcceptTrialPoint3.3 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -750,6 +766,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<const Vector> new_v_U;
+    max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *IpCq().trial_slack_s_U(),
+                     *IpCq().trial_compl_s_U(), new_v_U);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.4 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -760,7 +777,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<IteratesVector> trial = IpData().trial()->MakeNewContainer();
+    trial->Set_bound_mult(*new_z_L, *new_z_U, *new_v_L, *new_v_U);
+    IpData().set_trial(trial);
+-
++std::cout << "IpoptAlgorithm::AcceptTrialPoint3.5 corrected="<<corrected<< std::endl << std::flush;
+    if( corrected )
+    {
+       IpData().Append_info_string("z");
+@@ -794,6 +811,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+          SmartPtr<Vector> y_c = IpData().curr()->y_c()->MakeNew();
+          SmartPtr<Vector> y_d = IpData().curr()->y_d()->MakeNew();
+          bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++         std::cout << "IpoptAlgorithm::AcceptTrialPoint5 CalculateMultipliers="<<retval<< std::endl << std::flush;
+          if( retval )
+          {
+             SmartPtr<const IteratesVector> curr = IpData().curr();
+@@ -862,6 +880,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+ 
+    // if not primal feasible yet, then do not compute multipliers yet
+    Number constr_viol = IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers0 constr_viol="<<constr_viol<< " tol="<<constr_viol_tol_<< std::endl << std::flush;
++   
+    if( constr_viol > constr_viol_tol_ )
+    {
+       return;
+@@ -878,6 +898,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+ 
+    IpData().TimingStats().CheckConvergence().Start();
+    ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence(false);
++   
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers1 conv_status="<<conv_status<< std::endl << std::flush;
+    IpData().TimingStats().CheckConvergence().End();
+ 
+    // if converged or reached some limit, then do not update multipliers
+@@ -909,6 +931,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+    IpData().set_trial(iterates);
+    IpData().AcceptTrialPoint();
+    bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers2 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       //TODO Check if following line is really necessary
+@@ -951,7 +974,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+    DBG_START_METH("IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess",
+                   dbg_verbosity);
+    DBG_ASSERT(IpCq().IsSquareProblem());
+-
++std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess0"<< std::endl << std::flush;
+    // if we don't have an object for computing least square
+    // multipliers we don't compute them
+    if( IsNull(eq_multiplier_calculator_) )
+@@ -979,6 +1002,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+    IpData().set_trial(iterates);
+    IpData().AcceptTrialPoint();
+    bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess1 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       //TODO Check if following line is really necessary
 diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
 index 44525aea..422add7e 100644
 --- a/src/Interfaces/IpIpoptApplication.cpp
