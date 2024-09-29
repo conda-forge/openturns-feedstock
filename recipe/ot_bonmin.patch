@@ -1,22 +1,30 @@
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..126339f9d 100644
+index 147ddd9ad..156a79ef1 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
-@@ -212,7 +212,7 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -207,12 +207,12 @@ bool BonminProblem::get_bounds_info( int n,
+     for (int i = 0; i < n; ++i)
+     {
+       if (!bounds.getFiniteLowerBound()[i])
+-        x_l[i] = SpecFunc::LowestScalar;
++        x_l[i] = -std::pow(2.0, 50.0);
+       else
          x_l[i] = bounds.getLowerBound()[i];
  
        if (!bounds.getFiniteUpperBound()[i])
 -        x_u[i] =  SpecFunc::MaxScalar;
-+        x_u[i] =  SpecFunc::ActualMaxScalar;
++        x_u[i] = std::pow(2.0, 50.0);
        else
          x_u[i] = bounds.getUpperBound()[i];
      }
-@@ -222,7 +222,7 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -221,8 +221,8 @@ bool BonminProblem::get_bounds_info( int n,
+   {
      for (int i = 0; i < n; ++i)
      {
-       x_l[i] = SpecFunc::LowestScalar;
+-      x_l[i] = SpecFunc::LowestScalar;
 -      x_u[i] =  SpecFunc::MaxScalar;
-+      x_u[i] =  SpecFunc::ActualMaxScalar;
++      x_l[i] = -std::pow(2.0, 50.0);
++      x_u[i] =  std::pow(2.0, 50.0);
      }
    }
  
@@ -25,7 +33,7 @@ index 147ddd9ad..126339f9d 100644
      {
        g_l[k] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
 -      g_u[k] = SpecFunc::MaxScalar;
-+      g_u[k] = SpecFunc::ActualMaxScalar;
++      g_u[k] = std::pow(2.0, 50.0);
        ++k;
      }
  
@@ -60,7 +68,7 @@ index 147ddd9ad..126339f9d 100644
  }
  
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 5f818e28b..4dfa0a346 100644
+index 02fdffeac..6fe9e2e4e 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
 @@ -36,7 +36,7 @@ int main()
@@ -72,7 +80,21 @@ index 5f818e28b..4dfa0a346 100644
    try
    {
      /* TEST ON SIMPLE FUNCTION */
-@@ -85,7 +85,7 @@ int main()
+@@ -55,11 +55,11 @@ int main()
+     variablesUpperBounds[0] = 1;
+ 
+     variablesLowerBounds[1] = 0;
+-    variablesUpperBounds[1] = DBL_MAX;
++    variablesUpperBounds[1] = std::pow(2.0, 50.0);
+     variablesFiniteUpperBounds[1] = 0;
+ 
+     variablesLowerBounds[2] = 0;
+-    variablesUpperBounds[2] = DBL_MAX;
++    variablesUpperBounds[2] = std::pow(2.0, 50.0);
+     variablesFiniteUpperBounds[2] = 0;
+ 
+     variablesLowerBounds[3] = 0;
+@@ -102,7 +102,7 @@ int main()
      const Point referenceSolution = {1.0, 1.0, 0.5, 0.0};
  
      // Defining solvers to test
