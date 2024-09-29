@@ -1,5 +1,5 @@
 diff --git a/Cbc/src/CbcModel.cpp b/Cbc/src/CbcModel.cpp
-index 235d8a72..aa946208 100644
+index 235d8a72..afced5d9 100644
 --- a/Cbc/src/CbcModel.cpp
 +++ b/Cbc/src/CbcModel.cpp
 @@ -10,6 +10,7 @@
@@ -885,7 +885,7 @@ index 235d8a72..aa946208 100644
  // Increases usedInSolution for nonzeros
  void CbcModel::incrementUsed(const double *solution)
  {
-+  std::cout << "CbcModel::incrementUsed"<<" solution="<<solution<<" usedInSolution_="<<usedInSolution_<<std::endl<< std::flush;
++  std::cout << "CbcModel::incrementUsed solution="<<(solution!=NULL)<< " used="<<(usedInSolution_!=NULL)<< std::endl<< std::flush;
    if (usedInSolution_) {
      // might as well mark all including continuous
      int numberColumns = solver_->getNumCols();

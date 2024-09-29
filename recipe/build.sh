@@ -2,6 +2,7 @@
 
 CFLAGS="${CFLAGS} -g -O1"
 CXXFLAGS="${CXXFLAGS} -g -O1"
+CPPFLAGS="${CPPFLAGS} -DNDEBUG"
 
 curl -L https://github.com/coin-or/Osi/archive/releases/0.108.11.tar.gz | tar xz
 cd Osi-releases-0.108.11/
