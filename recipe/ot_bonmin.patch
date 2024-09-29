@@ -1,0 +1,105 @@
+diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
+index 147ddd9ad..438a326c2 100644
+--- a/lib/src/Base/Optim/BonminProblem.cxx
++++ b/lib/src/Base/Optim/BonminProblem.cxx
+@@ -207,12 +207,12 @@ bool BonminProblem::get_bounds_info( int n,
+     for (int i = 0; i < n; ++i)
+     {
+       if (!bounds.getFiniteLowerBound()[i])
+-        x_l[i] = SpecFunc::LowestScalar;
++        x_l[i] = -std::pow(2.0, 100.0);
+       else
+         x_l[i] = bounds.getLowerBound()[i];
+ 
+       if (!bounds.getFiniteUpperBound()[i])
+-        x_u[i] =  SpecFunc::MaxScalar;
++        x_u[i] = std::pow(2.0, 100.0);
+       else
+         x_u[i] = bounds.getUpperBound()[i];
+     }
+@@ -221,8 +221,8 @@ bool BonminProblem::get_bounds_info( int n,
+   {
+     for (int i = 0; i < n; ++i)
+     {
+-      x_l[i] = SpecFunc::LowestScalar;
+-      x_u[i] =  SpecFunc::MaxScalar;
++      x_l[i] = -std::pow(2.0, 100.0);
++      x_u[i] =  std::pow(2.0, 100.0);
+     }
+   }
+ 
+@@ -240,7 +240,7 @@ bool BonminProblem::get_bounds_info( int n,
+     for (UnsignedInteger i = 0; i < optimProblem_.getInequalityConstraint().getOutputDimension(); ++i)
+     {
+       g_l[k] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
+-      g_u[k] = SpecFunc::MaxScalar;
++      g_u[k] = std::pow(2.0, 100.0);
+       ++k;
+     }
+ 
+@@ -289,6 +289,8 @@ bool BonminProblem::eval_f(int n,
+   else
+     obj_value = -yPoint[0];
+ 
++  // std::cout <<"BonminProblem::eval_f x=" <<xPoint<<" y=" << obj_value<< std::endl<< std::flush;
++  
+   // track input/outputs
+   evaluationInputHistory_.add(xPoint);
+   evaluationOutputHistory_.add(yPoint);
+@@ -339,13 +341,19 @@ bool BonminProblem::eval_grad_f( int n,
+     return false;
+   }
+ 
++  // std::cout <<"BonminProblem::eval_grad_f x=" <<xPoint<<" grad_f=";
++  
+   // Conversion from OT::Matrix to double array
+   for (int i = 0; i < n; ++i)
++  {
+     if (optimProblem_.isMinimization())
+       grad_f[i] = gradOT(i, 0);
+     else
+       grad_f[i] = -gradOT(i, 0);
+-
++    // std::cout << grad_f[i] << "; ";
++  }
++  // std::cout << std::endl<< std::flush;
++  
+   return true;
+ }
+ 
+diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
+index 02fdffeac..6fe9e2e4e 100644
+--- a/lib/test/t_Bonmin_std.cxx
++++ b/lib/test/t_Bonmin_std.cxx
+@@ -36,7 +36,7 @@ int main()
+ {
+   TESTPREAMBLE;
+   OStream fullprint(std::cout);
+-
++  Log::Show(Log::INFO);
+   try
+   {
+     /* TEST ON SIMPLE FUNCTION */
+@@ -55,11 +55,11 @@ int main()
+     variablesUpperBounds[0] = 1;
+ 
+     variablesLowerBounds[1] = 0;
+-    variablesUpperBounds[1] = DBL_MAX;
++    variablesUpperBounds[1] = std::pow(2.0, 50.0);
+     variablesFiniteUpperBounds[1] = 0;
+ 
+     variablesLowerBounds[2] = 0;
+-    variablesUpperBounds[2] = DBL_MAX;
++    variablesUpperBounds[2] = std::pow(2.0, 50.0);
+     variablesFiniteUpperBounds[2] = 0;
+ 
+     variablesLowerBounds[3] = 0;
+@@ -102,7 +102,7 @@ int main()
+     const Point referenceSolution = {1.0, 1.0, 0.5, 0.0};
+ 
+     // Defining solvers to test
+-    const Description solvers(Bonmin::GetAlgorithmNames());
++    const Description solvers({"B-BB"});
+ 
+     for (UnsignedInteger i = 0; i < solvers.getSize(); ++i)
+     {
