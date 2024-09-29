@@ -1,5 +1,5 @@
 diff --git a/src/Algorithm/IpBacktrackingLineSearch.cpp b/src/Algorithm/IpBacktrackingLineSearch.cpp
-index 6782ac59..29edce5b 100644
+index 6782ac59..bdaa9f53 100644
 --- a/src/Algorithm/IpBacktrackingLineSearch.cpp
 +++ b/src/Algorithm/IpBacktrackingLineSearch.cpp
 @@ -14,6 +14,7 @@
@@ -10,7 +10,40 @@ index 6782ac59..29edce5b 100644
  
  namespace Ipopt
  {
-@@ -317,6 +318,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -257,6 +258,8 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+                   "--> Starting line search in iteration %" IPOPT_INDEX_FORMAT " <--\n", IpData().iter_count());
+ 
+    Number curr_mu = IpData().curr_mu();
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint0 curr_mu="<<curr_mu<< std::endl << std::flush;
++
+    if( last_mu_ != curr_mu )
+    {
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+@@ -275,6 +278,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // by the Acceptor.
+    if( !acceptor_->NeverRestorationPhase() && IpCq().IsSquareProblem() )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint NeverRestorationPhase"<< std::endl << std::flush;
+       //expect_infeasible_problem_ = true;
+       expect_infeasible_problem_ctol_ = 0.;
+    }
+@@ -283,6 +287,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // level to be restored if things fail later
+    if( CurrentIsAcceptable() )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint CurrentIsAcceptable"<< std::endl << std::flush;
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+                      "Storing current iterate as backup acceptable point.\n");
+       StoreAcceptablePoint();
+@@ -296,6 +301,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    SmartPtr<IteratesVector> actual_delta;
+ 
+    bool goto_resto = false;
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint fallback_activated_="<<fallback_activated_<< std::endl << std::flush;
+    if( fallback_activated_ )
+    {
+       // In this case, the algorithm had trouble to continue and wants
+@@ -317,6 +323,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
        }
        else
        {
@@ -18,7 +51,53 @@ index 6782ac59..29edce5b 100644
           THROW_EXCEPTION(STEP_COMPUTATION_FAILED,
                           "We are in an emergency mode, but no restoration phase or other fall back is available.");
        }
-@@ -566,11 +568,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -328,7 +335,10 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       acceptor_->InitThisLineSearch(in_watchdog_);
+       actual_delta = IpData().delta()->MakeNewContainer();
+    }
++   
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint in_watchdog_="<<in_watchdog_<< std::endl << std::flush;
+ 
++      std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint start_with_resto_="<<start_with_resto_<< std::endl << std::flush;
+    if( start_with_resto_ )
+    {
+       // If the user requested to start with the restoration phase,
+@@ -345,12 +355,15 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       goto_resto = true;
+    }
+ 
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint goto_resto="<<goto_resto<< std::endl << std::flush;
++   
+    bool accept = false;
+    Index n_steps = 0;
+    Number alpha_primal = 0.;
+ 
+    // Check if search direction becomes too small
+    bool tiny_step = (!goto_resto && DetectTinyStep());
++std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint tiny_step="<<tiny_step<< std::endl << std::flush;
+ 
+    if( in_watchdog_ && (goto_resto || tiny_step) )
+    {
+@@ -366,8 +379,10 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    if( watchdog_shortened_iter_trigger_ > 0 && !in_watchdog_ && !goto_resto && !tiny_step && !in_soft_resto_phase_
+        && !expect_infeasible_problem_ && watchdog_shortened_iter_ >= watchdog_shortened_iter_trigger_ )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint StartWatchDog"<< std::endl << std::flush;
+       StartWatchDog();
+    }
++std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint tiny_step="<<tiny_step<< std::endl << std::flush;
+ 
+    // Handle the situation of a tiny step
+    if( tiny_step )
+@@ -503,6 +518,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // If line search has been aborted because the step size becomes
+    // too small, go to the restoration phase or continue with soft
+    // restoration phase
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint accept="<<accept<< std::endl << std::flush;
+    if( !accept )
+    {
+       // If we are not asked to do a rigorous line search, do no call
+@@ -566,11 +582,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
              }
  
              // ToDo make the 1e-2 below a parameter?
@@ -35,7 +114,7 @@ index 6782ac59..29edce5b 100644
                 if( found_acceptable )
                 {
                    Jnlst().Printf(J_WARNING, J_LINE_SEARCH,
-@@ -581,6 +588,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -581,6 +602,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
                 }
                 else
                 {
@@ -43,7 +122,72 @@ index 6782ac59..29edce5b 100644
                    Jnlst().Printf(J_STRONGWARNING, J_LINE_SEARCH,
                                   "Cannot call restoration phase at point that is almost feasible %s(violation %e).\nAbort in line search due to no other fall back.\n",
                                   dynamic_cast<OrigIpoptNLP*>(GetRawPtr(IpCq().GetIpoptNLP())) == NULL ? "for the restoration NLP " : "",
-@@ -1289,13 +1297,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
+@@ -722,6 +744,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+       corr_taken = true;
+    }
+ 
++   std::cout << "IpoptAlgorithm::DoBacktrackingLineSearch accept="<<accept<< std::endl << std::flush;
+    if( !accept )
+    {
+       // Loop over decreasing step sizes until acceptable point is
+@@ -839,6 +862,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+       IpData().Append_info_string("C");
+    }
+ 
++   std::cout << "IpoptAlgorithm::DoBacktrackingLineSearch result accept="<<accept<< std::endl << std::flush;
+    return accept;
+ }
+ 
+@@ -918,6 +942,7 @@ void BacktrackingLineSearch::PerformDualStep(
+    IpData().SetTrialBoundMultipliersFromStep(alpha_dual, *delta->z_L(), *delta->z_U(), *delta->v_L(), *delta->v_U());
+ 
+    Number alpha_y = -1.;
++   std::cout << "IpoptAlgorithm::PerformDualStep alpha_for_y_="<<alpha_for_y_<< std::endl << std::flush;
+    switch( alpha_for_y_ )
+    {
+       case LSACCEPTOR_ALPHA_FOR_Y:
+@@ -1163,6 +1188,7 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
+    {
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+                      "  Trial step acceptable with respect to original backtracking globalization.\n");
++      std::cout << "IpoptAlgorithm::PerformDualStep TrySoftRestoStep"<< std::endl << std::flush;
+       satisfies_original_criterion = true;
+       return true;
+    }
+@@ -1213,7 +1239,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+ 
+    Number max_step_x;
+    Number max_step_s;
+-
++std::cout << "IpoptAlgorithm::DetectTinyStep tiny_step_tol_="<<tiny_step_tol_<< std::endl << std::flush;
+    if( tiny_step_tol_ == 0. )
+    {
+       return false;
+@@ -1230,6 +1256,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    SmartPtr<Vector> tmp2 = IpData().delta()->x()->MakeNewCopy();
+    tmp2->ElementWiseDivide(*tmp);
+    max_step_x = tmp2->Amax();
++   std::cout << "IpoptAlgorithm::DetectTinyStep max_step_x="<<max_step_x<< std::endl << std::flush;
+    Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
+                   "Relative step size for delta_x = %e\n", max_step_x);
+    if( max_step_x > tiny_step_tol_ )
+@@ -1248,6 +1275,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    max_step_s = tmp2->Amax();
+    Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
+                   "Relative step size for delta_s = %e\n", max_step_s);
++   std::cout << "IpoptAlgorithm::DetectTinyStep max_step_x="<<max_step_x<< std::endl << std::flush;
+    if( max_step_s > tiny_step_tol_ )
+    {
+       return false;
+@@ -1257,6 +1285,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    // might be at a starting point that is already a local minimizer
+    // of the constraint violation
+    const Number cviol = IpCq().curr_constraint_violation();
++   std::cout << "IpoptAlgorithm::DetectTinyStep cviol="<<cviol<< std::endl << std::flush;
+    if( cviol > 1e-4 ) // ToDo: adapt parameter?
+    {
+       return false;
+@@ -1289,13 +1318,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
  
     if( !IsValid(acceptable_iterate_) )
     {
@@ -61,7 +205,7 @@ index 6782ac59..29edce5b 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
-index d9092e5c..351b0f96 100644
+index d9092e5c..91c36135 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
 +++ b/src/Algorithm/IpIpoptAlg.cpp
 @@ -18,6 +18,7 @@
@@ -130,22 +274,55 @@ index d9092e5c..351b0f96 100644
     return retval;
  }
  
-@@ -658,11 +668,14 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -582,7 +592,7 @@ bool IpoptAlgorithm::UpdateBarrierParameter()
+    Jnlst().Printf(J_DETAILED, J_MAIN,
+                   "\n**************************************************\n\n");
+    bool retval = mu_update_->UpdateBarrierParameter();
+-
++std::cout << "IpoptAlgorithm::UpdateBarrierParameter retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -609,7 +619,7 @@ bool IpoptAlgorithm::ComputeSearchDirection()
+                   "\n**************************************************\n\n");
+ 
+    bool retval = search_dir_calculator_->ComputeSearchDirection();
+-
++std::cout << "IpoptAlgorithm::ComputeSearchDirection0 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       Jnlst().Printf(J_MOREVECTOR, J_MAIN,
+@@ -633,6 +643,7 @@ void IpoptAlgorithm::ComputeAcceptableTrialPoint()
+                   "*** Finding Acceptable Trial Point for Iteration %" IPOPT_INDEX_FORMAT ":", IpData().iter_count());
+    Jnlst().Printf(J_DETAILED, J_MAIN,
+                   "\n**************************************************\n\n");
++   std::cout << "IpoptAlgorithm::ComputeAcceptableTrialPoint"<< std::endl << std::flush;
+    line_search_->FindAcceptableTrialPoint();
+ }
+ 
+@@ -652,17 +663,21 @@ void IpoptAlgorithm::InitializeIterates()
+ void IpoptAlgorithm::AcceptTrialPoint()
+ {
+    DBG_START_METH("IpoptAlgorithm::AcceptTrialPoint", dbg_verbosity);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint0"<< std::endl << std::flush;
+    // If the line search didn't determine a new acceptable trial
+    // point, do not accept a new iterate
+    if( line_search_->CheckSkippedLineSearch() )
     {
        Jnlst().Printf(J_SUMMARY, J_MAIN,
                       "Line search didn't find acceptable trial point.\n");
-+
++std::cout << "IpoptAlgorithm::AcceptTrialPoint0 CheckSkippedLineSearch"<< std::endl << std::flush;
        return;
     }
 +   
  
     // Adjust the bounds if necessary
     Index adjusted_slacks = IpCq().AdjustedTrialSlacks();
-+   std::cout << "IpoptAlgorithm::AcceptTrialPoint0 adjusted_slacks="<<adjusted_slacks<< std::endl << std::flush;
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint0.1 adjusted_slacks="<<adjusted_slacks<< std::endl << std::flush;
     DBG_PRINT((1, "adjusted_slacks = %" IPOPT_INDEX_FORMAT "\n", adjusted_slacks));
     if( adjusted_slacks > 0 )
     {
-@@ -720,6 +733,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -720,6 +735,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<const Vector> new_z_L;
     max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *IpCq().trial_slack_x_L(),
                      *IpCq().trial_compl_x_L(), new_z_L);
@@ -153,7 +330,7 @@ index d9092e5c..351b0f96 100644
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -730,6 +744,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -730,6 +746,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<const Vector> new_z_U;
     max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *IpCq().trial_slack_x_U(),
                      *IpCq().trial_compl_x_U(), new_z_U);
@@ -161,7 +338,7 @@ index d9092e5c..351b0f96 100644
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -740,6 +755,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -740,6 +757,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<const Vector> new_v_L;
     max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *IpCq().trial_slack_s_L(),
                      *IpCq().trial_compl_s_L(), new_v_L);
@@ -169,7 +346,7 @@ index d9092e5c..351b0f96 100644
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -750,6 +766,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -750,6 +768,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<const Vector> new_v_U;
     max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *IpCq().trial_slack_s_U(),
                      *IpCq().trial_compl_s_U(), new_v_U);
@@ -177,7 +354,7 @@ index d9092e5c..351b0f96 100644
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -760,7 +777,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -760,7 +779,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<IteratesVector> trial = IpData().trial()->MakeNewContainer();
     trial->Set_bound_mult(*new_z_L, *new_z_U, *new_v_L, *new_v_U);
     IpData().set_trial(trial);
@@ -186,7 +363,7 @@ index d9092e5c..351b0f96 100644
     if( corrected )
     {
        IpData().Append_info_string("z");
-@@ -794,6 +811,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -794,6 +813,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
           SmartPtr<Vector> y_c = IpData().curr()->y_c()->MakeNew();
           SmartPtr<Vector> y_d = IpData().curr()->y_d()->MakeNew();
           bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -194,7 +371,7 @@ index d9092e5c..351b0f96 100644
           if( retval )
           {
              SmartPtr<const IteratesVector> curr = IpData().curr();
-@@ -862,6 +880,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -862,6 +882,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
  
     // if not primal feasible yet, then do not compute multipliers yet
     Number constr_viol = IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX);
@@ -203,7 +380,7 @@ index d9092e5c..351b0f96 100644
     if( constr_viol > constr_viol_tol_ )
     {
        return;
-@@ -878,6 +898,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -878,6 +900,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
  
     IpData().TimingStats().CheckConvergence().Start();
     ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence(false);
@@ -212,7 +389,7 @@ index d9092e5c..351b0f96 100644
     IpData().TimingStats().CheckConvergence().End();
  
     // if converged or reached some limit, then do not update multipliers
-@@ -909,6 +931,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -909,6 +933,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
     IpData().set_trial(iterates);
     IpData().AcceptTrialPoint();
     bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -220,7 +397,7 @@ index d9092e5c..351b0f96 100644
     if( retval )
     {
        //TODO Check if following line is really necessary
-@@ -951,7 +974,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+@@ -951,7 +976,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
     DBG_START_METH("IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess",
                    dbg_verbosity);
     DBG_ASSERT(IpCq().IsSquareProblem());
@@ -229,7 +406,7 @@ index d9092e5c..351b0f96 100644
     // if we don't have an object for computing least square
     // multipliers we don't compute them
     if( IsNull(eq_multiplier_calculator_) )
-@@ -979,6 +1002,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+@@ -979,6 +1004,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
     IpData().set_trial(iterates);
     IpData().AcceptTrialPoint();
     bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -237,6 +414,58 @@ index d9092e5c..351b0f96 100644
     if( retval )
     {
        //TODO Check if following line is really necessary
+@@ -1061,6 +1087,8 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+ {
+    DBG_START_METH("IpoptAlgorithm::CorrectBoundMultiplier",
+                   dbg_verbosity);
++   
++      std::cout << "IpoptAlgorithm::correct_bound_multiplier zdim="<<trial_z.Dim()<<" kappa_sigma_="<<kappa_sigma_<<std::endl << std::flush;
+ 
+    if( kappa_sigma_ < 1. || trial_z.Dim() == 0 )
+    {
+@@ -1081,6 +1109,8 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    {
+       mu = IpData().curr_mu();
+    }
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier mu="<<mu<<std::endl << std::flush;
++   
+    DBG_PRINT((1, "mu = %8.2e\n", mu));
+    DBG_PRINT_VECTOR(2, "trial_z", trial_z);
+ 
+@@ -1089,6 +1119,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    // (and we use Amax because that can be used later)
+    if( trial_compl.Amax() <= kappa_sigma_ * mu && trial_compl.Min() >= 1. / kappa_sigma_ * mu )
+    {
++         std::cout << "IpoptAlgorithm::correct_bound_multiplier Amax return"<<std::endl << std::flush;
+       new_trial_z = &trial_z;
+       return 0.;
+    }
+@@ -1103,6 +1134,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    DBG_PRINT_VECTOR(2, "step_z", *step_z);
+ 
+    Number max_correction_up = Max(Number(0.), -step_z->Min());
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier max_correction_up="<<max_correction_up<<std::endl << std::flush;
+    if( max_correction_up > 0. )
+    {
+       SmartPtr<Vector> tmp = trial_z.MakeNew();
+@@ -1119,6 +1151,9 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    step_z->AddTwoVectors(1. / kappa_sigma_ * mu, *one_over_s, -1., *new_trial_z, 0.);
+ 
+    Number max_correction_low = Max(Number(0.), step_z->Max());
++      std::cout << "IpoptAlgorithm::correct_bound_multiplier max_correction_low="<<max_correction_low<<std::endl << std::flush;
++
++   
+    if( max_correction_low > 0. )
+    {
+       SmartPtr<Vector> tmp = trial_z.MakeNew();
+@@ -1130,6 +1165,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+ 
+    DBG_PRINT_VECTOR(2, "new_trial_z", *new_trial_z);
+ 
++   
+    return Max(max_correction_up, max_correction_low);
+ }
+ 
 diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
 index 44525aea..422add7e 100644
 --- a/src/Interfaces/IpIpoptApplication.cpp
