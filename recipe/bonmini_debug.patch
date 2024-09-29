@@ -84,7 +84,7 @@ index cf14b65..42ae795 100644
  }
  
 diff --git a/Bonmin/src/Algorithms/BonSubMipSolver.cpp b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
-index 01843e8..a8c55df 100644
+index 01843e8..25ef237 100644
 --- a/Bonmin/src/Algorithms/BonSubMipSolver.cpp
 +++ b/Bonmin/src/Algorithms/BonSubMipSolver.cpp
 @@ -208,7 +208,7 @@ namespace Bonmin {
@@ -108,7 +108,7 @@ index 01843e8..a8c55df 100644
        cbc.setDblParam( CbcModel::CbcAllowableFractionGap, gap_tol_);
  
        //cbc.solver()->writeMpsNative("FP.mps", NULL, NULL, 1);
-+      std::cout << "SubMipSolver::optimize cbc.branchAndBound cbc=" << (&cbc) << std::endl << std::flush;
++      std::cout << "SubMipSolver::optimize cbc.branchAndBound cbc=" << std::endl << std::flush;
        cbc.branchAndBound();
        lowBound_ = cbc.getBestPossibleObjValue();
  

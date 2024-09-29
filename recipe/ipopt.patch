@@ -205,7 +205,7 @@ index 6782ac59..bdaa9f53 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
-index d9092e5c..91c36135 100644
+index d9092e5c..c00850f4 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
 +++ b/src/Algorithm/IpIpoptAlg.cpp
 @@ -18,6 +18,7 @@
@@ -448,17 +448,21 @@ index d9092e5c..91c36135 100644
     if( max_correction_up > 0. )
     {
        SmartPtr<Vector> tmp = trial_z.MakeNew();
-@@ -1119,6 +1151,9 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1119,6 +1151,13 @@ Number IpoptAlgorithm::correct_bound_multiplier(
     step_z->AddTwoVectors(1. / kappa_sigma_ * mu, *one_over_s, -1., *new_trial_z, 0.);
  
     Number max_correction_low = Max(Number(0.), step_z->Max());
++   
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier zmax="<<step_z->Max()<<std::endl << std::flush;
++   
++   
 +      std::cout << "IpoptAlgorithm::correct_bound_multiplier max_correction_low="<<max_correction_low<<std::endl << std::flush;
 +
 +   
     if( max_correction_low > 0. )
     {
        SmartPtr<Vector> tmp = trial_z.MakeNew();
-@@ -1130,6 +1165,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1130,6 +1169,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
  
     DBG_PRINT_VECTOR(2, "new_trial_z", *new_trial_z);
  
