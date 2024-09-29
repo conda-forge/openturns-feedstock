@@ -113,14 +113,14 @@ index 01843e8..a8c55df 100644
        lowBound_ = cbc.getBestPossibleObjValue();
  
 diff --git a/Bonmin/src/CbcBonmin/BonCbc.cpp b/Bonmin/src/CbcBonmin/BonCbc.cpp
-index 5c10cbd..6cb0b5d 100644
+index 5c10cbd..71f57ff 100644
 --- a/Bonmin/src/CbcBonmin/BonCbc.cpp
 +++ b/Bonmin/src/CbcBonmin/BonCbc.cpp
 @@ -84,6 +84,7 @@ namespace Bonmin
    /** Destructor.*/
    Bab::~Bab()
    {
-+    std::cout << "Bab:::~Bab model_=" << (&model_) << std::endl << std::flush;
++    std::cout << "Bab:::~Bab model_=" << std::endl << std::flush;
      if (bestSolution_) delete [] bestSolution_;
      bestSolution_ = NULL;
      for ( int i = 0 ; i < nObjects_ ; i++) {
@@ -129,7 +129,7 @@ index 5c10cbd..6cb0b5d 100644
    Bab::branchAndBound(BabSetupBase & s)
    {
 -
-+    std::cout << "Bab::branchAndBound0 model_=" << (&model_) << std::endl << std::flush;
++    std::cout << "Bab::branchAndBound0 model_=" << std::endl << std::flush;
      double remaining_time = s.getDoubleParameter(BabSetupBase::MaxTime) + CoinCpuTime();
      /* Put a link to this into solver.*/
      OsiBabSolver *  babInfo = dynamic_cast<OsiBabSolver *>(s.continuousSolver()->getAuxiliaryInfo());
@@ -137,19 +137,19 @@ index 5c10cbd..6cb0b5d 100644
      //model_.branchAndBound(3);
      remaining_time -= CoinCpuTime();
      model_.setDblParam(CbcModel::CbcMaximumSeconds, remaining_time);
-+    std::cout << "Bab::branchAndBound model_.branchAndBound remaining_time=" << remaining_time << " model_=" << (&model_) << std::endl << std::flush;
++    std::cout << "Bab::branchAndBound model_.branchAndBound remaining_time=" << remaining_time << " model_=" << std::endl << std::flush;
      if(remaining_time > 0.)
        model_.branchAndBound();
      }
 diff --git a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
-index ee31245..53b3394 100644
+index ee31245..f454935 100644
 --- a/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
 +++ b/Bonmin/src/Interfaces/BonOsiTMINLPInterface.cpp
 @@ -988,6 +988,7 @@ OsiTMINLPInterface::resolveForCost(int numsolve, bool keepWarmStart)
  void
  OsiTMINLPInterface::resolveForRobustness(int numsolve)
  {
-+  std::cout << "OsiTMINLPInterface::resolveForRobustness0 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::resolveForRobustness0" <<std::endl<< std::flush;
    // This method assumes that a problem has just been solved and we try for a
    // different solution. So disregard (in fact, clear out) any warmstart info
    // we might have, and acquire a new one before returning.
@@ -158,7 +158,7 @@ index ee31245..53b3394 100644
    <<1<< CoinMessageEol ;
    solveAndCheckErrors(0,0,"resolve robustness");
 -
-+std::cout << "OsiTMINLPInterface::resolveForRobustness1 this="<<this <<std::endl<< std::flush;
++std::cout << "OsiTMINLPInterface::resolveForRobustness1" <<std::endl<< std::flush;
  
    char c='*';
    if(isAbandoned()) {
@@ -166,7 +166,7 @@ index ee31245..53b3394 100644
      }
      return; //we won go on
    }
-+std::cout << "OsiTMINLPInterface::resolveForRobustness2 this="<<this <<std::endl<< std::flush;
++std::cout << "OsiTMINLPInterface::resolveForRobustness2" <<std::endl<< std::flush;
  
    //still unsolved try again with different random starting points
    for(int f = 0; f < numsolve ; f++) {
@@ -174,7 +174,7 @@ index ee31245..53b3394 100644
        return; //we have found a solution and continue
      }
    }
-+std::cout << "OsiTMINLPInterface::resolveForRobustness3 this="<<this <<std::endl<< std::flush;
++std::cout << "OsiTMINLPInterface::resolveForRobustness3" <<std::endl<< std::flush;
  
  
    if(warmStartMode_ < Optimum){
@@ -182,14 +182,14 @@ index ee31245..53b3394 100644
      return;
    }
    else {
-+      std::cout << "OsiTMINLPInterface::resolveForRobustness4 this="<<this <<std::endl<< std::flush;
++      std::cout << "OsiTMINLPInterface::resolveForRobustness4" <<std::endl<< std::flush;
 +
      std::string probName;
      getStrParam(OsiProbName,probName);
      throw newUnsolvedError(app_->errorCode(), problem_,
                             probName);
    }
-+  std::cout << "OsiTMINLPInterface::resolveForRobustness5 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::resolveForRobustness5" <<std::endl<< std::flush;
 +
    // Do NOT get warmstart in other cases
  }
@@ -198,14 +198,14 @@ index ee31245..53b3394 100644
  OsiTMINLPInterface::solveAndCheckErrors(bool warmStarted, bool throwOnFailure,
      const char * whereFrom)
  {
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0 this="<<this <<" warmStarted="<<warmStarted<<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0" <<" warmStarted="<<warmStarted<<std::endl<< std::flush;
    if (BonminAbortAll == true) return;
    totalNlpSolveTime_-=CoinCpuTime();
    if(warmStarted)
      optimizationStatus_ = app_->ReOptimizeTNLP(GetRawPtr(problem_to_optimize_));
    else
      optimizationStatus_ = app_->OptimizeTNLP(GetRawPtr(problem_to_optimize_));
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0.1 this="<<this << " optimizationStatus_="<<optimizationStatus_<<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors0.1" << " optimizationStatus_="<<optimizationStatus_<<std::endl<< std::flush;
    totalNlpSolveTime_+=CoinCpuTime();
    nCallOptimizeTNLP_++;
    hasBeenOptimized_ = true;
@@ -213,7 +213,7 @@ index ee31245..53b3394 100644
           std::string probName;
           getStrParam(OsiProbName, probName);
           fprintf(stderr, "Problem on optimal path is infeasible!\n");
-+           std::cout << "OsiTMINLPInterface::solveAndCheckErrors0.1 this="<<this <<std::endl<< std::flush;
++           std::cout << "OsiTMINLPInterface::solveAndCheckErrors0.1" <<std::endl<< std::flush;
 +
           throw newUnsolvedError(app_->errorCode(), problem_, probName);
        }
@@ -226,17 +226,17 @@ index ee31245..53b3394 100644
      app_->options()->SetStringValue("print_user_options","no", false, true);
    }
 -  
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors1 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors1" <<std::endl<< std::flush;
 +
    bool otherDisagree = false ;
 +  
 +  
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors1.1 this="<<this << " isRecoverable="<<app_->isRecoverable(optimizationStatus_)<<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors1.1" << " isRecoverable="<<app_->isRecoverable(optimizationStatus_)<<std::endl<< std::flush;
      if(!app_->isRecoverable(optimizationStatus_))//Solver failed and the error can not be recovered, throw it
      {
        std::string probName;
        getStrParam(OsiProbName, probName);
-+        std::cout << "OsiTMINLPInterface::solveAndCheckErrors1.1 this="<<this <<std::endl<< std::flush;
++        std::cout << "OsiTMINLPInterface::solveAndCheckErrors1.1" <<std::endl<< std::flush;
 +
        throw newUnsolvedError(app_->errorCode(), problem_, probName);
      }
@@ -245,7 +245,7 @@ index ee31245..53b3394 100644
            <<(*i)->IterationCount()<<(*i)->CPUTime()<<"retry with "+(*i)->solverName()<<CoinMessageEol;
        }
    }
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors2 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors2" <<std::endl<< std::flush;
 +
    try{
      totalIterations_ += app_->IterationCount();
@@ -254,7 +254,7 @@ index ee31245..53b3394 100644
    {
      if (throwOnFailure)//something failed throw
      {
-+          std::cout << "OsiTMINLPInterface::solveAndCheckErrors2.1 this="<<this <<std::endl<< std::flush;
++          std::cout << "OsiTMINLPInterface::solveAndCheckErrors2.1" <<std::endl<< std::flush;
 +
        throw SimpleError("No statistics available from Ipopt",whereFrom);
      }
@@ -262,7 +262,7 @@ index ee31245..53b3394 100644
        return;
      }
    }
-+    std::cout << "OsiTMINLPInterface::solveAndCheckErrors3 this="<<this <<std::endl<< std::flush;
++    std::cout << "OsiTMINLPInterface::solveAndCheckErrors3" <<std::endl<< std::flush;
 +
    if(problem_->hasUpperBoundingObjective()){//Check if solution is integer and recompute objective value using alternative objective function
      const double * sol = getColSolution();
@@ -271,7 +271,7 @@ index ee31245..53b3394 100644
        }
      }
    }
-+    std::cout << "OsiTMINLPInterface::solveAndCheckErrors4 this="<<this <<std::endl<< std::flush;
++    std::cout << "OsiTMINLPInterface::solveAndCheckErrors4" <<std::endl<< std::flush;
  
    messageHandler()->message(IPOPT_SUMMARY, messages_)
      <<whereFrom<<optimizationStatus_<<app_->IterationCount()<<app_->CPUTime()<<CoinMessageEol;
@@ -280,7 +280,7 @@ index ee31245..53b3394 100644
      problem_->outputDiffs(subProbName, NULL/*getVarNames()*/);
    }
 -  
-+  std::cout << "OsiTMINLPInterface::solveAndCheckErrors5 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::solveAndCheckErrors5" <<std::endl<< std::flush;
  }
  
  ////////////////////////////////////////////////////////////////////
@@ -288,31 +288,31 @@ index ee31245..53b3394 100644
  ////////////////////////////////////////////////////////////////////
  void OsiTMINLPInterface::initialSolve(const char * whereFrom)
  {
-+  std::cout << "OsiTMINLPInterface::initialSolve0 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve0" <<std::endl<< std::flush;
    assert(IsValid(app_));
    assert(IsValid(problem_));
-+  std::cout << "OsiTMINLPInterface::initialSolve1 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve1" <<std::endl<< std::flush;
  
    if (BonminAbortAll == true) return;
    // Discard warmstart_ if we had one
    delete warmstart_;
    warmstart_ = NULL;
 -  
-+  std::cout << "OsiTMINLPInterface::initialSolve2 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve2" <<std::endl<< std::flush;
    if(!hasPrintedOptions) {
      int printOptions;
      app_->options()->GetEnumValue("print_user_options",printOptions,app_->prefix());
      if(printOptions)
        app_->options()->SetStringValue("print_user_options","yes",true,true);
    }
-+  std::cout << "OsiTMINLPInterface::initialSolve3 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve3" <<std::endl<< std::flush;
    if(warmStartMode_ >= Optimum)
 -    app_->disableWarmStart(); 
 +    app_->disableWarmStart();
-+  std::cout << "OsiTMINLPInterface::initialSolve4 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve4" <<std::endl<< std::flush;
    solveAndCheckErrors(0,1,"initialSolve");
 -  
-+  std::cout << "OsiTMINLPInterface::initialSolve5 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve5" <<std::endl<< std::flush;
    //Options should have been printed if not done already turn off Ipopt output
    if(!hasPrintedOptions) {
      hasPrintedOptions = 1;
@@ -320,7 +320,7 @@ index ee31245..53b3394 100644
      app_->options()->SetIntegerValue("print_level",0);
    }
 -  
-+  std::cout << "OsiTMINLPInterface::initialSolve6 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve6" <<std::endl<< std::flush;
    messageHandler()->message(LOG_LINE, messages_)<<' '<<nCallOptimizeTNLP_
  						      <<statusAsString()
                                                        <<getObjValue()
@@ -330,7 +330,7 @@ index ee31245..53b3394 100644
    }
 +  
    int numRetry = firstSolve_ ? numRetryInitial_ : numRetryResolve_;
-+  std::cout << "OsiTMINLPInterface::initialSolve7 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve7" <<std::endl<< std::flush;
    if(isAbandoned() ||
      ( isProvenPrimalInfeasible() && getObjValue() < infeasibility_epsilon_)) {
      resolveForRobustness(numRetryUnsolved_);
@@ -339,7 +339,7 @@ index ee31245..53b3394 100644
      }
    firstSolve_ = false;
 -
-+std::cout << "OsiTMINLPInterface::initialSolve8 this="<<this <<std::endl<< std::flush;
++std::cout << "OsiTMINLPInterface::initialSolve8" <<std::endl<< std::flush;
    // if warmstart_ is not empty then had to use resolveFor... and that created
    // the warmstart at the end, and we have nothing to do here. Otherwise...
    if (! warmstart_ && ! isAbandoned()) {
@@ -347,7 +347,7 @@ index ee31245..53b3394 100644
        warmstart_ = app_->getWarmStart(problem_);
      }
    }
-+  std::cout << "OsiTMINLPInterface::initialSolve9 this="<<this <<std::endl<< std::flush;
++  std::cout << "OsiTMINLPInterface::initialSolve9" <<std::endl<< std::flush;
  }
  
  /** Resolve the continuous relaxation after problem modification. */
@@ -364,31 +364,31 @@ index d070ee5..82a2d8f 100644
    }
  
 diff --git a/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp b/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
-index 6969595..0921dc2 100644
+index 6969595..bf0eb76 100644
 --- a/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
 +++ b/Bonmin/src/Interfaces/Filter/BonBqpdSolver.cpp
 @@ -208,6 +208,7 @@ namespace Bonmin
    TNLPSolver::ReturnStatus
    BqpdSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP>& tnlp)
    {
-+    std::cout << "BqpdSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
++    std::cout << "BqpdSolver::OptimizeTNLP0" <<std::endl<< std::flush;
      BranchingTQP* tqp = dynamic_cast<BranchingTQP*>(GetRawPtr(tnlp));
      if (!tqp) {
        Ipopt::IpoptException E("BqpdSolver called with object other than a BranchingTQP",
 diff --git a/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp b/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
-index 85812e1..e1b7255 100644
+index 85812e1..7368ec8 100644
 --- a/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
 +++ b/Bonmin/src/Interfaces/Filter/BonFilterSolver.cpp
 @@ -363,6 +363,7 @@ namespace Bonmin
    TNLPSolver::ReturnStatus
    FilterSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP> & tnlp)
    {
-+    std::cout << "FilterSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
++    std::cout << "FilterSolver::OptimizeTNLP0" <<std::endl<< std::flush;
      if (cached_.IsNull() || !cached_->use_warm_start_in_cache_) {
        cached_ = new cachedInfo(tnlp, options_);
      }
 diff --git a/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp b/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
-index 22d2d6b..64deae0 100644
+index 22d2d6b..6717be2 100644
 --- a/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
 +++ b/Bonmin/src/Interfaces/Ipopt/BonIpoptSolver.cpp
 @@ -8,6 +8,7 @@
@@ -403,11 +403,38 @@ index 22d2d6b..64deae0 100644
    TNLPSolver::ReturnStatus
    IpoptSolver::OptimizeTNLP(const Ipopt::SmartPtr<Ipopt::TNLP> &tnlp)
    {
-+    std::cout << "IpoptSolver::OptimizeTNLP0 this="<<this <<std::endl<< std::flush;
++    std::cout << "IpoptSolver::OptimizeTNLP0" <<std::endl<< std::flush;
  #if 0
      printf("Global Time limit set to %g\n", time_limit_);
      double local_time_limit = time_limit_ - 
-@@ -307,7 +309,10 @@ namespace Bonmin
+@@ -146,6 +148,7 @@ namespace Bonmin
+ #endif
+     TNLPSolver::ReturnStatus ret_status;
+     if (!zeroDimension(tnlp, ret_status)) {
++      std::cout << "IpoptSolver::OptimizeTNLP1" <<std::endl<< std::flush;
+ #if 0
+       if(time_limit_ < DBL_MAX){
+            options_->SetNumericValue("max_cpu_time", local_time_limit,
+@@ -153,15 +156,18 @@ namespace Bonmin
+       }
+ #endif
+       if (enable_warm_start_ && optimized_before_) {
++        std::cout << "IpoptSolver::OptimizeTNLP2" <<std::endl<< std::flush;
+         optimizationStatus_ = app_->ReOptimizeTNLP(tnlp);
+       }
+       else {
++        std::cout << "IpoptSolver::OptimizeTNLP3" <<std::endl<< std::flush;
+         optimizationStatus_ = app_->OptimizeTNLP(tnlp);
+       }
+       optimized_before_ = true;
+       problemHadZeroDimension_ = false;
+     }
+     else {
++      std::cout << "IpoptSolver::OptimizeTNLP4" <<std::endl<< std::flush;
+       problemHadZeroDimension_ = true;
+       if (ret_status == solvedOptimal)
+         optimizationStatus_ = Ipopt::Solve_Succeeded;
+@@ -307,7 +313,10 @@ namespace Bonmin
      case Ipopt::Error_In_Step_Computation:
      case Ipopt::Unrecoverable_Exception:
      case Ipopt::Insufficient_Memory:
