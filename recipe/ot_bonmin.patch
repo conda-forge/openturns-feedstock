@@ -1,5 +1,5 @@
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..156a79ef1 100644
+index 147ddd9ad..4ce88212f 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -207,12 +207,12 @@ bool BonminProblem::get_bounds_info( int n,
@@ -7,13 +7,13 @@ index 147ddd9ad..156a79ef1 100644
      {
        if (!bounds.getFiniteLowerBound()[i])
 -        x_l[i] = SpecFunc::LowestScalar;
-+        x_l[i] = -std::pow(2.0, 50.0);
++        x_l[i] = -std::sqrt(SpecFunc::ActualMaxScalar);
        else
          x_l[i] = bounds.getLowerBound()[i];
  
        if (!bounds.getFiniteUpperBound()[i])
 -        x_u[i] =  SpecFunc::MaxScalar;
-+        x_u[i] = std::pow(2.0, 50.0);
++        x_u[i] = std::sqrt(SpecFunc::ActualMaxScalar);
        else
          x_u[i] = bounds.getUpperBound()[i];
      }
@@ -23,8 +23,8 @@ index 147ddd9ad..156a79ef1 100644
      {
 -      x_l[i] = SpecFunc::LowestScalar;
 -      x_u[i] =  SpecFunc::MaxScalar;
-+      x_l[i] = -std::pow(2.0, 50.0);
-+      x_u[i] =  std::pow(2.0, 50.0);
++      x_l[i] = -std::sqrt(SpecFunc::ActualMaxScalar);
++      x_u[i] =  std::sqrt(SpecFunc::ActualMaxScalar);
      }
    }
  
@@ -33,7 +33,7 @@ index 147ddd9ad..156a79ef1 100644
      {
        g_l[k] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
 -      g_u[k] = SpecFunc::MaxScalar;
-+      g_u[k] = std::pow(2.0, 50.0);
++      g_u[k] = std::sqrt(SpecFunc::ActualMaxScalar);
        ++k;
      }
  
