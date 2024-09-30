@@ -7,13 +7,13 @@ index 147ddd9ad..156a79ef1 100644
      {
        if (!bounds.getFiniteLowerBound()[i])
 -        x_l[i] = SpecFunc::LowestScalar;
-+        x_l[i] = -std::pow(2.0, 50.0);
++        x_l[i] = -std::pow(2.0, 100.0);
        else
          x_l[i] = bounds.getLowerBound()[i];
  
        if (!bounds.getFiniteUpperBound()[i])
 -        x_u[i] =  SpecFunc::MaxScalar;
-+        x_u[i] = std::pow(2.0, 50.0);
++        x_u[i] = std::pow(2.0, 100.0);
        else
          x_u[i] = bounds.getUpperBound()[i];
      }
@@ -23,8 +23,8 @@ index 147ddd9ad..156a79ef1 100644
      {
 -      x_l[i] = SpecFunc::LowestScalar;
 -      x_u[i] =  SpecFunc::MaxScalar;
-+      x_l[i] = -std::pow(2.0, 50.0);
-+      x_u[i] =  std::pow(2.0, 50.0);
++      x_l[i] = -std::pow(2.0, 100.0);
++      x_u[i] =  std::pow(2.0, 100.0);
      }
    }
  
@@ -33,7 +33,7 @@ index 147ddd9ad..156a79ef1 100644
      {
        g_l[k] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
 -      g_u[k] = SpecFunc::MaxScalar;
-+      g_u[k] = std::pow(2.0, 50.0);
++      g_u[k] = std::pow(2.0, 100.0);
        ++k;
      }
  
