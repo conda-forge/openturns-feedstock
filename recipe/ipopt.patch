@@ -537,6 +537,31 @@ index d9092e5c..6db205d0 100644
     return Max(max_correction_up, max_correction_low);
  }
  
+diff --git a/src/Algorithm/IpIpoptData.hpp b/src/Algorithm/IpIpoptData.hpp
+index 067ef8fd..6f9aabf5 100644
+--- a/src/Algorithm/IpIpoptData.hpp
++++ b/src/Algorithm/IpIpoptData.hpp
+@@ -850,6 +850,7 @@ inline SmartPtr<const IteratesVector> IpoptData::delta_aff() const
+ inline
+ void IpoptData::CopyTrialToCurrent()
+ {
++
+    curr_ = trial_;
+ #if IPOPT_CHECKLEVEL > 0
+ 
+@@ -872,6 +873,12 @@ void IpoptData::set_trial(
+    SmartPtr<IteratesVector>& trial
+ )
+ {
++   
++   for(Index i=0; i < trial->NComps(); ++ i)
++   {
++      std::cout << "IpoptData::set_trial i="<<i << " trial min="<<trial->GetComp(i)->Min() << " max="<<trial->GetComp(i)->Max()<<std::endl;
++   }
++   
+    trial_ = ConstPtr(trial);
+ 
+ #if IPOPT_CHECKLEVEL > 0
 diff --git a/src/Algorithm/IpOptErrorConvCheck.cpp b/src/Algorithm/IpOptErrorConvCheck.cpp
 index 352757a1..b617df9d 100644
 --- a/src/Algorithm/IpOptErrorConvCheck.cpp
