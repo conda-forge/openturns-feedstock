@@ -537,6 +537,49 @@ index d9092e5c..6db205d0 100644
     return Max(max_correction_up, max_correction_low);
  }
  
+diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
+index df366eaa..18126dcd 100644
+--- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
++++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
+@@ -241,12 +241,19 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
+    const Vector& x_bound
+ )
+ {
++      
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl;
++
++      
+    DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_L",
+                   dbg_verbosity);
+    SmartPtr<Vector> result;
+    result = x_bound.MakeNew();
+    result->Copy(x_bound);
+    P.TransMultVector(1.0, x, -1.0, *result);
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl;
++
+    return result;
+ }
+ 
+@@ -256,12 +263,18 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_U(
+    const Vector& x_bound
+ )
+ {
++               std::cout << "IpoptCalculatedQuantities::CalcSlack_U x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_U x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl;
++
++      
+    DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_U",
+                   dbg_verbosity);
+    SmartPtr<Vector> result;
+    result = x_bound.MakeNew();
+    result->Copy(x_bound);
+    P.TransMultVector(-1.0, x, 1.0, *result);
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_U result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl;
++
+    return result;
+ }
+ 
 diff --git a/src/Algorithm/IpIpoptData.cpp b/src/Algorithm/IpIpoptData.cpp
 index 68596e89..d6960e2d 100644
 --- a/src/Algorithm/IpIpoptData.cpp
