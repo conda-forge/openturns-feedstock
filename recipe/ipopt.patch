@@ -537,6 +537,57 @@ index d9092e5c..6db205d0 100644
     return Max(max_correction_up, max_correction_low);
  }
  
+diff --git a/src/Algorithm/IpIpoptData.cpp b/src/Algorithm/IpIpoptData.cpp
+index 68596e89..d6960e2d 100644
+--- a/src/Algorithm/IpIpoptData.cpp
++++ b/src/Algorithm/IpIpoptData.cpp
+@@ -189,6 +189,13 @@ void IpoptData::SetTrialPrimalVariablesFromStep(
+       trial_ = iterates_space_->MakeNewIteratesVector(false);
+    }
+ 
++   
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep alpha=" <<alpha<<std::endl;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_x.min=" << delta_x.Min() << " max="<<delta_x.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_s.min=" << delta_s.Min() << " max="<<delta_s.Max()<<std::endl;
++   
++   
++   
+    SmartPtr<IteratesVector> newvec = trial_->MakeNewContainer();
+    newvec->create_new_x();
+    newvec->x_NonConst()->AddTwoVectors(1., *curr_->x(), alpha, delta_x, 0.);
+@@ -207,6 +214,10 @@ void IpoptData::SetTrialEqMultipliersFromStep(
+ {
+    DBG_ASSERT(have_prototypes_);
+ 
++         std::cout << "IpoptData::SetTrialEqMultipliersFromStep alpha=" <<alpha<<std::endl;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_c.min=" << delta_y_c.Min() << " max="<<delta_y_c.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_d.min=" << delta_y_d.Min() << " max="<<delta_y_d.Max()<<std::endl;
++   
+    SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
+    newvec->create_new_y_c();
+    newvec->y_c_NonConst()->AddTwoVectors(1., *curr()->y_c(), alpha, delta_y_c, 0.);
+@@ -227,6 +238,12 @@ void IpoptData::SetTrialBoundMultipliersFromStep(
+ {
+    DBG_ASSERT(have_prototypes_);
+ 
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep alpha=" <<alpha<<std::endl;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_L.min=" << delta_z_L.Min() << " max="<<delta_z_L.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_U.min=" << delta_z_U.Min() << " max="<<delta_z_U.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_L.min=" << delta_v_L.Min() << " max="<<delta_v_L.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_U.min=" << delta_v_U.Min() << " max="<<delta_v_U.Max()<<std::endl;
++      
+    SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
+    newvec->create_new_z_L();
+    newvec->z_L_NonConst()->AddTwoVectors(1., *curr()->z_L(), alpha, delta_z_L, 0.);
+@@ -255,6 +272,8 @@ void IpoptData::AcceptTrialPoint()
+    DBG_ASSERT(IsValid(trial_->v_L()));
+    DBG_ASSERT(IsValid(trial_->v_U()));
+ 
++
++   
+    CopyTrialToCurrent();
+ 
+    // Set trial pointers to Null (frees memory unless someone else is
 diff --git a/src/Algorithm/IpIpoptData.hpp b/src/Algorithm/IpIpoptData.hpp
 index 067ef8fd..b241bbc8 100644
 --- a/src/Algorithm/IpIpoptData.hpp
