@@ -538,16 +538,14 @@ index d9092e5c..6db205d0 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-index df366eaa..18126dcd 100644
+index df366eaa..4c8fa84e 100644
 --- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 +++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-@@ -241,12 +241,19 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
+@@ -241,12 +241,17 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
     const Vector& x_bound
  )
  {
 +      
-+   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl;
-+   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl;
 +
 +      
     DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_L",
@@ -556,32 +554,184 @@ index df366eaa..18126dcd 100644
     result = x_bound.MakeNew();
     result->Copy(x_bound);
     P.TransMultVector(1.0, x, -1.0, *result);
-+   std::cout << "IpoptCalculatedQuantities::CalcSlack_L result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl<<std::flush;
 +
     return result;
  }
  
-@@ -256,12 +263,18 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_U(
+@@ -255,13 +260,15 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_U(
+    const Vector& x,
     const Vector& x_bound
  )
- {
-+               std::cout << "IpoptCalculatedQuantities::CalcSlack_U x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl;
-+   std::cout << "IpoptCalculatedQuantities::CalcSlack_U x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl;
-+
-+      
+-{
++{    
     DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_U",
                    dbg_verbosity);
     SmartPtr<Vector> result;
     result = x_bound.MakeNew();
     result->Copy(x_bound);
     P.TransMultVector(-1.0, x, 1.0, *result);
-+   std::cout << "IpoptCalculatedQuantities::CalcSlack_U result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_U result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl<<std::flush;
 +
     return result;
  }
  
+@@ -272,6 +279,11 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_L()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> x_bound = ip_nlp_->x_L();
++   
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_L x.min="<<x->Min() << " x.max="<<x->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_x_L x_bound.min="<<x_bound->Min() << " x_bound.max="<<x_bound->Max()<<std::endl<<std::flush;
++   
++   
+    if( !curr_slack_x_L_cache_.GetCachedResult1Dep(result, *x) )
+    {
+       if( !trial_slack_x_L_cache_.GetCachedResult1Dep(result, *x) )
+@@ -279,10 +291,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_L()
+          SmartPtr<const Matrix> P = ip_nlp_->Px_L();
+          DBG_PRINT_VECTOR(2, "x_L", *x_bound);
+          result = CalcSlack_L(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_L_ == 0);
+          num_adjusted_slack_x_L_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_L());
+       }
+       curr_slack_x_L_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -295,16 +309,23 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_U()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> x_bound = ip_nlp_->x_U();
++   
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_U x.min="<<x->Min() << " x.max="<<x->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_x_U x_bound.min="<<x_bound->Min() << " x_bound.max="<<x_bound->Max()<<std::endl<<std::flush;
++   
++   
+    if( !curr_slack_x_U_cache_.GetCachedResult1Dep(result, *x) )
+    {
+       if( !trial_slack_x_U_cache_.GetCachedResult1Dep(result, *x) )
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_U();
+          result = CalcSlack_U(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_U_ == 0);
+          num_adjusted_slack_x_U_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_U());
+       }
+       curr_slack_x_U_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -317,16 +338,23 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_s_L()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> s = ip_data_->curr()->s();
+    SmartPtr<const Vector> s_bound = ip_nlp_->d_L();
++   
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_L x.min="<<s->Min() << " x.max="<<s->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_s_L x_bound.min="<<s_bound->Min() << " s_bound.max="<<s_bound->Max()<<std::endl<<std::flush;
++
++   
+    if( !curr_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
+    {
+       if( !trial_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_L();
+          result = CalcSlack_L(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_s_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_L_ == 0);
+          num_adjusted_slack_s_L_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_L());
+       }
+       curr_slack_s_L_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -345,12 +373,14 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_s_U()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_U();
+          result = CalcSlack_U(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_s_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_U_ == 0);
+          num_adjusted_slack_s_U_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_U());
+          DBG_PRINT_VECTOR(2, "result", *result);
+          DBG_PRINT((1, "num_adjusted_slack_s_U = %" IPOPT_INDEX_FORMAT "\n", num_adjusted_slack_s_U_));
+       }
+       curr_slack_s_U_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -370,10 +400,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_x_L()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_L();
+          result = CalcSlack_L(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_x_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_L_ == 0);
+          num_adjusted_slack_x_L_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_L());
+       }
+       trial_slack_x_L_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_x_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -393,10 +425,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_x_U()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_U();
+          result = CalcSlack_U(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_x_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_U_ == 0);
+          num_adjusted_slack_x_U_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_U());
+       }
+       trial_slack_x_U_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_x_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -416,10 +450,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_L()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_L();
+          result = CalcSlack_L(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_L_ == 0);
+          num_adjusted_slack_s_L_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_L());
+       }
+       trial_slack_s_L_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_s_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -441,6 +477,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+          DBG_PRINT_VECTOR(2, "d_U", *s_bound);
+          DBG_PRINT_VECTOR(2, "s", *s);
+          result = CalcSlack_U(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_PRINT_VECTOR(2, "result", *result);
+          DBG_ASSERT(num_adjusted_slack_s_U_ == 0);
+          num_adjusted_slack_s_U_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_U());
+@@ -448,6 +485,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+          DBG_PRINT_VECTOR(2, "trial_slack_s_U", *result);
+       }
+       trial_slack_s_U_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_s_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -476,6 +514,10 @@ Index IpoptCalculatedQuantities::CalculateSafeSlack(
+          s_min = std::numeric_limits<Number>::min();
+       }
+       DBG_PRINT((1, "s_min = %g, curr_mu = %g, min_slack=%g\n", s_min, ip_data_->curr_mu(), min_slack));
++      
++      
++      std::cout << "IpoptCalculatedQuantities::CalculateSafeSlack s_min="<<s_min << " curr_mu="<<ip_data_->curr_mu()<< "min_slack="<<min_slack<<std::endl<<std::flush;
++      
+       if( min_slack < s_min )
+       {
+          // Need to correct the slacks and calculate new bounds...
 diff --git a/src/Algorithm/IpIpoptData.cpp b/src/Algorithm/IpIpoptData.cpp
-index 68596e89..d6960e2d 100644
+index 68596e89..d69a0b63 100644
 --- a/src/Algorithm/IpIpoptData.cpp
 +++ b/src/Algorithm/IpIpoptData.cpp
 @@ -189,6 +189,13 @@ void IpoptData::SetTrialPrimalVariablesFromStep(
@@ -589,9 +739,9 @@ index 68596e89..d6960e2d 100644
     }
  
 +   
-+      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep alpha=" <<alpha<<std::endl;
-+      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_x.min=" << delta_x.Min() << " max="<<delta_x.Max()<<std::endl;
-+      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_s.min=" << delta_s.Min() << " max="<<delta_s.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_x.min=" << delta_x.Min() << " max="<<delta_x.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_s.min=" << delta_s.Min() << " max="<<delta_s.Max()<<std::endl<<std::flush;
 +   
 +   
 +   
@@ -602,9 +752,9 @@ index 68596e89..d6960e2d 100644
  {
     DBG_ASSERT(have_prototypes_);
  
-+         std::cout << "IpoptData::SetTrialEqMultipliersFromStep alpha=" <<alpha<<std::endl;
-+      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_c.min=" << delta_y_c.Min() << " max="<<delta_y_c.Max()<<std::endl;
-+      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_d.min=" << delta_y_d.Min() << " max="<<delta_y_d.Max()<<std::endl;
++         std::cout << "IpoptData::SetTrialEqMultipliersFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_c.min=" << delta_y_c.Min() << " max="<<delta_y_c.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_d.min=" << delta_y_d.Min() << " max="<<delta_y_d.Max()<<std::endl<<std::flush;
 +   
     SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
     newvec->create_new_y_c();
@@ -613,11 +763,11 @@ index 68596e89..d6960e2d 100644
  {
     DBG_ASSERT(have_prototypes_);
  
-+      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep alpha=" <<alpha<<std::endl;
-+      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_L.min=" << delta_z_L.Min() << " max="<<delta_z_L.Max()<<std::endl;
-+      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_U.min=" << delta_z_U.Min() << " max="<<delta_z_U.Max()<<std::endl;
-+      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_L.min=" << delta_v_L.Min() << " max="<<delta_v_L.Max()<<std::endl;
-+      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_U.min=" << delta_v_U.Min() << " max="<<delta_v_U.Max()<<std::endl;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_L.min=" << delta_z_L.Min() << " max="<<delta_z_L.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_U.min=" << delta_z_U.Min() << " max="<<delta_z_U.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_L.min=" << delta_v_L.Min() << " max="<<delta_v_L.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_U.min=" << delta_v_U.Min() << " max="<<delta_v_U.Max()<<std::endl<<std::flush;
 +      
     SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
     newvec->create_new_z_L();
@@ -632,7 +782,7 @@ index 68596e89..d6960e2d 100644
  
     // Set trial pointers to Null (frees memory unless someone else is
 diff --git a/src/Algorithm/IpIpoptData.hpp b/src/Algorithm/IpIpoptData.hpp
-index 067ef8fd..b241bbc8 100644
+index 067ef8fd..2f13bf4b 100644
 --- a/src/Algorithm/IpIpoptData.hpp
 +++ b/src/Algorithm/IpIpoptData.hpp
 @@ -850,6 +850,7 @@ inline SmartPtr<const IteratesVector> IpoptData::delta_aff() const
@@ -650,7 +800,7 @@ index 067ef8fd..b241bbc8 100644
 +   
 +   for(Index i=0; i < 1; ++ i)
 +   {
-+      std::cout << "IpoptData::set_trial n=" << trial->NComps()<<" i="<<i << " trial min="<<trial->GetComp(i)->Min() << " max="<<trial->GetComp(i)->Max()<<std::endl;
++      std::cout << "IpoptData::set_trial n=" << trial->NComps()<<" i="<<i << " trial min="<<trial->GetComp(i)->Min() << " max="<<trial->GetComp(i)->Max()<<std::endl<<std::flush;
 +   }
 +   
     trial_ = ConstPtr(trial);
