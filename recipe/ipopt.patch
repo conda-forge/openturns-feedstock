@@ -538,7 +538,7 @@ index d9092e5c..6db205d0 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-index df366eaa..1c217c01 100644
+index df366eaa..ae72ed2b 100644
 --- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 +++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 @@ -241,12 +241,17 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
@@ -867,15 +867,31 @@ index df366eaa..1c217c01 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_s_U());
        tmp->AddScalar(-mu);
-@@ -3376,6 +3431,7 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
+@@ -3376,12 +3431,18 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
  
     if( !primal_frac_to_the_bound_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
-+std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound"<<std::endl<<std::flush;         
-       result = Min(
-                   CalcFracToBound(*curr_slack_x_L(), Tmp_x_L(), *ip_nlp_->Px_L(), *curr_slack_x_U(), Tmp_x_U(), *ip_nlp_->Px_U(),
-                                   delta_x, tau),
-@@ -3480,7 +3536,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+-      result = Min(
+-                  CalcFracToBound(*curr_slack_x_L(), Tmp_x_L(), *ip_nlp_->Px_L(), *curr_slack_x_U(), Tmp_x_U(), *ip_nlp_->Px_U(),
+-                                  delta_x, tau),
+-                  CalcFracToBound(*curr_slack_s_L(), Tmp_s_L(), *ip_nlp_->Pd_L(), *curr_slack_s_U(), Tmp_s_U(), *ip_nlp_->Pd_U(),
+-                                  delta_s, tau));
++std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound"<<std::endl<<std::flush;
++
++
++   SmartPtr<const Vector> x_L = curr_slack_x_L();
++   SmartPtr<const Vector> x_U = curr_slack_x_U();
++   SmartPtr<const Vector> s_L = curr_slack_s_L();
++   SmartPtr<const Vector> s_U = curr_slack_s_U();
++
++   Number ftb1 = CalcFracToBound(*x_L, Tmp_x_L(), *ip_nlp_->Px_L(), *x_U, Tmp_x_U(), *ip_nlp_->Px_U(), delta_x, tau);
++   Number ftb2 = CalcFracToBound(*s_L, Tmp_s_L(), *ip_nlp_->Pd_L(), *s_U, Tmp_s_U(), *ip_nlp_->Pd_U(), delta_s, tau);
+ 
++      result = Min(ftb1, ftb2);
+       primal_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
+ 
+@@ -3480,7 +3541,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
     DBG_START_METH("IpoptCalculatedQuantities::slack_frac_to_the_bound",
                    dbg_verbosity);
     Number result;
@@ -884,7 +900,7 @@ index df366eaa..1c217c01 100644
     SmartPtr<const Vector> x_L = curr_slack_x_L();
     SmartPtr<const Vector> x_U = curr_slack_x_U();
     SmartPtr<const Vector> s_L = curr_slack_s_L();
-@@ -3509,6 +3565,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
+@@ -3509,6 +3570,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
  
     if( !curr_sigma_x_cache_.GetCachedResult3Dep(result, *x, *z_L, *z_U) )
     {
@@ -892,7 +908,7 @@ index df366eaa..1c217c01 100644
        SmartPtr<Vector> sigma = x->MakeNew();
  
        sigma->Set(0.);
-@@ -3576,7 +3633,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
+@@ -3576,7 +3638,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
     {
        if( !trial_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
@@ -901,7 +917,7 @@ index df366eaa..1c217c01 100644
           SmartPtr<const Vector> slack_x_L = curr_slack_x_L();
           SmartPtr<const Vector> slack_x_U = curr_slack_x_U();
           SmartPtr<const Vector> slack_s_L = curr_slack_s_L();
-@@ -3631,7 +3688,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+@@ -3631,7 +3693,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
     {
        if( !curr_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
