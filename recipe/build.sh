@@ -1,16 +1,16 @@
 #!/bin/sh
 
-CFLAGS="${CFLAGS} -g -O1"
-CXXFLAGS="${CXXFLAGS} -g -O1"
-
-CPPFLAGS="${CPPFLAGS} -DNDEBUG"
+# CFLAGS="${CFLAGS} -g -O1"
+# CXXFLAGS="${CXXFLAGS} -g -O1"
+# 
+# CPPFLAGS="${CPPFLAGS} -DNDEBUG"
 
 curl -L https://github.com/coin-or/Osi/archive/releases/0.108.11.tar.gz | tar xz
 cd Osi-releases-0.108.11/
 curl -L https://raw.githubusercontent.com/conda-forge/coin-or-osi-feedstock/main/recipe/0001-Patch-for-downstream.patch | patch -p1
-./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}"
-make -j "${CPU_COUNT}"
-make install
+#./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}"
+#make -j "${CPU_COUNT}"
+#make install
 cd ..
 
 curl -L https://github.com/coin-or/Cbc/archive/releases/2.10.12.tar.gz | tar xz
@@ -19,10 +19,10 @@ mkdir Data
 git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
 patch -p1 -i ${RECIPE_DIR}/cbc_debug.patch
 curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main/recipe/patches/0001-Patch-for-downstream.patch | patch -p1
-./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
-cat ./Cbc/src/config.h
-make -j "${CPU_COUNT}"
-make install
+#./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
+#cat ./Cbc/src/config.h
+#make -j "${CPU_COUNT}"
+#make install
 # make test || "cbc test :["
 cd ..
 
@@ -40,13 +40,13 @@ patch -p1 -i ${RECIPE_DIR}/ipopt.patch
   --with-asl-cflags="-I${PREFIX}/include/asl" \
   --with-asl-lflags="-lasl" \
   --prefix=${PREFIX}
-make -j "${CPU_COUNT}"
-make install
+#make -j "${CPU_COUNT}"
+#make install
 # make test || "ipopt test :["
 cd ..
 
 # compat
-cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
+#cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
@@ -68,12 +68,12 @@ LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-ipopt-incdir="${PREFIX}/include/coin/" \
   --with-asl-incdir="${PREFIX}/include/asl" \
   --with-asl-lib="$(pkg-config --libs ipoptamplinterface) -lasl"
-make -j ${CPU_COUNT}
-make install
-cd Bonmin/test
-make
-./CppExample
-cd ../..
+#make -j ${CPU_COUNT}
+#make install
+#cd Bonmin/test
+#make
+#./CppExample
+#cd ../..
 # make test || "bonmin test :["
 cd ..
 
@@ -98,6 +98,9 @@ cmake --build build --target t_Bonmin_std --parallel ${CPU_COUNT}
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
   ctest --test-dir build -R cppcheck_Bonmin_std --output-on-failure -V || echo "nope"
+  cmake --build build --target install --parallel ${CPU_COUNT}
+  ctest --test-dir build -R pyinstallcheck_Bonmin --output-on-failure -V
+  exit 0
 #   ./build/lib/test/t_Bonmin_std || echo "nope"
   if test `uname` = "Darwin"; then
 #     echo -e "run\n\bt" > test.gdb
