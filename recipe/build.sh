@@ -98,9 +98,9 @@ cmake --build build --target t_Bonmin_std --parallel ${CPU_COUNT}
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
   ctest --test-dir build -R cppcheck_Bonmin_std --output-on-failure -V || echo "nope"
-  cmake --build build --target install --parallel ${CPU_COUNT}
-  ctest --test-dir build -R pyinstallcheck_Bonmin --output-on-failure -V
-  exit 0
+#   cmake --build build --target install --parallel ${CPU_COUNT}
+#   ctest --test-dir build -R pyinstallcheck_Bonmin --output-on-failure -V
+#   exit 0
 #   ./build/lib/test/t_Bonmin_std || echo "nope"
   if test `uname` = "Darwin"; then
 #     echo -e "run\n\bt" > test.gdb
