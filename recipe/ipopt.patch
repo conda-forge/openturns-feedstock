@@ -213,7 +213,7 @@ index 6782ac59..e7c1addb 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
-index d9092e5c..6db205d0 100644
+index d9092e5c..56bec282 100644
 --- a/src/Algorithm/IpIpoptAlg.cpp
 +++ b/src/Algorithm/IpIpoptAlg.cpp
 @@ -18,6 +18,7 @@
@@ -369,39 +369,62 @@ index d9092e5c..6db205d0 100644
        IpNLP().AdjustVariableBounds(*new_x_l, *new_x_u, *new_d_l, *new_d_u);
  
        if( Jnlst().ProduceOutput(J_VECTOR, J_MAIN) )
-@@ -720,6 +750,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -718,8 +748,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    bool corrected = false;
+    Number max_correction;
     SmartPtr<const Vector> new_z_L;
-    max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *IpCq().trial_slack_x_L(),
-                     *IpCq().trial_compl_x_L(), new_z_L);
+-   max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *IpCq().trial_slack_x_L(),
+-                    *IpCq().trial_compl_x_L(), new_z_L);
++   SmartPtr<const Vector> tsxl = IpCq().trial_slack_x_L();
++   SmartPtr<const Vector> tcxl = IpCq().trial_compl_x_L();
++
++   max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *tsxl, *tcxl, new_z_L);
 +   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.1 max_correction="<<max_correction<< std::endl << std::flush;
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -730,6 +761,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -728,8 +761,10 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
     SmartPtr<const Vector> new_z_U;
-    max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *IpCq().trial_slack_x_U(),
-                     *IpCq().trial_compl_x_U(), new_z_U);
+-   max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *IpCq().trial_slack_x_U(),
+-                    *IpCq().trial_compl_x_U(), new_z_U);
++   SmartPtr<const Vector> tsxu = IpCq().trial_slack_x_U();
++   SmartPtr<const Vector> tcxu = IpCq().trial_compl_x_U();
++   max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *tsxu, *tcxu, new_z_U);
 +   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.2 max_correction="<<max_correction<< std::endl << std::flush;
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -740,6 +772,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -738,8 +773,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
     SmartPtr<const Vector> new_v_L;
-    max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *IpCq().trial_slack_s_L(),
-                     *IpCq().trial_compl_s_L(), new_v_L);
+-   max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *IpCq().trial_slack_s_L(),
+-                    *IpCq().trial_compl_s_L(), new_v_L);
++   SmartPtr<const Vector> tssl = IpCq().trial_slack_s_L();
++   SmartPtr<const Vector> tcsl = IpCq().trial_compl_s_L();
++   
++   max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *tssl, *tcsl, new_v_L);
 +std::cout << "IpoptAlgorithm::AcceptTrialPoint3.3 max_correction="<<max_correction<< std::endl << std::flush;
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -750,6 +783,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -748,8 +786,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
     SmartPtr<const Vector> new_v_U;
-    max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *IpCq().trial_slack_s_U(),
-                     *IpCq().trial_compl_s_U(), new_v_U);
+-   max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *IpCq().trial_slack_s_U(),
+-                    *IpCq().trial_compl_s_U(), new_v_U);
++   SmartPtr<const Vector> tssu = IpCq().trial_slack_s_U();
++   SmartPtr<const Vector> tcsu = IpCq().trial_compl_s_U();
++
++   max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *tssu, *tcsu, new_v_U);
 +   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.4 max_correction="<<max_correction<< std::endl << std::flush;
     if( max_correction > 0. )
     {
        Jnlst().Printf(J_DETAILED, J_MAIN,
-@@ -760,7 +794,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -760,7 +801,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
     SmartPtr<IteratesVector> trial = IpData().trial()->MakeNewContainer();
     trial->Set_bound_mult(*new_z_L, *new_z_U, *new_v_L, *new_v_U);
     IpData().set_trial(trial);
@@ -410,7 +433,7 @@ index d9092e5c..6db205d0 100644
     if( corrected )
     {
        IpData().Append_info_string("z");
-@@ -794,6 +828,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+@@ -794,6 +835,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
           SmartPtr<Vector> y_c = IpData().curr()->y_c()->MakeNew();
           SmartPtr<Vector> y_d = IpData().curr()->y_d()->MakeNew();
           bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -418,7 +441,7 @@ index d9092e5c..6db205d0 100644
           if( retval )
           {
              SmartPtr<const IteratesVector> curr = IpData().curr();
-@@ -862,6 +897,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -862,6 +904,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
  
     // if not primal feasible yet, then do not compute multipliers yet
     Number constr_viol = IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX);
@@ -427,7 +450,7 @@ index d9092e5c..6db205d0 100644
     if( constr_viol > constr_viol_tol_ )
     {
        return;
-@@ -878,6 +915,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -878,6 +922,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
  
     IpData().TimingStats().CheckConvergence().Start();
     ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence(false);
@@ -436,7 +459,7 @@ index d9092e5c..6db205d0 100644
     IpData().TimingStats().CheckConvergence().End();
  
     // if converged or reached some limit, then do not update multipliers
-@@ -909,6 +948,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+@@ -909,6 +955,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
     IpData().set_trial(iterates);
     IpData().AcceptTrialPoint();
     bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -444,7 +467,7 @@ index d9092e5c..6db205d0 100644
     if( retval )
     {
        //TODO Check if following line is really necessary
-@@ -951,7 +991,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+@@ -951,7 +998,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
     DBG_START_METH("IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess",
                    dbg_verbosity);
     DBG_ASSERT(IpCq().IsSquareProblem());
@@ -453,7 +476,7 @@ index d9092e5c..6db205d0 100644
     // if we don't have an object for computing least square
     // multipliers we don't compute them
     if( IsNull(eq_multiplier_calculator_) )
-@@ -979,6 +1019,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+@@ -979,6 +1026,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
     IpData().set_trial(iterates);
     IpData().AcceptTrialPoint();
     bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
@@ -461,7 +484,7 @@ index d9092e5c..6db205d0 100644
     if( retval )
     {
        //TODO Check if following line is really necessary
-@@ -1061,6 +1102,8 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1061,6 +1109,8 @@ Number IpoptAlgorithm::correct_bound_multiplier(
  {
     DBG_START_METH("IpoptAlgorithm::CorrectBoundMultiplier",
                    dbg_verbosity);
@@ -470,7 +493,7 @@ index d9092e5c..6db205d0 100644
  
     if( kappa_sigma_ < 1. || trial_z.Dim() == 0 )
     {
-@@ -1081,28 +1124,38 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1081,28 +1131,38 @@ Number IpoptAlgorithm::correct_bound_multiplier(
     {
        mu = IpData().curr_mu();
     }
@@ -511,7 +534,7 @@ index d9092e5c..6db205d0 100644
     if( max_correction_up > 0. )
     {
        SmartPtr<Vector> tmp = trial_z.MakeNew();
-@@ -1117,8 +1170,16 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1117,8 +1177,16 @@ Number IpoptAlgorithm::correct_bound_multiplier(
     }
  
     step_z->AddTwoVectors(1. / kappa_sigma_ * mu, *one_over_s, -1., *new_trial_z, 0.);
@@ -529,7 +552,7 @@ index d9092e5c..6db205d0 100644
     if( max_correction_low > 0. )
     {
        SmartPtr<Vector> tmp = trial_z.MakeNew();
-@@ -1130,6 +1191,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+@@ -1130,6 +1198,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
  
     DBG_PRINT_VECTOR(2, "new_trial_z", *new_trial_z);
  
