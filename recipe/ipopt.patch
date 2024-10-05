@@ -1,5 +1,23 @@
+diff --git a/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp b/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
+index 336ebf46..0a50c8c4 100644
+--- a/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
++++ b/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
+@@ -291,8 +291,13 @@ bool InexactLSAcceptor::CheckAcceptabilityOfTrialPoint(
+    // First compute the barrier function and constraint violation at the
+    // current iterate and the trial point
+ 
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint0 alpha_primal_test="<<alpha_primal_test<<std::endl;
+    Number trial_theta = IpCq().trial_constraint_violation();
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_theta="<<trial_theta<<std::endl;
++
+    Number trial_barr = IpCq().trial_barrier_obj();
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint2 trial_barr="<<trial_barr<<std::endl;
++
+    DBG_ASSERT(IsFiniteNumber(trial_barr));
+ 
+    Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
 diff --git a/src/Algorithm/IpBacktrackingLineSearch.cpp b/src/Algorithm/IpBacktrackingLineSearch.cpp
-index 6782ac59..e7c1addb 100644
+index 6782ac59..3e85d1ea 100644
 --- a/src/Algorithm/IpBacktrackingLineSearch.cpp
 +++ b/src/Algorithm/IpBacktrackingLineSearch.cpp
 @@ -14,6 +14,7 @@
@@ -89,7 +107,23 @@ index 6782ac59..e7c1addb 100644
  
     // Handle the situation of a tiny step
     if( tiny_step )
-@@ -503,6 +518,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -381,8 +396,15 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       // the tiny step and continue with regular line search
+       try
+       {
++          std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint.tiny_step trial_barrier_obj..."<< std::endl << std::flush;
++
+          IpCq().trial_barrier_obj();
++         std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint.tiny_step trial_constraint_violation..."<< std::endl << std::flush;
++         
+          IpCq().trial_constraint_violation();
++         std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint try ok" << std::endl << std::flush;
++         
++         
+       }
+       catch( IpoptNLP::Eval_Error& e )
+       {
+@@ -503,6 +525,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
     // If line search has been aborted because the step size becomes
     // too small, go to the restoration phase or continue with soft
     // restoration phase
@@ -97,7 +131,7 @@ index 6782ac59..e7c1addb 100644
     if( !accept )
     {
        // If we are not asked to do a rigorous line search, do no call
-@@ -566,11 +582,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -566,11 +589,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
              }
  
              // ToDo make the 1e-2 below a parameter?
@@ -114,7 +148,7 @@ index 6782ac59..e7c1addb 100644
                 if( found_acceptable )
                 {
                    Jnlst().Printf(J_WARNING, J_LINE_SEARCH,
-@@ -581,6 +602,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+@@ -581,6 +609,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
                 }
                 else
                 {
@@ -122,7 +156,7 @@ index 6782ac59..e7c1addb 100644
                    Jnlst().Printf(J_STRONGWARNING, J_LINE_SEARCH,
                                   "Cannot call restoration phase at point that is almost feasible %s(violation %e).\nAbort in line search due to no other fall back.\n",
                                   dynamic_cast<OrigIpoptNLP*>(GetRawPtr(IpCq().GetIpoptNLP())) == NULL ? "for the restoration NLP " : "",
-@@ -722,6 +744,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+@@ -722,6 +751,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
        corr_taken = true;
     }
  
@@ -130,7 +164,7 @@ index 6782ac59..e7c1addb 100644
     if( !accept )
     {
        // Loop over decreasing step sizes until acceptable point is
-@@ -839,6 +862,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+@@ -839,6 +869,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
        IpData().Append_info_string("C");
     }
  
@@ -138,7 +172,7 @@ index 6782ac59..e7c1addb 100644
     return accept;
  }
  
-@@ -918,6 +942,7 @@ void BacktrackingLineSearch::PerformDualStep(
+@@ -918,6 +949,7 @@ void BacktrackingLineSearch::PerformDualStep(
     IpData().SetTrialBoundMultipliersFromStep(alpha_dual, *delta->z_L(), *delta->z_U(), *delta->v_L(), *delta->v_U());
  
     Number alpha_y = -1.;
@@ -146,7 +180,19 @@ index 6782ac59..e7c1addb 100644
     switch( alpha_for_y_ )
     {
        case LSACCEPTOR_ALPHA_FOR_Y:
-@@ -1163,6 +1188,7 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
+@@ -1141,8 +1173,11 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
+       // original filter
+       try
+       {
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep1"<<std::endl<<std::flush;
+          IpCq().trial_barrier_obj();
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep2"<<std::endl<<std::flush;
+          IpCq().trial_constraint_violation();
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep3"<<std::endl<<std::flush;
+          done = true;
+       }
+       catch( IpoptNLP::Eval_Error& e )
+@@ -1163,6 +1198,7 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
     {
        Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
                       "  Trial step acceptable with respect to original backtracking globalization.\n");
@@ -154,7 +200,7 @@ index 6782ac59..e7c1addb 100644
        satisfies_original_criterion = true;
        return true;
     }
-@@ -1213,7 +1239,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+@@ -1213,7 +1249,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
  
     Number max_step_x;
     Number max_step_s;
@@ -163,7 +209,7 @@ index 6782ac59..e7c1addb 100644
     if( tiny_step_tol_ == 0. )
     {
        return false;
-@@ -1230,6 +1256,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+@@ -1230,6 +1266,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
     SmartPtr<Vector> tmp2 = IpData().delta()->x()->MakeNewCopy();
     tmp2->ElementWiseDivide(*tmp);
     max_step_x = tmp2->Amax();
@@ -171,7 +217,7 @@ index 6782ac59..e7c1addb 100644
     Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
                    "Relative step size for delta_x = %e\n", max_step_x);
     if( max_step_x > tiny_step_tol_ )
-@@ -1248,6 +1275,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+@@ -1248,6 +1285,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
     max_step_s = tmp2->Amax();
     Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
                    "Relative step size for delta_s = %e\n", max_step_s);
@@ -179,7 +225,7 @@ index 6782ac59..e7c1addb 100644
     if( max_step_s > tiny_step_tol_ )
     {
        return false;
-@@ -1257,6 +1285,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+@@ -1257,6 +1295,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
     // might be at a starting point that is already a local minimizer
     // of the constraint violation
     const Number cviol = IpCq().curr_constraint_violation();
@@ -187,7 +233,7 @@ index 6782ac59..e7c1addb 100644
     if( cviol > 1e-4 ) // ToDo: adapt parameter?
     {
        return false;
-@@ -1270,6 +1299,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+@@ -1270,6 +1309,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
  
  bool BacktrackingLineSearch::CurrentIsAcceptable()
  {
@@ -195,7 +241,7 @@ index 6782ac59..e7c1addb 100644
     return (IsValid(conv_check_) && conv_check_->CurrentIsAcceptable());
  }
  
-@@ -1289,13 +1319,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
+@@ -1289,13 +1329,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
  
     if( !IsValid(acceptable_iterate_) )
     {
@@ -561,7 +607,7 @@ index d9092e5c..56bec282 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-index df366eaa..7bbcc17b 100644
+index df366eaa..af5d980e 100644
 --- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 +++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 @@ -241,12 +241,21 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
@@ -721,9 +767,14 @@ index df366eaa..7bbcc17b 100644
     }
     return ConstPtr(result);
  }
-@@ -416,10 +458,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_L()
+@@ -415,11 +457,17 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_L()
+       if( !curr_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
        {
           SmartPtr<const Matrix> P = ip_nlp_->Pd_L();
++         
++         
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_L s.min="<<s->Min() << " s.max="<<s->Max()<<std::endl<<std::flush;
++         
           result = CalcSlack_L(*P, *s, *s_bound);
 +         std::cout << "IpoptCalculatedQuantities::trial_slack_s_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
           DBG_ASSERT(num_adjusted_slack_s_L_ == 0);
@@ -734,7 +785,7 @@ index df366eaa..7bbcc17b 100644
     }
     return ConstPtr(result);
  }
-@@ -441,6 +485,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+@@ -441,6 +489,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
           DBG_PRINT_VECTOR(2, "d_U", *s_bound);
           DBG_PRINT_VECTOR(2, "s", *s);
           result = CalcSlack_U(*P, *s, *s_bound);
@@ -742,7 +793,7 @@ index df366eaa..7bbcc17b 100644
           DBG_PRINT_VECTOR(2, "result", *result);
           DBG_ASSERT(num_adjusted_slack_s_U_ == 0);
           num_adjusted_slack_s_U_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_U());
-@@ -448,6 +493,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+@@ -448,6 +497,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
           DBG_PRINT_VECTOR(2, "trial_slack_s_U", *result);
        }
        trial_slack_s_U_cache_.AddCachedResult1Dep(result, *s);
@@ -750,7 +801,7 @@ index df366eaa..7bbcc17b 100644
     }
     return ConstPtr(result);
  }
-@@ -476,6 +522,10 @@ Index IpoptCalculatedQuantities::CalculateSafeSlack(
+@@ -476,6 +526,10 @@ Index IpoptCalculatedQuantities::CalculateSafeSlack(
           s_min = std::numeric_limits<Number>::min();
        }
        DBG_PRINT((1, "s_min = %g, curr_mu = %g, min_slack=%g\n", s_min, ip_data_->curr_mu(), min_slack));
@@ -761,7 +812,7 @@ index df366eaa..7bbcc17b 100644
        if( min_slack < s_min )
        {
           // Need to correct the slacks and calculate new bounds...
-@@ -813,7 +863,16 @@ Number IpoptCalculatedQuantities::curr_barrier_obj()
+@@ -813,7 +867,16 @@ Number IpoptCalculatedQuantities::curr_barrier_obj()
        {
           result = curr_f();
           DBG_PRINT((1, "curr_F=%e\n", result));
@@ -779,13 +830,13 @@ index df366eaa..7bbcc17b 100644
        }
        curr_barrier_obj_cache_.AddCachedResult(result, tdeps, sdeps);
     }
-@@ -847,8 +906,14 @@ Number IpoptCalculatedQuantities::trial_barrier_obj()
+@@ -847,8 +910,14 @@ Number IpoptCalculatedQuantities::trial_barrier_obj()
           result = trial_f();
           DBG_PRINT((1, "trial_F=%e\n", result));
           DBG_PRINT_VECTOR(2, "trial_slack_s_U", *trial_slack_s_U());
 -         result += CalcBarrierTerm(ip_data_->curr_mu(), *trial_slack_x_L(), *trial_slack_x_U(), *trial_slack_s_L(),
 -                                   *trial_slack_s_U());
-+         
++         std::cout << "IpoptCalculatedQuantities::trial_barrier_obj..."<<std::endl<<std::flush;
 +         
 +         SmartPtr<const Vector> tsxl = trial_slack_x_L();
 +         SmartPtr<const Vector> tsxu = trial_slack_x_U();
@@ -796,7 +847,7 @@ index df366eaa..7bbcc17b 100644
        }
        trial_barrier_obj_cache_.AddCachedResult(result, tdeps, sdeps);
     }
-@@ -873,6 +938,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_grad_barrier_obj_x()
+@@ -873,6 +942,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_grad_barrier_obj_x()
  
     if( !curr_grad_barrier_obj_x_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -804,7 +855,7 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> tmp1 = x->MakeNew();
        tmp1->Copy(*curr_grad_f());
  
-@@ -2245,6 +2311,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_L()
+@@ -2245,6 +2315,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_L()
                    dbg_verbosity);
     SmartPtr<const Vector> result;
  
@@ -812,7 +863,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = curr_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
     DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
-@@ -2266,7 +2333,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_L()
+@@ -2266,7 +2337,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_L()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -821,7 +872,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = trial_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->trial()->z_L();
     DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
-@@ -2288,6 +2355,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
+@@ -2288,6 +2359,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_x_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -829,7 +880,7 @@ index df366eaa..7bbcc17b 100644
  
     SmartPtr<const Vector> slack = curr_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
-@@ -2308,6 +2376,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
+@@ -2308,6 +2380,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -837,7 +888,7 @@ index df366eaa..7bbcc17b 100644
  
     SmartPtr<const Vector> slack = trial_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->trial()->z_U();
-@@ -2328,7 +2397,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_L()
+@@ -2328,7 +2401,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_L()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -846,7 +897,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = curr_slack_s_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->v_L();
  
-@@ -2348,7 +2417,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_L()
+@@ -2348,7 +2421,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_L()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -855,7 +906,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = trial_slack_s_L();
     SmartPtr<const Vector> mult = ip_data_->trial()->v_L();
  
-@@ -2368,7 +2437,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_U()
+@@ -2368,7 +2441,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_U()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -864,7 +915,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = curr_slack_s_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->v_U();
  
-@@ -2388,7 +2457,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_U()
+@@ -2388,7 +2461,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_U()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -873,7 +924,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = trial_slack_s_U();
     SmartPtr<const Vector> mult = ip_data_->trial()->v_U();
  
-@@ -2408,7 +2477,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+@@ -2408,7 +2481,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
     DBG_START_METH("IpoptCalculatedQuantities::curr_relaxed_compl_x_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -882,7 +933,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = curr_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
     std::vector<const TaggedObject*> tdeps(2);
-@@ -2421,6 +2490,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+@@ -2421,6 +2494,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
  
     if( !curr_relaxed_compl_x_L_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -891,7 +942,7 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_x_L());
        tmp->AddScalar(-mu);
-@@ -2436,6 +2507,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+@@ -2436,6 +2511,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
                    dbg_verbosity);
     SmartPtr<const Vector> result;
  
@@ -899,7 +950,7 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> slack = curr_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
     std::vector<const TaggedObject*> tdeps(2);
-@@ -2448,6 +2520,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+@@ -2448,6 +2524,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
  
     if( !curr_relaxed_compl_x_U_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -908,7 +959,7 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_x_U());
        tmp->AddScalar(-mu);
-@@ -2475,6 +2549,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_L()
+@@ -2475,6 +2553,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_L()
  
     if( !curr_relaxed_compl_s_L_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -917,7 +968,7 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_s_L());
        tmp->AddScalar(-mu);
-@@ -2502,6 +2578,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_U()
+@@ -2502,6 +2582,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_U()
  
     if( !curr_relaxed_compl_s_U_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -925,7 +976,231 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_s_U());
        tmp->AddScalar(-mu);
-@@ -3376,12 +3453,18 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
+@@ -2577,6 +2658,9 @@ Number IpoptCalculatedQuantities::curr_primal_infeasibility(
+ 
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> s = ip_data_->curr()->s();
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++
+ 
+    DBG_PRINT_VECTOR(2, "x to eval", *x);
+    DBG_PRINT_VECTOR(2, "s to eval", *s);
+@@ -2598,9 +2682,8 @@ Number IpoptCalculatedQuantities::curr_primal_infeasibility(
+ 
+          DBG_PRINT_VECTOR(2, "c", *c);
+          DBG_PRINT_VECTOR(2, "d_minus_s", *d_minus_s);
+-
+          result = CalcNormOfType(NormType, *c, *d_minus_s);
+-
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility result="<<result <<std::endl<<std::flush;
+       }
+       curr_primal_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2620,6 +2703,9 @@ Number IpoptCalculatedQuantities::trial_primal_infeasibility(
+    SmartPtr<const Vector> x = ip_data_->trial()->x();
+    SmartPtr<const Vector> s = ip_data_->trial()->s();
+ 
++   std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
+    DBG_PRINT_VECTOR(2, "x to eval", *x);
+    DBG_PRINT_VECTOR(2, "s to eval", *s);
+    DBG_PRINT((1, "NormType = %d\n", NormType))
+@@ -2642,6 +2728,8 @@ Number IpoptCalculatedQuantities::trial_primal_infeasibility(
+          DBG_PRINT_VECTOR(2, "d_minus_s", *d_minus_s);
+ 
+          result = CalcNormOfType(NormType, *c, *d_minus_s);
++         std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility result="<<result <<std::endl<<std::flush;
++
+       }
+       trial_primal_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2667,6 +2755,10 @@ Number IpoptCalculatedQuantities::curr_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++      std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2689,6 +2781,8 @@ Number IpoptCalculatedQuantities::curr_dual_infeasibility(
+          DBG_PRINT_VECTOR(2, "grad_lag_s", *grad_lag_s);
+ 
+          result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
++                  std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility result="<<result <<std::endl<<std::flush;
++
+       }
+       curr_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2713,6 +2807,10 @@ Number IpoptCalculatedQuantities::trial_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->trial()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->trial()->v_U();
+ 
++         std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2735,7 +2833,7 @@ Number IpoptCalculatedQuantities::trial_dual_infeasibility(
+          DBG_PRINT_VECTOR(2, "grad_lag_s", *grad_lag_s);
+ 
+          result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
+-
++std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility result="<<result <<std::endl<<std::flush;
+       }
+       trial_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2760,6 +2858,10 @@ Number IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++            std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2790,6 +2892,8 @@ Number IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility(
+       }
+ 
+       result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
++      std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility result="<<result <<std::endl<<std::flush;
++
+       unscaled_curr_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+ 
+@@ -2812,6 +2916,10 @@ Number IpoptCalculatedQuantities::curr_complementarity(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++std::cout << "IpoptCalculatedQuantities::curr_complementarity x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_complementarity s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(6);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2862,6 +2970,8 @@ Number IpoptCalculatedQuantities::curr_complementarity(
+          }
+ 
+          result = CalcNormOfType(NormType, vecs);
++               std::cout << "IpoptCalculatedQuantities::curr_complementarity result="<<result <<std::endl<<std::flush;
++
+       }
+ 
+       curr_complementarity_cache_.AddCachedResult(result, deps, sdeps);
+@@ -2886,6 +2996,11 @@ Number IpoptCalculatedQuantities::trial_complementarity(
+    SmartPtr<const Vector> v_L = ip_data_->trial()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->trial()->v_U();
+ 
++   std::cout << "IpoptCalculatedQuantities::trial_complementarity x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_complementarity s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
++   
+    std::vector<const TaggedObject*> deps(6);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2936,6 +3051,8 @@ Number IpoptCalculatedQuantities::trial_complementarity(
+          }
+ 
+          result = CalcNormOfType(NormType, vecs);
++                        std::cout << "IpoptCalculatedQuantities::trial_complementarity result="<<result <<std::endl<<std::flush;
++
+       }
+ 
+       trial_complementarity_cache_.AddCachedResult(result, deps, sdeps);
+@@ -3007,6 +3124,7 @@ Number IpoptCalculatedQuantities::CalcCentralityMeasure(
+    DBG_PRINT((1, "MinCompl = %25.16e\n", MinCompl));
+ 
+    Number xi = MinCompl / avrg_compl;
++   std::cout << "IpoptCalculatedQuantities::CalcCentralityMeasure xi="<<xi <<std::endl<<std::flush;
+    // The folloking line added for the case that avrg_compl is
+    // slighly smaller than MinCompl, due to numerical roundoff
+    xi = Min(Number(1.), xi);
+@@ -3025,6 +3143,11 @@ Number IpoptCalculatedQuantities::curr_centrality_measure()
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++   
++   std::cout << "IpoptCalculatedQuantities::curr_centrality_measure x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> tdeps(6);
+    tdeps[0] = GetRawPtr(x);
+    tdeps[1] = GetRawPtr(s);
+@@ -3041,6 +3164,7 @@ Number IpoptCalculatedQuantities::curr_centrality_measure()
+       SmartPtr<const Vector> compl_s_U = curr_compl_s_U();
+ 
+       result = CalcCentralityMeasure(*compl_x_L, *compl_x_U, *compl_s_L, *compl_s_U);
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure result="<<result <<std::endl<<std::flush;
+ 
+       curr_centrality_measure_cache_.AddCachedResult(result, tdeps);
+    }
+@@ -3063,6 +3187,11 @@ Number IpoptCalculatedQuantities::curr_nlp_error()
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++     std::cout << "IpoptCalculatedQuantities::curr_centrality_measure x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
++   
+    std::vector<const TaggedObject*> tdeps(8);
+    tdeps[0] = GetRawPtr(x);
+    tdeps[1] = GetRawPtr(s);
+@@ -3096,6 +3225,7 @@ Number IpoptCalculatedQuantities::curr_nlp_error()
+       DBG_PRINT((1, "curr_complementarity(mu_target_, NORM_MAX) = %8.2e\n",
+                  curr_complementarity(mu_target_, NORM_MAX)));
+       result = Max(result, curr_complementarity(mu_target_, NORM_MAX) / s_c);
++std::cout << "IpoptCalculatedQuantities::curr_nlp_error result="<<result <<std::endl<<std::flush;
+ 
+       curr_nlp_error_cache_.AddCachedResult(result, tdeps);
+    }
+@@ -3140,7 +3270,10 @@ Number IpoptCalculatedQuantities::unscaled_curr_nlp_error()
+       result = Max(result, unscaled_curr_complementarity(mu_target_, NORM_MAX));
+ 
+       unscaled_curr_nlp_error_cache_.AddCachedResult(result, tdeps);
++      
++      
+    }
++std::cout << "IpoptCalculatedQuantities::unscaled_curr_nlp_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3191,6 +3324,7 @@ Number IpoptCalculatedQuantities::curr_barrier_error()
+ 
+       curr_barrier_error_cache_.AddCachedResult(result, tdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::curr_barrier_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3251,6 +3385,7 @@ Number IpoptCalculatedQuantities::curr_primal_dual_system_error(
+       }
+       curr_primal_dual_system_error_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::curr_primal_dual_system_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3311,6 +3446,7 @@ Number IpoptCalculatedQuantities::trial_primal_dual_system_error(
+       }
+       trial_primal_dual_system_error_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::trial_primal_dual_system_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3376,14 +3512,21 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
  
     if( !primal_frac_to_the_bound_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -934,8 +1209,8 @@ index df366eaa..7bbcc17b 100644
 -                                  delta_x, tau),
 -                  CalcFracToBound(*curr_slack_s_L(), Tmp_s_L(), *ip_nlp_->Pd_L(), *curr_slack_s_U(), Tmp_s_U(), *ip_nlp_->Pd_U(),
 -                                  delta_s, tau));
-+std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound"<<std::endl<<std::flush;
-+
++std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound1"<<std::endl<<std::flush;
+ 
 +
 +   SmartPtr<const Vector> x_L = curr_slack_x_L();
 +   SmartPtr<const Vector> x_U = curr_slack_x_U();
@@ -944,12 +1219,31 @@ index df366eaa..7bbcc17b 100644
 +
 +   Number ftb1 = CalcFracToBound(*x_L, Tmp_x_L(), *ip_nlp_->Px_L(), *x_U, Tmp_x_U(), *ip_nlp_->Px_U(), delta_x, tau);
 +   Number ftb2 = CalcFracToBound(*s_L, Tmp_s_L(), *ip_nlp_->Pd_L(), *s_U, Tmp_s_U(), *ip_nlp_->Pd_U(), delta_s, tau);
- 
++
 +      result = Min(ftb1, ftb2);
        primal_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
     }
++std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound result="<<result <<std::endl<<std::flush;
  
-@@ -3480,7 +3563,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+    return result;
+ }
+@@ -3413,6 +3556,7 @@ Number IpoptCalculatedQuantities::uncached_dual_frac_to_the_bound(
+    result = Min(result, ip_data_->curr()->z_U()->FracToBound(delta_z_U, tau));
+    result = Min(result, ip_data_->curr()->v_L()->FracToBound(delta_v_L, tau));
+    result = Min(result, ip_data_->curr()->v_U()->FracToBound(delta_v_U, tau));
++std::cout << "IpoptCalculatedQuantities::uncached_dual_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3455,6 +3599,7 @@ Number IpoptCalculatedQuantities::dual_frac_to_the_bound(
+ 
+       dual_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::dual_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3480,7 +3625,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
     DBG_START_METH("IpoptCalculatedQuantities::slack_frac_to_the_bound",
                    dbg_verbosity);
     Number result;
@@ -958,7 +1252,15 @@ index df366eaa..7bbcc17b 100644
     SmartPtr<const Vector> x_L = curr_slack_x_L();
     SmartPtr<const Vector> x_U = curr_slack_x_U();
     SmartPtr<const Vector> s_L = curr_slack_s_L();
-@@ -3509,6 +3592,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
+@@ -3490,6 +3635,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+    result = Min(result, x_U->FracToBound(delta_x_U, tau));
+    result = Min(result, s_L->FracToBound(delta_s_L, tau));
+    result = Min(result, s_U->FracToBound(delta_s_U, tau));
++std::cout << "IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3509,6 +3655,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
  
     if( !curr_sigma_x_cache_.GetCachedResult3Dep(result, *x, *z_L, *z_U) )
     {
@@ -966,7 +1268,7 @@ index df366eaa..7bbcc17b 100644
        SmartPtr<Vector> sigma = x->MakeNew();
  
        sigma->Set(0.);
-@@ -3576,7 +3660,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
+@@ -3576,7 +3723,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
     {
        if( !trial_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
@@ -975,7 +1277,7 @@ index df366eaa..7bbcc17b 100644
           SmartPtr<const Vector> slack_x_L = curr_slack_x_L();
           SmartPtr<const Vector> slack_x_U = curr_slack_x_U();
           SmartPtr<const Vector> slack_s_L = curr_slack_s_L();
-@@ -3631,7 +3715,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+@@ -3631,7 +3778,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
     {
        if( !curr_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
@@ -984,6 +1286,23 @@ index df366eaa..7bbcc17b 100644
           SmartPtr<const Vector> slack_x_L = trial_slack_x_L();
           SmartPtr<const Vector> slack_x_U = trial_slack_x_U();
           SmartPtr<const Vector> slack_s_L = trial_slack_s_L();
+@@ -3656,6 +3803,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+ 
+       trial_avrg_compl_cache_.AddCachedResult(result, tdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::trial_avrg_compl result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3697,6 +3845,8 @@ void IpoptCalculatedQuantities::ComputeOptimalityErrorScaling(
+       s_d = s_d / n;
+       s_d = Max(s_max, s_d) / s_max;
+    }
++   std::cout << "IpoptCalculatedQuantities::ComputeOptimalityErrorScaling s_d="<<s_d<<" s_c="<<s_c <<std::endl<<std::flush;
++
+ }
+ 
+ Number IpoptCalculatedQuantities::curr_gradBarrTDelta()
 diff --git a/src/Algorithm/IpIpoptData.cpp b/src/Algorithm/IpIpoptData.cpp
 index 68596e89..d69a0b63 100644
 --- a/src/Algorithm/IpIpoptData.cpp
@@ -1101,6 +1420,40 @@ index 352757a1..b617df9d 100644
  
     DBG_PRINT((1, "overall_error = %e\n", overall_error));
     DBG_PRINT((1, "dual_inf = %e\n", dual_inf));
+diff --git a/src/Algorithm/IpPenaltyLSAcceptor.cpp b/src/Algorithm/IpPenaltyLSAcceptor.cpp
+index 814dd41a..efb4690d 100644
+--- a/src/Algorithm/IpPenaltyLSAcceptor.cpp
++++ b/src/Algorithm/IpPenaltyLSAcceptor.cpp
+@@ -207,8 +207,11 @@ bool PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint(
+    // First compute the barrier function and constraint violation at the
+    // current iterate and the trial point
+ 
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint0 alpha_primal_test="<<alpha_primal_test<<std::endl;
+    Number trial_theta = IpCq().trial_constraint_violation();
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_theta="<<trial_theta<<std::endl;
+    Number trial_barr = IpCq().trial_barrier_obj();
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_barr=" << trial_barr <<std::endl;
+    DBG_ASSERT(IsFiniteNumber(trial_barr));
+ 
+    Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+diff --git a/src/Algorithm/IpRestoConvCheck.cpp b/src/Algorithm/IpRestoConvCheck.cpp
+index 6f634215..ba454b9d 100644
+--- a/src/Algorithm/IpRestoConvCheck.cpp
++++ b/src/Algorithm/IpRestoConvCheck.cpp
+@@ -190,11 +190,12 @@ ConvergenceCheck::ConvergenceStatus RestoConvergenceCheck::CheckConvergence(
+    }
+    else
+    {
++      std::cout << "RestoConvergenceCheck::CheckConvergence first3"<<std::endl; 
+       Number orig_trial_barr = orig_ip_cq->trial_barrier_obj();
+-
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+                      "orig_trial_barr = %8.2e\n", orig_trial_barr);
+       status = TestOrigProgress(orig_trial_barr, orig_trial_theta);
++      std::cout << "RestoConvergenceCheck::CheckConvergence first3.1 status="<<status=<<std::endl;
+    }
+ 
+    // If the point is not yet acceptable to the filter, check if the problem
 diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
 index 44525aea..422add7e 100644
 --- a/src/Interfaces/IpIpoptApplication.cpp
