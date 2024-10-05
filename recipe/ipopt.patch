@@ -538,7 +538,7 @@ index d9092e5c..6db205d0 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-index df366eaa..ae72ed2b 100644
+index df366eaa..deda5625 100644
 --- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 +++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 @@ -241,12 +241,17 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
@@ -730,15 +730,25 @@ index df366eaa..ae72ed2b 100644
        if( min_slack < s_min )
        {
           // Need to correct the slacks and calculate new bounds...
-@@ -813,6 +855,7 @@ Number IpoptCalculatedQuantities::curr_barrier_obj()
+@@ -813,7 +855,16 @@ Number IpoptCalculatedQuantities::curr_barrier_obj()
        {
           result = curr_f();
           DBG_PRINT((1, "curr_F=%e\n", result));
+-         result += CalcBarrierTerm(mu, *curr_slack_x_L(), *curr_slack_x_U(), *curr_slack_s_L(), *curr_slack_s_U());
++         
++         
++            SmartPtr<const Vector> x_L = curr_slack_x_L();
++   SmartPtr<const Vector> x_U = curr_slack_x_U();
++   SmartPtr<const Vector> s_L = curr_slack_s_L();
++   SmartPtr<const Vector> s_U = curr_slack_s_U();
++         
++         
 +         std::cout << "IpoptCalculatedQuantities::curr_barrier_obj mu="<<mu<<std::endl<<std::flush;
-          result += CalcBarrierTerm(mu, *curr_slack_x_L(), *curr_slack_x_U(), *curr_slack_s_L(), *curr_slack_s_U());
++         result += CalcBarrierTerm(mu, *x_L, *x_U, *s_L, *s_U);
        }
        curr_barrier_obj_cache_.AddCachedResult(result, tdeps, sdeps);
-@@ -873,6 +916,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_grad_barrier_obj_x()
+    }
+@@ -873,6 +924,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_grad_barrier_obj_x()
  
     if( !curr_grad_barrier_obj_x_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -746,7 +756,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> tmp1 = x->MakeNew();
        tmp1->Copy(*curr_grad_f());
  
-@@ -2245,6 +2289,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_L()
+@@ -2245,6 +2297,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_L()
                    dbg_verbosity);
     SmartPtr<const Vector> result;
  
@@ -754,7 +764,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = curr_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
     DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
-@@ -2266,7 +2311,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_L()
+@@ -2266,7 +2319,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_L()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -763,7 +773,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = trial_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->trial()->z_L();
     DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
-@@ -2288,6 +2333,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
+@@ -2288,6 +2341,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_x_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -771,7 +781,7 @@ index df366eaa..ae72ed2b 100644
  
     SmartPtr<const Vector> slack = curr_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
-@@ -2308,6 +2354,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
+@@ -2308,6 +2362,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -779,7 +789,7 @@ index df366eaa..ae72ed2b 100644
  
     SmartPtr<const Vector> slack = trial_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->trial()->z_U();
-@@ -2328,7 +2375,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_L()
+@@ -2328,7 +2383,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_L()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -788,7 +798,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = curr_slack_s_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->v_L();
  
-@@ -2348,7 +2395,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_L()
+@@ -2348,7 +2403,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_L()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -797,7 +807,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = trial_slack_s_L();
     SmartPtr<const Vector> mult = ip_data_->trial()->v_L();
  
-@@ -2368,7 +2415,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_U()
+@@ -2368,7 +2423,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_U()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -806,7 +816,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = curr_slack_s_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->v_U();
  
-@@ -2388,7 +2435,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_U()
+@@ -2388,7 +2443,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_U()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -815,7 +825,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = trial_slack_s_U();
     SmartPtr<const Vector> mult = ip_data_->trial()->v_U();
  
-@@ -2408,7 +2455,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+@@ -2408,7 +2463,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
     DBG_START_METH("IpoptCalculatedQuantities::curr_relaxed_compl_x_L()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
@@ -824,7 +834,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = curr_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
     std::vector<const TaggedObject*> tdeps(2);
-@@ -2421,6 +2468,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+@@ -2421,6 +2476,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
  
     if( !curr_relaxed_compl_x_L_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -833,7 +843,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_x_L());
        tmp->AddScalar(-mu);
-@@ -2436,6 +2485,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+@@ -2436,6 +2493,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
                    dbg_verbosity);
     SmartPtr<const Vector> result;
  
@@ -841,7 +851,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> slack = curr_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
     std::vector<const TaggedObject*> tdeps(2);
-@@ -2448,6 +2498,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+@@ -2448,6 +2506,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
  
     if( !curr_relaxed_compl_x_U_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -850,7 +860,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_x_U());
        tmp->AddScalar(-mu);
-@@ -2475,6 +2527,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_L()
+@@ -2475,6 +2535,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_L()
  
     if( !curr_relaxed_compl_s_L_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -859,7 +869,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_s_L());
        tmp->AddScalar(-mu);
-@@ -2502,6 +2556,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_U()
+@@ -2502,6 +2564,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_U()
  
     if( !curr_relaxed_compl_s_U_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -867,7 +877,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> tmp = slack->MakeNew();
        tmp->Copy(*curr_compl_s_U());
        tmp->AddScalar(-mu);
-@@ -3376,12 +3431,18 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
+@@ -3376,12 +3439,18 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
  
     if( !primal_frac_to_the_bound_cache_.GetCachedResult(result, tdeps, sdeps) )
     {
@@ -878,7 +888,7 @@ index df366eaa..ae72ed2b 100644
 -                                  delta_s, tau));
 +std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound"<<std::endl<<std::flush;
 +
-+
+ 
 +   SmartPtr<const Vector> x_L = curr_slack_x_L();
 +   SmartPtr<const Vector> x_U = curr_slack_x_U();
 +   SmartPtr<const Vector> s_L = curr_slack_s_L();
@@ -886,12 +896,12 @@ index df366eaa..ae72ed2b 100644
 +
 +   Number ftb1 = CalcFracToBound(*x_L, Tmp_x_L(), *ip_nlp_->Px_L(), *x_U, Tmp_x_U(), *ip_nlp_->Px_U(), delta_x, tau);
 +   Number ftb2 = CalcFracToBound(*s_L, Tmp_s_L(), *ip_nlp_->Pd_L(), *s_U, Tmp_s_U(), *ip_nlp_->Pd_U(), delta_s, tau);
- 
++
 +      result = Min(ftb1, ftb2);
        primal_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
     }
  
-@@ -3480,7 +3541,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+@@ -3480,7 +3549,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
     DBG_START_METH("IpoptCalculatedQuantities::slack_frac_to_the_bound",
                    dbg_verbosity);
     Number result;
@@ -900,7 +910,7 @@ index df366eaa..ae72ed2b 100644
     SmartPtr<const Vector> x_L = curr_slack_x_L();
     SmartPtr<const Vector> x_U = curr_slack_x_U();
     SmartPtr<const Vector> s_L = curr_slack_s_L();
-@@ -3509,6 +3570,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
+@@ -3509,6 +3578,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
  
     if( !curr_sigma_x_cache_.GetCachedResult3Dep(result, *x, *z_L, *z_U) )
     {
@@ -908,7 +918,7 @@ index df366eaa..ae72ed2b 100644
        SmartPtr<Vector> sigma = x->MakeNew();
  
        sigma->Set(0.);
-@@ -3576,7 +3638,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
+@@ -3576,7 +3646,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
     {
        if( !trial_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
@@ -917,7 +927,7 @@ index df366eaa..ae72ed2b 100644
           SmartPtr<const Vector> slack_x_L = curr_slack_x_L();
           SmartPtr<const Vector> slack_x_U = curr_slack_x_U();
           SmartPtr<const Vector> slack_s_L = curr_slack_s_L();
-@@ -3631,7 +3693,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+@@ -3631,7 +3701,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
     {
        if( !curr_avrg_compl_cache_.GetCachedResult(result, tdeps) )
        {
