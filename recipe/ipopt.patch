@@ -1437,7 +1437,7 @@ index 814dd41a..efb4690d 100644
  
     Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
 diff --git a/src/Algorithm/IpRestoConvCheck.cpp b/src/Algorithm/IpRestoConvCheck.cpp
-index 6f634215..ba454b9d 100644
+index 6f634215..32a142a2 100644
 --- a/src/Algorithm/IpRestoConvCheck.cpp
 +++ b/src/Algorithm/IpRestoConvCheck.cpp
 @@ -190,11 +190,12 @@ ConvergenceCheck::ConvergenceStatus RestoConvergenceCheck::CheckConvergence(
@@ -1450,7 +1450,7 @@ index 6f634215..ba454b9d 100644
        Jnlst().Printf(J_DETAILED, J_MAIN,
                       "orig_trial_barr = %8.2e\n", orig_trial_barr);
        status = TestOrigProgress(orig_trial_barr, orig_trial_theta);
-+      std::cout << "RestoConvergenceCheck::CheckConvergence first3.1 status="<<status=<<std::endl;
++      std::cout << "RestoConvergenceCheck::CheckConvergence first3.1 status="<<status<<std::endl;
     }
  
     // If the point is not yet acceptable to the filter, check if the problem
