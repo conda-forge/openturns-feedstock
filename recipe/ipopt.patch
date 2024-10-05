@@ -538,7 +538,7 @@ index d9092e5c..6db205d0 100644
  }
  
 diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
-index df366eaa..45f6d7b6 100644
+index df366eaa..1c217c01 100644
 --- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 +++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
 @@ -241,12 +241,17 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
@@ -763,17 +763,14 @@ index df366eaa..45f6d7b6 100644
     SmartPtr<const Vector> slack = trial_slack_x_L();
     SmartPtr<const Vector> mult = ip_data_->trial()->z_L();
     DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
-@@ -2288,8 +2333,9 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
+@@ -2288,6 +2333,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::curr_compl_x_U()",
                    dbg_verbosity);
     SmartPtr<const Vector> result;
-+std::cout << "IpoptCalculatedQuantities::trial_compl_x_U"<<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_compl_x_U"<<std::endl<<std::flush;
  
--   SmartPtr<const Vector> slack = curr_slack_x_U();
-+   SmartPtr<const Vector> slack = curr_compl_x_U();
+    SmartPtr<const Vector> slack = curr_slack_x_U();
     SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
- 
-    if( !curr_compl_x_U_cache_.GetCachedResult2Dep(result, *slack, *mult) )
 @@ -2308,6 +2354,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
     DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_U()",
                    dbg_verbosity);
