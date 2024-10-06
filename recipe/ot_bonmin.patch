@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..4bf7bdd1b 100644
+index 147ddd9ad..99174c4be 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -94,63 +94,20 @@ bool BonminProblem::get_nlp_info(int & n,
@@ -264,14 +264,36 @@ index 147ddd9ad..4bf7bdd1b 100644
    return true;
  }
  
-@@ -289,31 +214,11 @@ bool BonminProblem::eval_f(int n,
-   else
-     obj_value = -yPoint[0];
- 
+@@ -269,52 +194,12 @@ bool BonminProblem::eval_f(int n,
+                            bool /*new_x*/,
+                            double& obj_value)
+ {
+-  // Convert x to OT::Point
+-  Point xPoint(n);
+-  std::copy(x, x + n, xPoint.begin());
+-
+-  // Computing objective function value
+-  Point yPoint;
+-  try
+-  {
+-    yPoint = optimProblem_.getObjective()(xPoint);
+-  }
+-  catch (const std::exception & exc)
+-  {
+-    LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-    return false;
+-  }
+-  if (optimProblem_.isMinimization())
+-    obj_value = yPoint[0];
+-  else
+-    obj_value = -yPoint[0];
+-
 +  obj_value = -x[0] -x[1] -x[2];
    // track input/outputs
-   evaluationInputHistory_.add(xPoint);
-   evaluationOutputHistory_.add(yPoint);
+-  evaluationInputHistory_.add(xPoint);
+-  evaluationOutputHistory_.add(yPoint);
++  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
++  evaluationOutputHistory_.add(Point({obj_value}));
  
 -  // enforce time limit even before bonmin.time_limit can be taken into account
 -  std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -294,10 +316,12 @@ index 147ddd9ad..4bf7bdd1b 100644
 -      return false;
 -  }
 -
-   return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
+-  return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
++  return (evaluationInputHistory_.getSize() <= 10000);
  }
  
-@@ -323,29 +228,10 @@ bool BonminProblem::eval_grad_f( int n,
+ 
+@@ -323,29 +208,10 @@ bool BonminProblem::eval_grad_f( int n,
                                   bool /*new_x*/,
                                   double* grad_f)
  {
@@ -330,7 +354,7 @@ index 147ddd9ad..4bf7bdd1b 100644
    return true;
  }
  
-@@ -355,49 +241,10 @@ bool BonminProblem::eval_g(int n,
+@@ -355,49 +221,10 @@ bool BonminProblem::eval_g(int n,
                             int /*m*/,
                             double* g)
  {
@@ -384,7 +408,7 @@ index 147ddd9ad..4bf7bdd1b 100644
    return true;
  }
  
-@@ -434,27 +281,6 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -434,27 +261,6 @@ bool BonminProblem::eval_jac_g(int n,
      UnsignedInteger nbEqualityConstraints = 0;
      UnsignedInteger nbInequalityConstraints = 0;
  
@@ -412,7 +436,7 @@ index 147ddd9ad..4bf7bdd1b 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -493,14 +319,6 @@ bool BonminProblem::eval_h(int n,
+@@ -493,14 +299,6 @@ bool BonminProblem::eval_h(int n,
                             int* jCol,
                             double* values)
  {
@@ -427,7 +451,7 @@ index 147ddd9ad..4bf7bdd1b 100644
    /* Switch on first call / later calls */
    if (values == NULL) // First call: initialization of iRow/jCol
    {
-@@ -515,76 +333,8 @@ bool BonminProblem::eval_h(int n,
+@@ -515,76 +313,8 @@ bool BonminProblem::eval_h(int n,
    }
    else // Later calls
    {
@@ -506,7 +530,7 @@ index 147ddd9ad..4bf7bdd1b 100644
    }
  
    return true;
-@@ -596,28 +346,12 @@ bool BonminProblem::eval_gi(int n,
+@@ -596,28 +326,12 @@ bool BonminProblem::eval_gi(int n,
                              int i,
                              double& gi)
  {
