@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..284921e60 100644
+index 147ddd9ad..1cb2b45c7 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -120,37 +120,13 @@ bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
@@ -300,7 +300,61 @@ index 147ddd9ad..284921e60 100644
    return true;
  }
  
-@@ -434,27 +339,6 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -355,49 +260,10 @@ bool BonminProblem::eval_g(int n,
+                            int /*m*/,
+                            double* g)
+ {
+-  // Convert x to OT::Point
+-  Point xPoint(n);
+-  std::copy(x, x + n, xPoint.begin());
+-
+-  // Retrieve number of constraints
+-  UnsignedInteger nbEqualityConstraints = 0;
+-  UnsignedInteger nbInequalityConstraints = 0;
+-  UnsignedInteger k = 0;
+-
+-  if (optimProblem_.hasEqualityConstraint())
+-  {
+-    nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
+-    Point equalityConstraint;
+-    try
+-    {
+-      equalityConstraint = (optimProblem_.getEqualityConstraint()(xPoint));
+-    }
+-    catch (const std::exception & exc)
+-    {
+-      LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-      return false;
+-    }
+-    std::copy(equalityConstraint.begin(), equalityConstraint.end(), g + k);
+-    k += nbEqualityConstraints;
+-  }
+-
+-  if (optimProblem_.hasInequalityConstraint())
+-  {
+-    nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
+-    Point inequalityConstraint;
+-    try
+-    {
+-      inequalityConstraint = optimProblem_.getInequalityConstraint()(xPoint);
+-    }
+-    catch (const std::exception & exc)
+-    {
+-      LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-      return false;
+-    }
+-    std::copy(inequalityConstraint.begin(), inequalityConstraint.end(), g + k);
+-    k += nbInequalityConstraints;
+-  }
+-
++  g[0] = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++     g[1] = -x[0] +x[1];
++    g[2] = -x[0] -x[2]-x[3] + 2.0;
++  
+   return true;
+ }
+ 
+@@ -434,27 +300,6 @@ bool BonminProblem::eval_jac_g(int n,
      UnsignedInteger nbEqualityConstraints = 0;
      UnsignedInteger nbInequalityConstraints = 0;
  
@@ -328,7 +382,7 @@ index 147ddd9ad..284921e60 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -538,25 +422,6 @@ bool BonminProblem::eval_h(int n,
+@@ -538,25 +383,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -354,6 +408,41 @@ index 147ddd9ad..284921e60 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
+@@ -596,28 +422,12 @@ bool BonminProblem::eval_gi(int n,
+                             int i,
+                             double& gi)
+ {
+-  // Convert x to OT::Point
+-  Point xPoint(n);
+-  std::copy(x, x + n, xPoint.begin());
+-
+-  // Retrieve number of constraints
+-  int nbEqualityConstraints = 0;
+-  if (optimProblem_.hasEqualityConstraint())
+-    nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
+-
+-  // Computing constraints values
+-  try
+-  {
+-    if (i < nbEqualityConstraints)
+-      gi = optimProblem_.getEqualityConstraint().getMarginal(i)(xPoint)[0];
+-    else
+-      gi = optimProblem_.getInequalityConstraint().getMarginal(i - nbEqualityConstraints)(xPoint)[0];
+-  }
+-  catch (const std::exception & exc)
+-  {
+-    LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-    return false;
+-  }
++  if (i == 0)
++    gi = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++   if (i == 1)
++     gi = -x[0] +x[1];
++  if (i == 2)
++    gi = -x[0] -x[2]-x[3] + 2.0;
+   return true;
+ }
+ 
 diff --git a/lib/src/Base/Optim/Pagmo.cxx b/lib/src/Base/Optim/Pagmo.cxx
 index 6a9fc2482..8ef033f67 100644
 --- a/lib/src/Base/Optim/Pagmo.cxx
