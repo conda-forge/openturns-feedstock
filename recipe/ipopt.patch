@@ -1,0 +1,1780 @@
+diff --git a/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp b/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
+index 336ebf46..0a50c8c4 100644
+--- a/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
++++ b/src/Algorithm/Inexact/IpInexactLSAcceptor.cpp
+@@ -291,8 +291,13 @@ bool InexactLSAcceptor::CheckAcceptabilityOfTrialPoint(
+    // First compute the barrier function and constraint violation at the
+    // current iterate and the trial point
+ 
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint0 alpha_primal_test="<<alpha_primal_test<<std::endl;
+    Number trial_theta = IpCq().trial_constraint_violation();
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_theta="<<trial_theta<<std::endl;
++
+    Number trial_barr = IpCq().trial_barrier_obj();
++   std::cout << "InexactLSAcceptor::CheckAcceptabilityOfTrialPoint2 trial_barr="<<trial_barr<<std::endl;
++
+    DBG_ASSERT(IsFiniteNumber(trial_barr));
+ 
+    Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+diff --git a/src/Algorithm/IpBacktrackingLineSearch.cpp b/src/Algorithm/IpBacktrackingLineSearch.cpp
+index 6782ac59..3e85d1ea 100644
+--- a/src/Algorithm/IpBacktrackingLineSearch.cpp
++++ b/src/Algorithm/IpBacktrackingLineSearch.cpp
+@@ -14,6 +14,7 @@
+ 
+ #include <cmath>
+ #include <limits>
++#include <iostream>
+ 
+ namespace Ipopt
+ {
+@@ -257,6 +258,8 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+                   "--> Starting line search in iteration %" IPOPT_INDEX_FORMAT " <--\n", IpData().iter_count());
+ 
+    Number curr_mu = IpData().curr_mu();
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint0 curr_mu="<<curr_mu<< std::endl << std::flush;
++
+    if( last_mu_ != curr_mu )
+    {
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+@@ -275,6 +278,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // by the Acceptor.
+    if( !acceptor_->NeverRestorationPhase() && IpCq().IsSquareProblem() )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint NeverRestorationPhase"<< std::endl << std::flush;
+       //expect_infeasible_problem_ = true;
+       expect_infeasible_problem_ctol_ = 0.;
+    }
+@@ -283,6 +287,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // level to be restored if things fail later
+    if( CurrentIsAcceptable() )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint CurrentIsAcceptable"<< std::endl << std::flush;
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+                      "Storing current iterate as backup acceptable point.\n");
+       StoreAcceptablePoint();
+@@ -296,6 +301,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    SmartPtr<IteratesVector> actual_delta;
+ 
+    bool goto_resto = false;
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint fallback_activated_="<<fallback_activated_<< std::endl << std::flush;
+    if( fallback_activated_ )
+    {
+       // In this case, the algorithm had trouble to continue and wants
+@@ -317,6 +323,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       }
+       else
+       {
++          std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint throw STEP_COMPUTATION_FAILED1"<< std::endl << std::flush;
+          THROW_EXCEPTION(STEP_COMPUTATION_FAILED,
+                          "We are in an emergency mode, but no restoration phase or other fall back is available.");
+       }
+@@ -328,7 +335,10 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       acceptor_->InitThisLineSearch(in_watchdog_);
+       actual_delta = IpData().delta()->MakeNewContainer();
+    }
++   
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint in_watchdog_="<<in_watchdog_<< std::endl << std::flush;
+ 
++      std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint start_with_resto_="<<start_with_resto_<< std::endl << std::flush;
+    if( start_with_resto_ )
+    {
+       // If the user requested to start with the restoration phase,
+@@ -345,12 +355,15 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       goto_resto = true;
+    }
+ 
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint goto_resto="<<goto_resto<< std::endl << std::flush;
++   
+    bool accept = false;
+    Index n_steps = 0;
+    Number alpha_primal = 0.;
+ 
+    // Check if search direction becomes too small
+    bool tiny_step = (!goto_resto && DetectTinyStep());
++std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint tiny_step="<<tiny_step<< std::endl << std::flush;
+ 
+    if( in_watchdog_ && (goto_resto || tiny_step) )
+    {
+@@ -366,8 +379,10 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    if( watchdog_shortened_iter_trigger_ > 0 && !in_watchdog_ && !goto_resto && !tiny_step && !in_soft_resto_phase_
+        && !expect_infeasible_problem_ && watchdog_shortened_iter_ >= watchdog_shortened_iter_trigger_ )
+    {
++       std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint StartWatchDog"<< std::endl << std::flush;
+       StartWatchDog();
+    }
++std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint tiny_step="<<tiny_step<< std::endl << std::flush;
+ 
+    // Handle the situation of a tiny step
+    if( tiny_step )
+@@ -381,8 +396,15 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+       // the tiny step and continue with regular line search
+       try
+       {
++          std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint.tiny_step trial_barrier_obj..."<< std::endl << std::flush;
++
+          IpCq().trial_barrier_obj();
++         std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint.tiny_step trial_constraint_violation..."<< std::endl << std::flush;
++         
+          IpCq().trial_constraint_violation();
++         std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint try ok" << std::endl << std::flush;
++         
++         
+       }
+       catch( IpoptNLP::Eval_Error& e )
+       {
+@@ -503,6 +525,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+    // If line search has been aborted because the step size becomes
+    // too small, go to the restoration phase or continue with soft
+    // restoration phase
++   std::cout << "IpoptAlgorithm::FindAcceptableTrialPoint accept="<<accept<< std::endl << std::flush;
+    if( !accept )
+    {
+       // If we are not asked to do a rigorous line search, do no call
+@@ -566,11 +589,16 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+             }
+ 
+             // ToDo make the 1e-2 below a parameter?
++            
++            std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint curr_constraint_violation="<<IpCq().curr_constraint_violation()<< std::endl << std::flush;
++            std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint unscaled_curr_nlp_constraint_violation="<<IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX)<< std::endl << std::flush;
++
+             // added second criteria to cover cases where tol has been set to a large value
+             if( IpCq().curr_constraint_violation() <= 1e-2 * IpData().tol() &&
+                 IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX) <= 1e-1 * constr_viol_tol_ )
+             {
+                bool found_acceptable = RestoreAcceptablePoint();
++               std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint found_acceptable="<<found_acceptable<< std::endl << std::flush;
+                if( found_acceptable )
+                {
+                   Jnlst().Printf(J_WARNING, J_LINE_SEARCH,
+@@ -581,6 +609,7 @@ void BacktrackingLineSearch::FindAcceptableTrialPoint()
+                }
+                else
+                {
++                    std::cout << "BacktrackingLineSearch::FindAcceptableTrialPoint throw STEP_COMPUTATION_FAILED2"<< std::endl << std::flush;
+                   Jnlst().Printf(J_STRONGWARNING, J_LINE_SEARCH,
+                                  "Cannot call restoration phase at point that is almost feasible %s(violation %e).\nAbort in line search due to no other fall back.\n",
+                                  dynamic_cast<OrigIpoptNLP*>(GetRawPtr(IpCq().GetIpoptNLP())) == NULL ? "for the restoration NLP " : "",
+@@ -722,6 +751,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+       corr_taken = true;
+    }
+ 
++   std::cout << "IpoptAlgorithm::DoBacktrackingLineSearch accept="<<accept<< std::endl << std::flush;
+    if( !accept )
+    {
+       // Loop over decreasing step sizes until acceptable point is
+@@ -839,6 +869,7 @@ bool BacktrackingLineSearch::DoBacktrackingLineSearch(
+       IpData().Append_info_string("C");
+    }
+ 
++   std::cout << "IpoptAlgorithm::DoBacktrackingLineSearch result accept="<<accept<< std::endl << std::flush;
+    return accept;
+ }
+ 
+@@ -918,6 +949,7 @@ void BacktrackingLineSearch::PerformDualStep(
+    IpData().SetTrialBoundMultipliersFromStep(alpha_dual, *delta->z_L(), *delta->z_U(), *delta->v_L(), *delta->v_U());
+ 
+    Number alpha_y = -1.;
++   std::cout << "IpoptAlgorithm::PerformDualStep alpha_for_y_="<<alpha_for_y_<< std::endl << std::flush;
+    switch( alpha_for_y_ )
+    {
+       case LSACCEPTOR_ALPHA_FOR_Y:
+@@ -1141,8 +1173,11 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
+       // original filter
+       try
+       {
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep1"<<std::endl<<std::flush;
+          IpCq().trial_barrier_obj();
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep2"<<std::endl<<std::flush;
+          IpCq().trial_constraint_violation();
++         std::cout << "BacktrackingLineSearch::TrySoftRestoStep3"<<std::endl<<std::flush;
+          done = true;
+       }
+       catch( IpoptNLP::Eval_Error& e )
+@@ -1163,6 +1198,7 @@ bool BacktrackingLineSearch::TrySoftRestoStep(
+    {
+       Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+                      "  Trial step acceptable with respect to original backtracking globalization.\n");
++      std::cout << "IpoptAlgorithm::PerformDualStep TrySoftRestoStep"<< std::endl << std::flush;
+       satisfies_original_criterion = true;
+       return true;
+    }
+@@ -1213,7 +1249,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+ 
+    Number max_step_x;
+    Number max_step_s;
+-
++std::cout << "IpoptAlgorithm::DetectTinyStep tiny_step_tol_="<<tiny_step_tol_<< std::endl << std::flush;
+    if( tiny_step_tol_ == 0. )
+    {
+       return false;
+@@ -1230,6 +1266,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    SmartPtr<Vector> tmp2 = IpData().delta()->x()->MakeNewCopy();
+    tmp2->ElementWiseDivide(*tmp);
+    max_step_x = tmp2->Amax();
++   std::cout << "IpoptAlgorithm::DetectTinyStep max_step_x="<<max_step_x<< std::endl << std::flush;
+    Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
+                   "Relative step size for delta_x = %e\n", max_step_x);
+    if( max_step_x > tiny_step_tol_ )
+@@ -1248,6 +1285,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    max_step_s = tmp2->Amax();
+    Jnlst().Printf(J_MOREDETAILED, J_LINE_SEARCH,
+                   "Relative step size for delta_s = %e\n", max_step_s);
++   std::cout << "IpoptAlgorithm::DetectTinyStep max_step_x="<<max_step_x<< std::endl << std::flush;
+    if( max_step_s > tiny_step_tol_ )
+    {
+       return false;
+@@ -1257,6 +1295,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+    // might be at a starting point that is already a local minimizer
+    // of the constraint violation
+    const Number cviol = IpCq().curr_constraint_violation();
++   std::cout << "IpoptAlgorithm::DetectTinyStep cviol="<<cviol<< std::endl << std::flush;
+    if( cviol > 1e-4 ) // ToDo: adapt parameter?
+    {
+       return false;
+@@ -1270,6 +1309,7 @@ bool BacktrackingLineSearch::DetectTinyStep()
+ 
+ bool BacktrackingLineSearch::CurrentIsAcceptable()
+ {
++    std::cout << "BacktrackingLineSearch::CurrentIsAcceptable"<< std::endl << std::flush;
+    return (IsValid(conv_check_) && conv_check_->CurrentIsAcceptable());
+ }
+ 
+@@ -1289,13 +1329,15 @@ bool BacktrackingLineSearch::RestoreAcceptablePoint()
+ 
+    if( !IsValid(acceptable_iterate_) )
+    {
++          std::cout << "BacktrackingLineSearch::RestoreAcceptablePoint false="<< std::endl << std::flush;
++
+       return false;
+    }
+ 
+    SmartPtr<IteratesVector> prev_iterate = acceptable_iterate_->MakeNewContainer();
+    IpData().set_trial(prev_iterate);
+    IpData().AcceptTrialPoint();
+-
++std::cout << "BacktrackingLineSearch::RestoreAcceptablePoint true="<< std::endl << std::flush;
+    return true;
+ }
+ 
+diff --git a/src/Algorithm/IpIpoptAlg.cpp b/src/Algorithm/IpIpoptAlg.cpp
+index d9092e5c..56bec282 100644
+--- a/src/Algorithm/IpIpoptAlg.cpp
++++ b/src/Algorithm/IpIpoptAlg.cpp
+@@ -18,6 +18,7 @@
+ #if IPOPT_CHECKLEVEL > 1 && defined(IPOPT_HAS_FEENABLEEXCEPT)
+ #include <cfenv>
+ #endif
++#include <iostream>
+ 
+ namespace Ipopt
+ {
+@@ -293,6 +294,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    bool isResto /*= false */
+ )
+ {
++      std::cout << "IpoptAlgorithm::Optimize0"<< std::endl << std::flush;
+    DBG_START_METH("IpoptAlgorithm::Optimize", dbg_verbosity);
+ 
+    // Start measuring CPU time
+@@ -341,6 +343,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+ 
+       IpData().TimingStats().CheckConvergence().Start();
+       ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence();
++      std::cout << "IpoptAlgorithm::Optimize1 conv_status"<<conv_status<< std::endl << std::flush;
+       IpData().TimingStats().CheckConvergence().End();
+ 
+       // main loop
+@@ -379,6 +382,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+          // If we are in the emergency mode, ask the line search object
+          // to go to the fallback options.  If that isn't possible,
+          // issue error message
++         std::cout << "IpoptAlgorithm::Optimize2 emergency_mode"<<emergency_mode<< std::endl << std::flush;
+          if( emergency_mode )
+          {
+             if( line_search_->ActivateFallbackMechanism() )
+@@ -388,6 +392,9 @@ SolverReturn IpoptAlgorithm::Optimize(
+             }
+             else
+             {
++                  
++                  std::cout << "IpoptAlgorithm::Optimize1 throw STEP_COMPUTATION_FAILED"<< std::endl << std::flush;
++                  
+                Jnlst().Printf(J_ERROR, J_MAIN,
+                               "ERROR: Problem in step computation, but emergency mode cannot be activated.\n");
+                THROW_EXCEPTION(STEP_COMPUTATION_FAILED, "Step computation failed.");
+@@ -413,6 +420,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+ 
+          IpData().TimingStats().CheckConvergence().Start();
+          conv_status = conv_check_->CheckConvergence();
++         std::cout << "IpoptAlgorithm::Optimize2 conv_status"<<conv_status<< std::endl << std::flush;
+          IpData().TimingStats().CheckConvergence().End();
+       }
+ 
+@@ -524,6 +532,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    }
+    catch( STEP_COMPUTATION_FAILED& exc )
+    {
++         std::cout << "IpoptAlgorithm::Optimize STEP_COMPUTATION_FAILED"<< std::endl << std::flush;
+       exc.ReportException(Jnlst(), J_MOREDETAILED);
+       IpData().TimingStats().ComputeAcceptableTrialPoint().EndIfStarted();
+       retval = ERROR_IN_STEP_COMPUTATION;
+@@ -559,6 +568,7 @@ SolverReturn IpoptAlgorithm::Optimize(
+    }
+ 
+    DBG_ASSERT(retval != UNASSIGNED && "Unknown return code in the algorithm");
++   std::cout << "IpoptAlgorithm::Optimize retval="<<retval<< std::endl << std::flush;
+    return retval;
+ }
+ 
+@@ -582,7 +592,7 @@ bool IpoptAlgorithm::UpdateBarrierParameter()
+    Jnlst().Printf(J_DETAILED, J_MAIN,
+                   "\n**************************************************\n\n");
+    bool retval = mu_update_->UpdateBarrierParameter();
+-
++std::cout << "IpoptAlgorithm::UpdateBarrierParameter retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -609,7 +619,7 @@ bool IpoptAlgorithm::ComputeSearchDirection()
+                   "\n**************************************************\n\n");
+ 
+    bool retval = search_dir_calculator_->ComputeSearchDirection();
+-
++std::cout << "IpoptAlgorithm::ComputeSearchDirection0 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       Jnlst().Printf(J_MOREVECTOR, J_MAIN,
+@@ -633,6 +643,7 @@ void IpoptAlgorithm::ComputeAcceptableTrialPoint()
+                   "*** Finding Acceptable Trial Point for Iteration %" IPOPT_INDEX_FORMAT ":", IpData().iter_count());
+    Jnlst().Printf(J_DETAILED, J_MAIN,
+                   "\n**************************************************\n\n");
++   std::cout << "IpoptAlgorithm::ComputeAcceptableTrialPoint"<< std::endl << std::flush;
+    line_search_->FindAcceptableTrialPoint();
+ }
+ 
+@@ -652,17 +663,21 @@ void IpoptAlgorithm::InitializeIterates()
+ void IpoptAlgorithm::AcceptTrialPoint()
+ {
+    DBG_START_METH("IpoptAlgorithm::AcceptTrialPoint", dbg_verbosity);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint0"<< std::endl << std::flush;
+    // If the line search didn't determine a new acceptable trial
+    // point, do not accept a new iterate
+    if( line_search_->CheckSkippedLineSearch() )
+    {
+       Jnlst().Printf(J_SUMMARY, J_MAIN,
+                      "Line search didn't find acceptable trial point.\n");
++std::cout << "IpoptAlgorithm::AcceptTrialPoint0 CheckSkippedLineSearch"<< std::endl << std::flush;
+       return;
+    }
++   
+ 
+    // Adjust the bounds if necessary
+    Index adjusted_slacks = IpCq().AdjustedTrialSlacks();
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint0.1 adjusted_slacks="<<adjusted_slacks<< std::endl << std::flush;
+    DBG_PRINT((1, "adjusted_slacks = %" IPOPT_INDEX_FORMAT "\n", adjusted_slacks));
+    if( adjusted_slacks > 0 )
+    {
+@@ -684,23 +699,38 @@ void IpoptAlgorithm::AcceptTrialPoint()
+          IpNLP().d_L()->Print(Jnlst(), J_VECTOR, J_MAIN, "old_d_L");
+          IpNLP().d_U()->Print(Jnlst(), J_VECTOR, J_MAIN, "old_d_U");
+       }
++      
++      std::cout << "IpoptAlgorithm::AcceptTrialPoint x.sum="<< IpData().trial()->x()->Sum()<<" min="<< IpData().trial()->x()->Min()<<" max="<< IpData().trial()->x()->Max()<<std::endl << std::flush;
++
+ 
+       SmartPtr<Vector> new_x_l = IpNLP().x_L()->MakeNew();
+       IpNLP().Px_L()->TransMultVector(1.0, *IpData().trial()->x(), 0.0, *new_x_l);
+       new_x_l->Axpy(-1.0, *IpCq().trial_slack_x_L());
+ 
++      
++      std::cout << "IpoptAlgorithm::AcceptTrialPoint new_x_l.sum="<<new_x_l->Sum()<<" min="<<new_x_l->Min()<<" max="<<new_x_l->Max()<<std::endl << std::flush;
++
++      
++      
+       SmartPtr<Vector> new_x_u = IpNLP().x_U()->MakeNew();
+       IpNLP().Px_U()->TransMultVector(1.0, *IpData().trial()->x(), 0.0, *new_x_u);
+       new_x_u->Axpy(1.0, *IpCq().trial_slack_x_U());
++      
++      std::cout << "IpoptAlgorithm::AcceptTrialPoint new_x_u.sum="<<new_x_u->Sum()<<" min="<<new_x_u->Min()<<" max="<<new_x_u->Max()<<std::endl << std::flush;
++      
+ 
+       SmartPtr<Vector> new_d_l = IpNLP().d_L()->MakeNew();
+       IpNLP().Pd_L()->TransMultVector(1.0, *IpData().trial()->s(), 0.0, *new_d_l);
+       new_d_l->Axpy(-1.0, *IpCq().trial_slack_s_L());
+ 
++      std::cout << "IpoptAlgorithm::AcceptTrialPoint new_d_l.sum="<<new_d_l->Sum()<<" min="<<new_d_l->Min()<<" max="<<new_d_l->Max()<<std::endl << std::flush;
++      
+       SmartPtr<Vector> new_d_u = IpNLP().d_U()->MakeNew();
+       IpNLP().Pd_U()->TransMultVector(1.0, *IpData().trial()->s(), 0.0, *new_d_u);
+       new_d_u->Axpy(1.0, *IpCq().trial_slack_s_U());
+ 
++      std::cout << "IpoptAlgorithm::AcceptTrialPoint new_d_u.sum="<<new_d_u->Sum()<<" min="<<new_d_u->Min()<<" max="<<new_d_u->Max()<<std::endl << std::flush;
++      
+       IpNLP().AdjustVariableBounds(*new_x_l, *new_x_u, *new_d_l, *new_d_u);
+ 
+       if( Jnlst().ProduceOutput(J_VECTOR, J_MAIN) )
+@@ -718,8 +748,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    bool corrected = false;
+    Number max_correction;
+    SmartPtr<const Vector> new_z_L;
+-   max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *IpCq().trial_slack_x_L(),
+-                    *IpCq().trial_compl_x_L(), new_z_L);
++   SmartPtr<const Vector> tsxl = IpCq().trial_slack_x_L();
++   SmartPtr<const Vector> tcxl = IpCq().trial_compl_x_L();
++
++   max_correction = correct_bound_multiplier(*IpData().trial()->z_L(), *tsxl, *tcxl, new_z_L);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.1 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -728,8 +761,10 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
+    SmartPtr<const Vector> new_z_U;
+-   max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *IpCq().trial_slack_x_U(),
+-                    *IpCq().trial_compl_x_U(), new_z_U);
++   SmartPtr<const Vector> tsxu = IpCq().trial_slack_x_U();
++   SmartPtr<const Vector> tcxu = IpCq().trial_compl_x_U();
++   max_correction = correct_bound_multiplier(*IpData().trial()->z_U(), *tsxu, *tcxu, new_z_U);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.2 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -738,8 +773,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
+    SmartPtr<const Vector> new_v_L;
+-   max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *IpCq().trial_slack_s_L(),
+-                    *IpCq().trial_compl_s_L(), new_v_L);
++   SmartPtr<const Vector> tssl = IpCq().trial_slack_s_L();
++   SmartPtr<const Vector> tcsl = IpCq().trial_compl_s_L();
++   
++   max_correction = correct_bound_multiplier(*IpData().trial()->v_L(), *tssl, *tcsl, new_v_L);
++std::cout << "IpoptAlgorithm::AcceptTrialPoint3.3 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -748,8 +786,11 @@ void IpoptAlgorithm::AcceptTrialPoint()
+       corrected = true;
+    }
+    SmartPtr<const Vector> new_v_U;
+-   max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *IpCq().trial_slack_s_U(),
+-                    *IpCq().trial_compl_s_U(), new_v_U);
++   SmartPtr<const Vector> tssu = IpCq().trial_slack_s_U();
++   SmartPtr<const Vector> tcsu = IpCq().trial_compl_s_U();
++
++   max_correction = correct_bound_multiplier(*IpData().trial()->v_U(), *tssu, *tcsu, new_v_U);
++   std::cout << "IpoptAlgorithm::AcceptTrialPoint3.4 max_correction="<<max_correction<< std::endl << std::flush;
+    if( max_correction > 0. )
+    {
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+@@ -760,7 +801,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+    SmartPtr<IteratesVector> trial = IpData().trial()->MakeNewContainer();
+    trial->Set_bound_mult(*new_z_L, *new_z_U, *new_v_L, *new_v_U);
+    IpData().set_trial(trial);
+-
++std::cout << "IpoptAlgorithm::AcceptTrialPoint3.5 corrected="<<corrected<< std::endl << std::flush;
+    if( corrected )
+    {
+       IpData().Append_info_string("z");
+@@ -794,6 +835,7 @@ void IpoptAlgorithm::AcceptTrialPoint()
+          SmartPtr<Vector> y_c = IpData().curr()->y_c()->MakeNew();
+          SmartPtr<Vector> y_d = IpData().curr()->y_d()->MakeNew();
+          bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++         std::cout << "IpoptAlgorithm::AcceptTrialPoint5 CalculateMultipliers="<<retval<< std::endl << std::flush;
+          if( retval )
+          {
+             SmartPtr<const IteratesVector> curr = IpData().curr();
+@@ -862,6 +904,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+ 
+    // if not primal feasible yet, then do not compute multipliers yet
+    Number constr_viol = IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers0 constr_viol="<<constr_viol<< " tol="<<constr_viol_tol_<< std::endl << std::flush;
++   
+    if( constr_viol > constr_viol_tol_ )
+    {
+       return;
+@@ -878,6 +922,8 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+ 
+    IpData().TimingStats().CheckConvergence().Start();
+    ConvergenceCheck::ConvergenceStatus conv_status = conv_check_->CheckConvergence(false);
++   
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers1 conv_status="<<conv_status<< std::endl << std::flush;
+    IpData().TimingStats().CheckConvergence().End();
+ 
+    // if converged or reached some limit, then do not update multipliers
+@@ -909,6 +955,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliers()
+    IpData().set_trial(iterates);
+    IpData().AcceptTrialPoint();
+    bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliers2 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       //TODO Check if following line is really necessary
+@@ -951,7 +998,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+    DBG_START_METH("IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess",
+                   dbg_verbosity);
+    DBG_ASSERT(IpCq().IsSquareProblem());
+-
++std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess0"<< std::endl << std::flush;
+    // if we don't have an object for computing least square
+    // multipliers we don't compute them
+    if( IsNull(eq_multiplier_calculator_) )
+@@ -979,6 +1026,7 @@ void IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess()
+    IpData().set_trial(iterates);
+    IpData().AcceptTrialPoint();
+    bool retval = eq_multiplier_calculator_->CalculateMultipliers(*y_c, *y_d);
++   std::cout << "IpoptAlgorithm::ComputeFeasibilityMultipliersPostprocess1 retval="<<retval<< std::endl << std::flush;
+    if( retval )
+    {
+       //TODO Check if following line is really necessary
+@@ -1061,6 +1109,8 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+ {
+    DBG_START_METH("IpoptAlgorithm::CorrectBoundMultiplier",
+                   dbg_verbosity);
++   
++      std::cout << "IpoptAlgorithm::correct_bound_multiplier zdim="<<trial_z.Dim()<<" kappa_sigma_="<<kappa_sigma_<<std::endl << std::flush;
+ 
+    if( kappa_sigma_ < 1. || trial_z.Dim() == 0 )
+    {
+@@ -1081,28 +1131,38 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    {
+       mu = IpData().curr_mu();
+    }
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier mu="<<mu<<std::endl << std::flush;
++   
+    DBG_PRINT((1, "mu = %8.2e\n", mu));
+    DBG_PRINT_VECTOR(2, "trial_z", trial_z);
++std::cout << "IpoptAlgorithm::correct_bound_multiplier trial_z.sum="<<trial_z.Sum()<<" min="<<trial_z.Min()<<" max="<<trial_z.Max()<<std::endl << std::flush;
++std::cout << "IpoptAlgorithm::correct_bound_multiplier trial_slack.sum="<<trial_slack.Sum()<<" min="<<trial_slack.Min()<<" max="<<trial_slack.Max()<<std::endl << std::flush;
++std::cout << "IpoptAlgorithm::correct_bound_multiplier trial_compl.sum="<<trial_compl.Sum()<<" min="<<trial_compl.Min()<<" max="<<trial_compl.Max()<<std::endl << std::flush;
+ 
+    // First check quickly if anything need to be corrected, using the
+    // trial complementarity directly.  Here, Amax is the same as Max
+    // (and we use Amax because that can be used later)
+    if( trial_compl.Amax() <= kappa_sigma_ * mu && trial_compl.Min() >= 1. / kappa_sigma_ * mu )
+    {
++         std::cout << "IpoptAlgorithm::correct_bound_multiplier Amax return"<<std::endl << std::flush;
+       new_trial_z = &trial_z;
+       return 0.;
+    }
+ 
++   
++   
+    SmartPtr<Vector> one_over_s = trial_z.MakeNew();
+    one_over_s->Copy(trial_slack);
+    one_over_s->ElementWiseReciprocal();
+-
++   
+    SmartPtr<Vector> step_z = trial_z.MakeNew();
++std::cout << "IpoptAlgorithm::correct_bound_multiplier one_over_s.sum="<<one_over_s->Sum()<<" min="<<one_over_s->Min()<<" max="<<one_over_s->Max()<<std::endl << std::flush;
+    step_z->AddTwoVectors(kappa_sigma_ * mu, *one_over_s, -1., trial_z, 0.);
+-
++std::cout << "IpoptAlgorithm::correct_bound_multiplier step_z.sum="<<step_z->Sum()<<" min="<<step_z->Min()<<" max="<<step_z->Max()<<std::endl << std::flush;
+    DBG_PRINT_VECTOR(2, "step_z", *step_z);
+ 
+    Number max_correction_up = Max(Number(0.), -step_z->Min());
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier max_correction_up="<<max_correction_up<<std::endl << std::flush;
+    if( max_correction_up > 0. )
+    {
+       SmartPtr<Vector> tmp = trial_z.MakeNew();
+@@ -1117,8 +1177,16 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+    }
+ 
+    step_z->AddTwoVectors(1. / kappa_sigma_ * mu, *one_over_s, -1., *new_trial_z, 0.);
+-
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier step_z.sum="<<step_z->Sum()<<" min="<<step_z->Min()<<" max="<<step_z->Max()<<std::endl << std::flush;
++   
+    Number max_correction_low = Max(Number(0.), step_z->Max());
++   
++   std::cout << "IpoptAlgorithm::correct_bound_multiplier zmax="<<step_z->Max()<<std::endl << std::flush;
++   
++   
++      std::cout << "IpoptAlgorithm::correct_bound_multiplier max_correction_low="<<max_correction_low<<std::endl << std::flush;
++
++   
+    if( max_correction_low > 0. )
+    {
+       SmartPtr<Vector> tmp = trial_z.MakeNew();
+@@ -1130,6 +1198,7 @@ Number IpoptAlgorithm::correct_bound_multiplier(
+ 
+    DBG_PRINT_VECTOR(2, "new_trial_z", *new_trial_z);
+ 
++   
+    return Max(max_correction_up, max_correction_low);
+ }
+ 
+diff --git a/src/Algorithm/IpIpoptCalculatedQuantities.cpp b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
+index df366eaa..af5d980e 100644
+--- a/src/Algorithm/IpIpoptCalculatedQuantities.cpp
++++ b/src/Algorithm/IpIpoptCalculatedQuantities.cpp
+@@ -241,12 +241,21 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_L(
+    const Vector& x_bound
+ )
+ {
++      
++
++      
+    DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_L",
+                   dbg_verbosity);
+    SmartPtr<Vector> result;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl<<std::flush;
++
++   
+    result = x_bound.MakeNew();
+    result->Copy(x_bound);
+    P.TransMultVector(1.0, x, -1.0, *result);
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_L result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl<<std::flush;
++
+    return result;
+ }
+ 
+@@ -255,13 +264,19 @@ SmartPtr<Vector> IpoptCalculatedQuantities::CalcSlack_U(
+    const Vector& x,
+    const Vector& x_bound
+ )
+-{
++{    
+    DBG_START_METH("IpoptCalculatedQuantities::CalcSlack_U",
+                   dbg_verbosity);
+    SmartPtr<Vector> result;
+    result = x_bound.MakeNew();
+    result->Copy(x_bound);
++   
++      std::cout << "IpoptCalculatedQuantities::CalcSlack_U x.min="<<x.Min() << " x.max="<<x.Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_U x_bound.min="<<x_bound.Min() << " x_bound.max="<<x_bound.Max()<<std::endl<<std::flush;
++   
+    P.TransMultVector(-1.0, x, 1.0, *result);
++   std::cout << "IpoptCalculatedQuantities::CalcSlack_U result.min="<<result->Min() << " result.max="<<result->Max()<<std::endl<<std::flush;
++
+    return result;
+ }
+ 
+@@ -272,6 +287,11 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_L()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> x_bound = ip_nlp_->x_L();
++   
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_L x.min="<<x->Min() << " x.max="<<x->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_x_L x_bound.min="<<x_bound->Min() << " x_bound.max="<<x_bound->Max()<<std::endl<<std::flush;
++   
++   
+    if( !curr_slack_x_L_cache_.GetCachedResult1Dep(result, *x) )
+    {
+       if( !trial_slack_x_L_cache_.GetCachedResult1Dep(result, *x) )
+@@ -279,10 +299,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_L()
+          SmartPtr<const Matrix> P = ip_nlp_->Px_L();
+          DBG_PRINT_VECTOR(2, "x_L", *x_bound);
+          result = CalcSlack_L(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_L_ == 0);
+          num_adjusted_slack_x_L_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_L());
+       }
+       curr_slack_x_L_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -295,16 +317,23 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_x_U()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> x_bound = ip_nlp_->x_U();
++   
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_U x.min="<<x->Min() << " x.max="<<x->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_x_U x_bound.min="<<x_bound->Min() << " x_bound.max="<<x_bound->Max()<<std::endl<<std::flush;
++   
++   
+    if( !curr_slack_x_U_cache_.GetCachedResult1Dep(result, *x) )
+    {
+       if( !trial_slack_x_U_cache_.GetCachedResult1Dep(result, *x) )
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_U();
+          result = CalcSlack_U(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_x_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_U_ == 0);
+          num_adjusted_slack_x_U_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_U());
+       }
+       curr_slack_x_U_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_x_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -317,16 +346,23 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_s_L()
+    SmartPtr<Vector> result;
+    SmartPtr<const Vector> s = ip_data_->curr()->s();
+    SmartPtr<const Vector> s_bound = ip_nlp_->d_L();
++   
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_L x.min="<<s->Min() << " x.max="<<s->Max()<<std::endl<<std::flush;
++   std::cout << "IpoptCalculatedQuantities::curr_slack_s_L x_bound.min="<<s_bound->Min() << " s_bound.max="<<s_bound->Max()<<std::endl<<std::flush;
++
++   
+    if( !curr_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
+    {
+       if( !trial_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_L();
+          result = CalcSlack_L(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_s_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_L_ == 0);
+          num_adjusted_slack_s_L_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_L());
+       }
+       curr_slack_s_L_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -345,12 +381,14 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_slack_s_U()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_U();
+          result = CalcSlack_U(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::curr_slack_s_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_U_ == 0);
+          num_adjusted_slack_s_U_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_U());
+          DBG_PRINT_VECTOR(2, "result", *result);
+          DBG_PRINT((1, "num_adjusted_slack_s_U = %" IPOPT_INDEX_FORMAT "\n", num_adjusted_slack_s_U_));
+       }
+       curr_slack_s_U_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::curr_slack_s_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -370,10 +408,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_x_L()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_L();
+          result = CalcSlack_L(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_x_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_L_ == 0);
+          num_adjusted_slack_x_L_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_L());
+       }
+       trial_slack_x_L_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_x_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -393,10 +433,12 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_x_U()
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Px_U();
+          result = CalcSlack_U(*P, *x, *x_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_x_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_x_U_ == 0);
+          num_adjusted_slack_x_U_ = CalculateSafeSlack(result, x_bound, x, ip_data_->curr()->z_U());
+       }
+       trial_slack_x_U_cache_.AddCachedResult1Dep(result, *x);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_x_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -415,11 +457,17 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_L()
+       if( !curr_slack_s_L_cache_.GetCachedResult1Dep(result, *s) )
+       {
+          SmartPtr<const Matrix> P = ip_nlp_->Pd_L();
++         
++         
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_L s.min="<<s->Min() << " s.max="<<s->Max()<<std::endl<<std::flush;
++         
+          result = CalcSlack_L(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_L result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_ASSERT(num_adjusted_slack_s_L_ == 0);
+          num_adjusted_slack_s_L_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_L());
+       }
+       trial_slack_s_L_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_s_L result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -441,6 +489,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+          DBG_PRINT_VECTOR(2, "d_U", *s_bound);
+          DBG_PRINT_VECTOR(2, "s", *s);
+          result = CalcSlack_U(*P, *s, *s_bound);
++         std::cout << "IpoptCalculatedQuantities::trial_slack_s_U result1.min="<<result->Min() << " result1.max="<<result->Max()<<std::endl<<std::flush;
+          DBG_PRINT_VECTOR(2, "result", *result);
+          DBG_ASSERT(num_adjusted_slack_s_U_ == 0);
+          num_adjusted_slack_s_U_ = CalculateSafeSlack(result, s_bound, s, ip_data_->curr()->v_U());
+@@ -448,6 +497,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_slack_s_U()
+          DBG_PRINT_VECTOR(2, "trial_slack_s_U", *result);
+       }
+       trial_slack_s_U_cache_.AddCachedResult1Dep(result, *s);
++      std::cout << "IpoptCalculatedQuantities::trial_slack_s_U result2.min="<<result->Min() << " result2.max="<<result->Max()<<std::endl<<std::flush;
+    }
+    return ConstPtr(result);
+ }
+@@ -476,6 +526,10 @@ Index IpoptCalculatedQuantities::CalculateSafeSlack(
+          s_min = std::numeric_limits<Number>::min();
+       }
+       DBG_PRINT((1, "s_min = %g, curr_mu = %g, min_slack=%g\n", s_min, ip_data_->curr_mu(), min_slack));
++      
++      
++      std::cout << "IpoptCalculatedQuantities::CalculateSafeSlack s_min="<<s_min << " curr_mu="<<ip_data_->curr_mu()<< "min_slack="<<min_slack<<std::endl<<std::flush;
++      
+       if( min_slack < s_min )
+       {
+          // Need to correct the slacks and calculate new bounds...
+@@ -813,7 +867,16 @@ Number IpoptCalculatedQuantities::curr_barrier_obj()
+       {
+          result = curr_f();
+          DBG_PRINT((1, "curr_F=%e\n", result));
+-         result += CalcBarrierTerm(mu, *curr_slack_x_L(), *curr_slack_x_U(), *curr_slack_s_L(), *curr_slack_s_U());
++         
++         
++            SmartPtr<const Vector> x_L = curr_slack_x_L();
++   SmartPtr<const Vector> x_U = curr_slack_x_U();
++   SmartPtr<const Vector> s_L = curr_slack_s_L();
++   SmartPtr<const Vector> s_U = curr_slack_s_U();
++         
++         
++         std::cout << "IpoptCalculatedQuantities::curr_barrier_obj mu="<<mu<<std::endl<<std::flush;
++         result += CalcBarrierTerm(mu, *x_L, *x_U, *s_L, *s_U);
+       }
+       curr_barrier_obj_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
+@@ -847,8 +910,14 @@ Number IpoptCalculatedQuantities::trial_barrier_obj()
+          result = trial_f();
+          DBG_PRINT((1, "trial_F=%e\n", result));
+          DBG_PRINT_VECTOR(2, "trial_slack_s_U", *trial_slack_s_U());
+-         result += CalcBarrierTerm(ip_data_->curr_mu(), *trial_slack_x_L(), *trial_slack_x_U(), *trial_slack_s_L(),
+-                                   *trial_slack_s_U());
++         std::cout << "IpoptCalculatedQuantities::trial_barrier_obj..."<<std::endl<<std::flush;
++         
++         SmartPtr<const Vector> tsxl = trial_slack_x_L();
++         SmartPtr<const Vector> tsxu = trial_slack_x_U();
++         SmartPtr<const Vector> tssl = trial_slack_s_L();
++         SmartPtr<const Vector> tssu = trial_slack_s_U();
++         result += CalcBarrierTerm(ip_data_->curr_mu(), *tsxl, *tsxu, *tssl, *tssu);
++         std::cout << "IpoptCalculatedQuantities::trial_barrier_obj result="<<result<<std::endl<<std::flush;
+       }
+       trial_barrier_obj_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
+@@ -873,6 +942,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_grad_barrier_obj_x()
+ 
+    if( !curr_grad_barrier_obj_x_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
++         std::cout << "IpoptCalculatedQuantities::curr_grad_barrier_obj_x"<<std::endl<<std::flush;
+       SmartPtr<Vector> tmp1 = x->MakeNew();
+       tmp1->Copy(*curr_grad_f());
+ 
+@@ -2245,6 +2315,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_L()
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+ 
++   std::cout << "IpoptCalculatedQuantities::curr_compl_x_L"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = curr_slack_x_L();
+    SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
+    DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
+@@ -2266,7 +2337,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_L()
+    DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_L()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::trial_compl_x_L"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = trial_slack_x_L();
+    SmartPtr<const Vector> mult = ip_data_->trial()->z_L();
+    DBG_PRINT_VECTOR(2, "slack_x_L", *slack);
+@@ -2288,6 +2359,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_x_U()
+    DBG_START_METH("IpoptCalculatedQuantities::curr_compl_x_U()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
++std::cout << "IpoptCalculatedQuantities::curr_compl_x_U"<<std::endl<<std::flush;
+ 
+    SmartPtr<const Vector> slack = curr_slack_x_U();
+    SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
+@@ -2308,6 +2380,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_x_U()
+    DBG_START_METH("IpoptCalculatedQuantities::trial_compl_x_U()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
++std::cout << "IpoptCalculatedQuantities::trial_compl_x_U"<<std::endl<<std::flush;
+ 
+    SmartPtr<const Vector> slack = trial_slack_x_U();
+    SmartPtr<const Vector> mult = ip_data_->trial()->z_U();
+@@ -2328,7 +2401,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_L()
+    DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_L()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::curr_compl_s_L"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = curr_slack_s_L();
+    SmartPtr<const Vector> mult = ip_data_->curr()->v_L();
+ 
+@@ -2348,7 +2421,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_L()
+    DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_L()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::trial_compl_s_L"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = trial_slack_s_L();
+    SmartPtr<const Vector> mult = ip_data_->trial()->v_L();
+ 
+@@ -2368,7 +2441,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_compl_s_U()
+    DBG_START_METH("IpoptCalculatedQuantities::curr_compl_s_U()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::curr_compl_s_U"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = curr_slack_s_U();
+    SmartPtr<const Vector> mult = ip_data_->curr()->v_U();
+ 
+@@ -2388,7 +2461,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::trial_compl_s_U()
+    DBG_START_METH("IpoptCalculatedQuantities::trial_compl_s_U()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::trial_compl_s_U"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = trial_slack_s_U();
+    SmartPtr<const Vector> mult = ip_data_->trial()->v_U();
+ 
+@@ -2408,7 +2481,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+    DBG_START_METH("IpoptCalculatedQuantities::curr_relaxed_compl_x_L()",
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+-
++std::cout << "IpoptCalculatedQuantities::curr_relaxed_compl_x_L"<<std::endl<<std::flush;
+    SmartPtr<const Vector> slack = curr_slack_x_L();
+    SmartPtr<const Vector> mult = ip_data_->curr()->z_L();
+    std::vector<const TaggedObject*> tdeps(2);
+@@ -2421,6 +2494,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_L()
+ 
+    if( !curr_relaxed_compl_x_L_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
++            std::cout << "IpoptCalculatedQuantities::curr_relaxed_compl_x_L"<<std::endl<<std::flush;
++
+       SmartPtr<Vector> tmp = slack->MakeNew();
+       tmp->Copy(*curr_compl_x_L());
+       tmp->AddScalar(-mu);
+@@ -2436,6 +2511,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+                   dbg_verbosity);
+    SmartPtr<const Vector> result;
+ 
++   
+    SmartPtr<const Vector> slack = curr_slack_x_U();
+    SmartPtr<const Vector> mult = ip_data_->curr()->z_U();
+    std::vector<const TaggedObject*> tdeps(2);
+@@ -2448,6 +2524,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_x_U()
+ 
+    if( !curr_relaxed_compl_x_U_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
++            std::cout << "IpoptCalculatedQuantities::curr_relaxed_compl_x_U"<<std::endl<<std::flush;
++
+       SmartPtr<Vector> tmp = slack->MakeNew();
+       tmp->Copy(*curr_compl_x_U());
+       tmp->AddScalar(-mu);
+@@ -2475,6 +2553,8 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_L()
+ 
+    if( !curr_relaxed_compl_s_L_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
++            std::cout << "IpoptCalculatedQuantities::curr_relaxed_compl_s_L"<<std::endl<<std::flush;
++
+       SmartPtr<Vector> tmp = slack->MakeNew();
+       tmp->Copy(*curr_compl_s_L());
+       tmp->AddScalar(-mu);
+@@ -2502,6 +2582,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_relaxed_compl_s_U()
+ 
+    if( !curr_relaxed_compl_s_U_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
++         std::cout << "IpoptCalculatedQuantities::curr_relaxed_compl_s_U"<<std::endl<<std::flush;
+       SmartPtr<Vector> tmp = slack->MakeNew();
+       tmp->Copy(*curr_compl_s_U());
+       tmp->AddScalar(-mu);
+@@ -2577,6 +2658,9 @@ Number IpoptCalculatedQuantities::curr_primal_infeasibility(
+ 
+    SmartPtr<const Vector> x = ip_data_->curr()->x();
+    SmartPtr<const Vector> s = ip_data_->curr()->s();
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++
+ 
+    DBG_PRINT_VECTOR(2, "x to eval", *x);
+    DBG_PRINT_VECTOR(2, "s to eval", *s);
+@@ -2598,9 +2682,8 @@ Number IpoptCalculatedQuantities::curr_primal_infeasibility(
+ 
+          DBG_PRINT_VECTOR(2, "c", *c);
+          DBG_PRINT_VECTOR(2, "d_minus_s", *d_minus_s);
+-
+          result = CalcNormOfType(NormType, *c, *d_minus_s);
+-
++std::cout << "IpoptCalculatedQuantities::curr_primal_infeasibility result="<<result <<std::endl<<std::flush;
+       }
+       curr_primal_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2620,6 +2703,9 @@ Number IpoptCalculatedQuantities::trial_primal_infeasibility(
+    SmartPtr<const Vector> x = ip_data_->trial()->x();
+    SmartPtr<const Vector> s = ip_data_->trial()->s();
+ 
++   std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
+    DBG_PRINT_VECTOR(2, "x to eval", *x);
+    DBG_PRINT_VECTOR(2, "s to eval", *s);
+    DBG_PRINT((1, "NormType = %d\n", NormType))
+@@ -2642,6 +2728,8 @@ Number IpoptCalculatedQuantities::trial_primal_infeasibility(
+          DBG_PRINT_VECTOR(2, "d_minus_s", *d_minus_s);
+ 
+          result = CalcNormOfType(NormType, *c, *d_minus_s);
++         std::cout << "IpoptCalculatedQuantities::trial_primal_infeasibility result="<<result <<std::endl<<std::flush;
++
+       }
+       trial_primal_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2667,6 +2755,10 @@ Number IpoptCalculatedQuantities::curr_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++      std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2689,6 +2781,8 @@ Number IpoptCalculatedQuantities::curr_dual_infeasibility(
+          DBG_PRINT_VECTOR(2, "grad_lag_s", *grad_lag_s);
+ 
+          result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
++                  std::cout << "IpoptCalculatedQuantities::curr_dual_infeasibility result="<<result <<std::endl<<std::flush;
++
+       }
+       curr_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2713,6 +2807,10 @@ Number IpoptCalculatedQuantities::trial_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->trial()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->trial()->v_U();
+ 
++         std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2735,7 +2833,7 @@ Number IpoptCalculatedQuantities::trial_dual_infeasibility(
+          DBG_PRINT_VECTOR(2, "grad_lag_s", *grad_lag_s);
+ 
+          result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
+-
++std::cout << "IpoptCalculatedQuantities::trial_dual_infeasibility result="<<result <<std::endl<<std::flush;
+       }
+       trial_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+@@ -2760,6 +2858,10 @@ Number IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++            std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(8);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2790,6 +2892,8 @@ Number IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility(
+       }
+ 
+       result = CalcNormOfType(NormType, *grad_lag_x, *grad_lag_s);
++      std::cout << "IpoptCalculatedQuantities::unscaled_curr_dual_infeasibility result="<<result <<std::endl<<std::flush;
++
+       unscaled_curr_dual_infeasibility_cache_.AddCachedResult(result, deps, sdeps);
+    }
+ 
+@@ -2812,6 +2916,10 @@ Number IpoptCalculatedQuantities::curr_complementarity(
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++std::cout << "IpoptCalculatedQuantities::curr_complementarity x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_complementarity s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> deps(6);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2862,6 +2970,8 @@ Number IpoptCalculatedQuantities::curr_complementarity(
+          }
+ 
+          result = CalcNormOfType(NormType, vecs);
++               std::cout << "IpoptCalculatedQuantities::curr_complementarity result="<<result <<std::endl<<std::flush;
++
+       }
+ 
+       curr_complementarity_cache_.AddCachedResult(result, deps, sdeps);
+@@ -2886,6 +2996,11 @@ Number IpoptCalculatedQuantities::trial_complementarity(
+    SmartPtr<const Vector> v_L = ip_data_->trial()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->trial()->v_U();
+ 
++   std::cout << "IpoptCalculatedQuantities::trial_complementarity x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::trial_complementarity s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
++   
+    std::vector<const TaggedObject*> deps(6);
+    deps[0] = GetRawPtr(x);
+    deps[1] = GetRawPtr(s);
+@@ -2936,6 +3051,8 @@ Number IpoptCalculatedQuantities::trial_complementarity(
+          }
+ 
+          result = CalcNormOfType(NormType, vecs);
++                        std::cout << "IpoptCalculatedQuantities::trial_complementarity result="<<result <<std::endl<<std::flush;
++
+       }
+ 
+       trial_complementarity_cache_.AddCachedResult(result, deps, sdeps);
+@@ -3007,6 +3124,7 @@ Number IpoptCalculatedQuantities::CalcCentralityMeasure(
+    DBG_PRINT((1, "MinCompl = %25.16e\n", MinCompl));
+ 
+    Number xi = MinCompl / avrg_compl;
++   std::cout << "IpoptCalculatedQuantities::CalcCentralityMeasure xi="<<xi <<std::endl<<std::flush;
+    // The folloking line added for the case that avrg_compl is
+    // slighly smaller than MinCompl, due to numerical roundoff
+    xi = Min(Number(1.), xi);
+@@ -3025,6 +3143,11 @@ Number IpoptCalculatedQuantities::curr_centrality_measure()
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++   
++   std::cout << "IpoptCalculatedQuantities::curr_centrality_measure x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
+    std::vector<const TaggedObject*> tdeps(6);
+    tdeps[0] = GetRawPtr(x);
+    tdeps[1] = GetRawPtr(s);
+@@ -3041,6 +3164,7 @@ Number IpoptCalculatedQuantities::curr_centrality_measure()
+       SmartPtr<const Vector> compl_s_U = curr_compl_s_U();
+ 
+       result = CalcCentralityMeasure(*compl_x_L, *compl_x_U, *compl_s_L, *compl_s_U);
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure result="<<result <<std::endl<<std::flush;
+ 
+       curr_centrality_measure_cache_.AddCachedResult(result, tdeps);
+    }
+@@ -3063,6 +3187,11 @@ Number IpoptCalculatedQuantities::curr_nlp_error()
+    SmartPtr<const Vector> v_L = ip_data_->curr()->v_L();
+    SmartPtr<const Vector> v_U = ip_data_->curr()->v_U();
+ 
++     std::cout << "IpoptCalculatedQuantities::curr_centrality_measure x.min="<<x->Min()<<" x.max="<<x->Max() <<std::endl<<std::flush;
++std::cout << "IpoptCalculatedQuantities::curr_centrality_measure s.min="<<s->Min()<<" s.max="<<s->Max() <<std::endl<<std::flush;
++   
++   
++   
+    std::vector<const TaggedObject*> tdeps(8);
+    tdeps[0] = GetRawPtr(x);
+    tdeps[1] = GetRawPtr(s);
+@@ -3096,6 +3225,7 @@ Number IpoptCalculatedQuantities::curr_nlp_error()
+       DBG_PRINT((1, "curr_complementarity(mu_target_, NORM_MAX) = %8.2e\n",
+                  curr_complementarity(mu_target_, NORM_MAX)));
+       result = Max(result, curr_complementarity(mu_target_, NORM_MAX) / s_c);
++std::cout << "IpoptCalculatedQuantities::curr_nlp_error result="<<result <<std::endl<<std::flush;
+ 
+       curr_nlp_error_cache_.AddCachedResult(result, tdeps);
+    }
+@@ -3140,7 +3270,10 @@ Number IpoptCalculatedQuantities::unscaled_curr_nlp_error()
+       result = Max(result, unscaled_curr_complementarity(mu_target_, NORM_MAX));
+ 
+       unscaled_curr_nlp_error_cache_.AddCachedResult(result, tdeps);
++      
++      
+    }
++std::cout << "IpoptCalculatedQuantities::unscaled_curr_nlp_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3191,6 +3324,7 @@ Number IpoptCalculatedQuantities::curr_barrier_error()
+ 
+       curr_barrier_error_cache_.AddCachedResult(result, tdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::curr_barrier_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3251,6 +3385,7 @@ Number IpoptCalculatedQuantities::curr_primal_dual_system_error(
+       }
+       curr_primal_dual_system_error_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::curr_primal_dual_system_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3311,6 +3446,7 @@ Number IpoptCalculatedQuantities::trial_primal_dual_system_error(
+       }
+       trial_primal_dual_system_error_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::trial_primal_dual_system_error result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3376,14 +3512,21 @@ Number IpoptCalculatedQuantities::primal_frac_to_the_bound(
+ 
+    if( !primal_frac_to_the_bound_cache_.GetCachedResult(result, tdeps, sdeps) )
+    {
+-      result = Min(
+-                  CalcFracToBound(*curr_slack_x_L(), Tmp_x_L(), *ip_nlp_->Px_L(), *curr_slack_x_U(), Tmp_x_U(), *ip_nlp_->Px_U(),
+-                                  delta_x, tau),
+-                  CalcFracToBound(*curr_slack_s_L(), Tmp_s_L(), *ip_nlp_->Pd_L(), *curr_slack_s_U(), Tmp_s_U(), *ip_nlp_->Pd_U(),
+-                                  delta_s, tau));
++std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound1"<<std::endl<<std::flush;
+ 
++
++   SmartPtr<const Vector> x_L = curr_slack_x_L();
++   SmartPtr<const Vector> x_U = curr_slack_x_U();
++   SmartPtr<const Vector> s_L = curr_slack_s_L();
++   SmartPtr<const Vector> s_U = curr_slack_s_U();
++
++   Number ftb1 = CalcFracToBound(*x_L, Tmp_x_L(), *ip_nlp_->Px_L(), *x_U, Tmp_x_U(), *ip_nlp_->Px_U(), delta_x, tau);
++   Number ftb2 = CalcFracToBound(*s_L, Tmp_s_L(), *ip_nlp_->Pd_L(), *s_U, Tmp_s_U(), *ip_nlp_->Pd_U(), delta_s, tau);
++
++      result = Min(ftb1, ftb2);
+       primal_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::primal_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3413,6 +3556,7 @@ Number IpoptCalculatedQuantities::uncached_dual_frac_to_the_bound(
+    result = Min(result, ip_data_->curr()->z_U()->FracToBound(delta_z_U, tau));
+    result = Min(result, ip_data_->curr()->v_L()->FracToBound(delta_v_L, tau));
+    result = Min(result, ip_data_->curr()->v_U()->FracToBound(delta_v_U, tau));
++std::cout << "IpoptCalculatedQuantities::uncached_dual_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3455,6 +3599,7 @@ Number IpoptCalculatedQuantities::dual_frac_to_the_bound(
+ 
+       dual_frac_to_the_bound_cache_.AddCachedResult(result, tdeps, sdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::dual_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3480,7 +3625,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+    DBG_START_METH("IpoptCalculatedQuantities::slack_frac_to_the_bound",
+                   dbg_verbosity);
+    Number result;
+-
++std::cout << "IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound"<<std::endl<<std::flush; 
+    SmartPtr<const Vector> x_L = curr_slack_x_L();
+    SmartPtr<const Vector> x_U = curr_slack_x_U();
+    SmartPtr<const Vector> s_L = curr_slack_s_L();
+@@ -3490,6 +3635,7 @@ Number IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound(
+    result = Min(result, x_U->FracToBound(delta_x_U, tau));
+    result = Min(result, s_L->FracToBound(delta_s_L, tau));
+    result = Min(result, s_U->FracToBound(delta_s_U, tau));
++std::cout << "IpoptCalculatedQuantities::uncached_slack_frac_to_the_bound result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3509,6 +3655,7 @@ SmartPtr<const Vector> IpoptCalculatedQuantities::curr_sigma_x()
+ 
+    if( !curr_sigma_x_cache_.GetCachedResult3Dep(result, *x, *z_L, *z_U) )
+    {
++         std::cout << "IpoptCalculatedQuantities::curr_sigma_x"<<std::endl<<std::flush; 
+       SmartPtr<Vector> sigma = x->MakeNew();
+ 
+       sigma->Set(0.);
+@@ -3576,7 +3723,7 @@ Number IpoptCalculatedQuantities::curr_avrg_compl()
+    {
+       if( !trial_avrg_compl_cache_.GetCachedResult(result, tdeps) )
+       {
+-
++std::cout << "IpoptCalculatedQuantities::curr_avrg_compl"<<std::endl<<std::flush;
+          SmartPtr<const Vector> slack_x_L = curr_slack_x_L();
+          SmartPtr<const Vector> slack_x_U = curr_slack_x_U();
+          SmartPtr<const Vector> slack_s_L = curr_slack_s_L();
+@@ -3631,7 +3778,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+    {
+       if( !curr_avrg_compl_cache_.GetCachedResult(result, tdeps) )
+       {
+-
++std::cout << "IpoptCalculatedQuantities::trial_avrg_compl"<<std::endl<<std::flush;
+          SmartPtr<const Vector> slack_x_L = trial_slack_x_L();
+          SmartPtr<const Vector> slack_x_U = trial_slack_x_U();
+          SmartPtr<const Vector> slack_s_L = trial_slack_s_L();
+@@ -3656,6 +3803,7 @@ Number IpoptCalculatedQuantities::trial_avrg_compl()
+ 
+       trial_avrg_compl_cache_.AddCachedResult(result, tdeps);
+    }
++std::cout << "IpoptCalculatedQuantities::trial_avrg_compl result="<<result <<std::endl<<std::flush;
+ 
+    return result;
+ }
+@@ -3697,6 +3845,8 @@ void IpoptCalculatedQuantities::ComputeOptimalityErrorScaling(
+       s_d = s_d / n;
+       s_d = Max(s_max, s_d) / s_max;
+    }
++   std::cout << "IpoptCalculatedQuantities::ComputeOptimalityErrorScaling s_d="<<s_d<<" s_c="<<s_c <<std::endl<<std::flush;
++
+ }
+ 
+ Number IpoptCalculatedQuantities::curr_gradBarrTDelta()
+diff --git a/src/Algorithm/IpIpoptData.cpp b/src/Algorithm/IpIpoptData.cpp
+index 68596e89..d69a0b63 100644
+--- a/src/Algorithm/IpIpoptData.cpp
++++ b/src/Algorithm/IpIpoptData.cpp
+@@ -189,6 +189,13 @@ void IpoptData::SetTrialPrimalVariablesFromStep(
+       trial_ = iterates_space_->MakeNewIteratesVector(false);
+    }
+ 
++   
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_x.min=" << delta_x.Min() << " max="<<delta_x.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialPrimalVariablesFromStep delta_s.min=" << delta_s.Min() << " max="<<delta_s.Max()<<std::endl<<std::flush;
++   
++   
++   
+    SmartPtr<IteratesVector> newvec = trial_->MakeNewContainer();
+    newvec->create_new_x();
+    newvec->x_NonConst()->AddTwoVectors(1., *curr_->x(), alpha, delta_x, 0.);
+@@ -207,6 +214,10 @@ void IpoptData::SetTrialEqMultipliersFromStep(
+ {
+    DBG_ASSERT(have_prototypes_);
+ 
++         std::cout << "IpoptData::SetTrialEqMultipliersFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_c.min=" << delta_y_c.Min() << " max="<<delta_y_c.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialEqMultipliersFromStep delta_y_d.min=" << delta_y_d.Min() << " max="<<delta_y_d.Max()<<std::endl<<std::flush;
++   
+    SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
+    newvec->create_new_y_c();
+    newvec->y_c_NonConst()->AddTwoVectors(1., *curr()->y_c(), alpha, delta_y_c, 0.);
+@@ -227,6 +238,12 @@ void IpoptData::SetTrialBoundMultipliersFromStep(
+ {
+    DBG_ASSERT(have_prototypes_);
+ 
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep alpha=" <<alpha<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_L.min=" << delta_z_L.Min() << " max="<<delta_z_L.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_z_U.min=" << delta_z_U.Min() << " max="<<delta_z_U.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_L.min=" << delta_v_L.Min() << " max="<<delta_v_L.Max()<<std::endl<<std::flush;
++      std::cout << "IpoptData::SetTrialBoundMultipliersFromStep delta_v_U.min=" << delta_v_U.Min() << " max="<<delta_v_U.Max()<<std::endl<<std::flush;
++      
+    SmartPtr<IteratesVector> newvec = trial()->MakeNewContainer();
+    newvec->create_new_z_L();
+    newvec->z_L_NonConst()->AddTwoVectors(1., *curr()->z_L(), alpha, delta_z_L, 0.);
+@@ -255,6 +272,8 @@ void IpoptData::AcceptTrialPoint()
+    DBG_ASSERT(IsValid(trial_->v_L()));
+    DBG_ASSERT(IsValid(trial_->v_U()));
+ 
++
++   
+    CopyTrialToCurrent();
+ 
+    // Set trial pointers to Null (frees memory unless someone else is
+diff --git a/src/Algorithm/IpIpoptData.hpp b/src/Algorithm/IpIpoptData.hpp
+index 067ef8fd..2f13bf4b 100644
+--- a/src/Algorithm/IpIpoptData.hpp
++++ b/src/Algorithm/IpIpoptData.hpp
+@@ -850,6 +850,7 @@ inline SmartPtr<const IteratesVector> IpoptData::delta_aff() const
+ inline
+ void IpoptData::CopyTrialToCurrent()
+ {
++
+    curr_ = trial_;
+ #if IPOPT_CHECKLEVEL > 0
+ 
+@@ -872,6 +873,12 @@ void IpoptData::set_trial(
+    SmartPtr<IteratesVector>& trial
+ )
+ {
++   
++   for(Index i=0; i < 1; ++ i)
++   {
++      std::cout << "IpoptData::set_trial n=" << trial->NComps()<<" i="<<i << " trial min="<<trial->GetComp(i)->Min() << " max="<<trial->GetComp(i)->Max()<<std::endl<<std::flush;
++   }
++   
+    trial_ = ConstPtr(trial);
+ 
+ #if IPOPT_CHECKLEVEL > 0
+diff --git a/src/Algorithm/IpOptErrorConvCheck.cpp b/src/Algorithm/IpOptErrorConvCheck.cpp
+index 352757a1..b617df9d 100644
+--- a/src/Algorithm/IpOptErrorConvCheck.cpp
++++ b/src/Algorithm/IpOptErrorConvCheck.cpp
+@@ -277,6 +277,7 @@ ConvergenceCheck::ConvergenceStatus OptimalityErrorConvergenceCheck::CheckConver
+ 
+ bool OptimalityErrorConvergenceCheck::CurrentIsAcceptable()
+ {
++    
+    DBG_START_METH("OptimalityErrorConvergenceCheck::CurrentIsAcceptable",
+                   dbg_verbosity);
+ 
+@@ -285,6 +286,18 @@ bool OptimalityErrorConvergenceCheck::CurrentIsAcceptable()
+    Number constr_viol = IpCq().unscaled_curr_nlp_constraint_violation(NORM_MAX);
+    Number compl_inf = IpCq().unscaled_curr_complementarity(mu_target_, NORM_MAX);
+ 
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable overall_error="<<overall_error<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable dual_inf="<<dual_inf<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable constr_viol="<<constr_viol<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable compl_inf="<<compl_inf<< std::endl << std::flush;
++
++   
++              std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable acceptable_tol_="<<acceptable_tol_<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable acceptable_dual_inf_tol_="<<acceptable_dual_inf_tol_<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable acceptable_constr_viol_tol_="<<acceptable_constr_viol_tol_<< std::endl << std::flush;
++       std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable acceptable_compl_inf_tol_="<<acceptable_compl_inf_tol_<< std::endl << std::flush;
++              std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable acceptable_obj_change_tol_="<<acceptable_obj_change_tol_<< std::endl << std::flush;
++
+    if( IpData().iter_count() != last_obj_val_iter_ )
+    {
+       //Jnlst().Printf(J_MOREDETAILED, J_MAIN,
+@@ -293,6 +306,9 @@ bool OptimalityErrorConvergenceCheck::CurrentIsAcceptable()
+       curr_obj_val_ = IpCq().curr_f();
+       last_obj_val_iter_ = IpData().iter_count();
+    }
++   
++          std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable last_obj_val_="<<last_obj_val_<< std::endl << std::flush;
++          std::cout << "OptimalityErrorConvergenceCheck::CurrentIsAcceptable curr_obj_val_="<<curr_obj_val_<< std::endl << std::flush;
+ 
+    DBG_PRINT((1, "overall_error = %e\n", overall_error));
+    DBG_PRINT((1, "dual_inf = %e\n", dual_inf));
+diff --git a/src/Algorithm/IpPenaltyLSAcceptor.cpp b/src/Algorithm/IpPenaltyLSAcceptor.cpp
+index 814dd41a..efb4690d 100644
+--- a/src/Algorithm/IpPenaltyLSAcceptor.cpp
++++ b/src/Algorithm/IpPenaltyLSAcceptor.cpp
+@@ -207,8 +207,11 @@ bool PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint(
+    // First compute the barrier function and constraint violation at the
+    // current iterate and the trial point
+ 
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint0 alpha_primal_test="<<alpha_primal_test<<std::endl;
+    Number trial_theta = IpCq().trial_constraint_violation();
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_theta="<<trial_theta<<std::endl;
+    Number trial_barr = IpCq().trial_barrier_obj();
++   std::cout << "PenaltyLSAcceptor::CheckAcceptabilityOfTrialPoint1 trial_barr=" << trial_barr <<std::endl;
+    DBG_ASSERT(IsFiniteNumber(trial_barr));
+ 
+    Jnlst().Printf(J_DETAILED, J_LINE_SEARCH,
+diff --git a/src/Algorithm/IpRestoConvCheck.cpp b/src/Algorithm/IpRestoConvCheck.cpp
+index 6f634215..32a142a2 100644
+--- a/src/Algorithm/IpRestoConvCheck.cpp
++++ b/src/Algorithm/IpRestoConvCheck.cpp
+@@ -190,11 +190,12 @@ ConvergenceCheck::ConvergenceStatus RestoConvergenceCheck::CheckConvergence(
+    }
+    else
+    {
++      std::cout << "RestoConvergenceCheck::CheckConvergence first3"<<std::endl; 
+       Number orig_trial_barr = orig_ip_cq->trial_barrier_obj();
+-
+       Jnlst().Printf(J_DETAILED, J_MAIN,
+                      "orig_trial_barr = %8.2e\n", orig_trial_barr);
+       status = TestOrigProgress(orig_trial_barr, orig_trial_theta);
++      std::cout << "RestoConvergenceCheck::CheckConvergence first3.1 status="<<status<<std::endl;
+    }
+ 
+    // If the point is not yet acceptable to the filter, check if the problem
+diff --git a/src/Interfaces/IpIpoptApplication.cpp b/src/Interfaces/IpIpoptApplication.cpp
+index 44525aea..422add7e 100644
+--- a/src/Interfaces/IpIpoptApplication.cpp
++++ b/src/Interfaces/IpIpoptApplication.cpp
+@@ -29,6 +29,7 @@
+ #include <cassert>
+ #include <cmath>
+ #include <fstream>
++#include <iostream>
+ 
+ // Factory to facilitate creating IpoptApplication objects from within a DLL
+ 
+@@ -105,6 +106,7 @@ IpoptApplication::IpoptApplication(
+    catch( std::overflow_error& )
+    {
+       jnlst_->Printf(J_ERROR, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
++      
+       THROW_EXCEPTION(IPOPT_APPLICATION_ERROR, "Not enough memory");
+    }
+    catch( ... )
+@@ -270,11 +272,13 @@ ApplicationReturnStatus IpoptApplication::Initialize(
+    }
+    catch( std::bad_alloc& )
+    {
++      std::cout << "IpoptApplication::Initialize1 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+       return Insufficient_Memory;
+    }
+    catch( std::overflow_error& )
+    {
++         std::cout << "IpoptApplication::Initialize1 Integer type too small for required memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+       return Insufficient_Memory;
+    }
+@@ -309,10 +313,12 @@ ApplicationReturnStatus IpoptApplication::Initialize(
+       catch( std::bad_alloc& )
+       {
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
++         std::cout << "IpoptApplication::Initialize2 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+          return Insufficient_Memory;
+       }
+       catch( std::overflow_error& )
+       {
++            std::cout << "IpoptApplication::Initialize2 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+          return Insufficient_Memory;
+       }
+@@ -469,6 +475,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeTNLP(
+    const SmartPtr<TNLP>& tnlp
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeTNLP" << std::endl << std::flush;
+    nlp_adapter_ = new TNLPAdapter(GetRawPtr(tnlp), ConstPtr(jnlst_));
+    return OptimizeNLP(nlp_adapter_);
+ }
+@@ -489,6 +496,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    const SmartPtr<NLP>& nlp
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeNLP" << std::endl << std::flush;
+    SmartPtr<AlgorithmBuilder> alg_builder = NULL;
+    return OptimizeNLP(nlp, alg_builder);
+ }
+@@ -498,6 +506,7 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    SmartPtr<AlgorithmBuilder>& alg_builder
+ )
+ {
++      std::cout << "IpoptApplication::OptimizeNLP alg_builder" << std::endl << std::flush;
+    ApplicationReturnStatus retValue = Internal_Error;
+ 
+    // Prepare internal data structures of the algorithm
+@@ -538,12 +547,14 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    }
+    catch( OPTION_INVALID& exc )
+    {
++         std::cout << "IpoptApplication::OptimizeNLP OPTION_INVALID" << std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid option encountered.\n");
+       retValue = Invalid_Option;
+    }
+    catch( IpoptException& exc )
+    {
++         std::cout << "IpoptApplication::OptimizeNLP IpoptException" << std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Some uncaught Ipopt exception encountered.\n");
+       retValue = Unrecoverable_Exception;
+@@ -551,23 +562,28 @@ ApplicationReturnStatus IpoptApplication::OptimizeNLP(
+    catch( std::bad_alloc& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize3 Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+    }
+    catch( std::overflow_error& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::Initialize3 Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+    }
+    catch( ... )
+    {
++         std::cout << "IpoptApplication::OptimizeNLP ..." << std::endl << std::flush;
+       if( !rethrow_nonipoptexception_ )
+       {
+          IpoptException exc("Unknown Exception caught in Ipopt", "Unknown File", -1);
+          exc.ReportException(*jnlst_, J_ERROR);
++         std::cout << "IpoptApplication::OptimizeNLP NonIpopt_Exception_Thrown" << std::endl << std::flush;
+          retValue = NonIpopt_Exception_Thrown;
+       }
+       else
+       {
++            std::cout << "IpoptApplication::OptimizeNLP throw" << std::endl << std::flush;
+          throw;
+       }
+    }
+@@ -581,6 +597,7 @@ ApplicationReturnStatus IpoptApplication::ReOptimizeNLP(
+    const SmartPtr<NLP>& nlp
+ )
+ {
++      std::cout << "IpoptApplication::ReOptimizeNLP0" << std::endl << std::flush;
+    ASSERT_EXCEPTION(IsValid(alg_), INVALID_WARMSTART, "ReOptimizeNLP called before OptimizeNLP.");
+    OrigIpoptNLP* orig_nlp = static_cast<OrigIpoptNLP*>(GetRawPtr(ip_nlp_));
+    DBG_ASSERT(dynamic_cast<OrigIpoptNLP*> (GetRawPtr(ip_nlp_)));
+@@ -591,6 +608,7 @@ ApplicationReturnStatus IpoptApplication::ReOptimizeNLP(
+ 
+ ApplicationReturnStatus IpoptApplication::call_optimize()
+ {
++      std::cout << "IpoptApplication::call_optimize0" << std::endl << std::flush;
+    // Reset the print-level for the screen output
+    Index ivalue;
+    options_->GetIntegerValue("print_level", ivalue, "");
+@@ -622,6 +640,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+ 
+    ApplicationReturnStatus retValue = Internal_Error;
+    SolverReturn status = INTERNAL_ERROR;
++   std::cout << "IpoptApplication::call_optimize0.1" << std::endl << std::flush;
+    try
+    {
+       // check whether timing statistics need to be printed
+@@ -656,7 +675,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+ 
+       // Run the algorithm
+       status = p2alg->Optimize();
+-
++std::cout << "IpoptApplication::call_optimize1 status=" <<status<< std::endl << std::flush;
+       // Since all the output below doesn't make any sense in this
+       // case, we rethrow the TOO_FEW_DOF exception here
+       ASSERT_EXCEPTION(status != TOO_FEW_DEGREES_OF_FREEDOM, TOO_FEW_DOF, "Too few degrees of freedom (rethrown)!");
+@@ -686,6 +705,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+          }
+          catch( IpoptNLP::Eval_Error& exc )
+          {
++               std::cout << "IpoptApplication::call_optimize Eval_Error"<< std::endl << std::flush;
+             // this can happen if the final point was accepted because functions can be evaluated,
+             // but functions are not differentiable, so dual infeasibility cannot be computed
+             status = INVALID_NUMBER_DETECTED;
+@@ -751,67 +771,80 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+       }
+       else if( status == MAXITER_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize MAXITER_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_Iterations_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum Number of Iterations Exceeded.\n");
+       }
+       else if( status == CPUTIME_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize CPUTIME_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_CpuTime_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum CPU time exceeded.\n");
+       }
+       else if( status == WALLTIME_EXCEEDED )
+       {
++            std::cout << "IpoptApplication::call_optimize WALLTIME_EXCEEDED"<< std::endl << std::flush;
+          retValue = Maximum_WallTime_Exceeded;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Maximum wallclock time exceeded.\n");
+       }
+       else if( status == STOP_AT_TINY_STEP )
+       {
++            std::cout << "IpoptApplication::call_optimize STOP_AT_TINY_STEP"<< std::endl << std::flush;
+          retValue = Search_Direction_Becomes_Too_Small;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Search Direction is becoming Too Small.\n");
+       }
+       else if( status == STOP_AT_ACCEPTABLE_POINT )
+       {
++            std::cout << "IpoptApplication::call_optimize STOP_AT_ACCEPTABLE_POINT"<< std::endl << std::flush;
+          retValue = Solved_To_Acceptable_Level;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Solved To Acceptable Level.\n");
+       }
+       else if( status == FEASIBLE_POINT_FOUND )
+       {
++            std::cout << "IpoptApplication::call_optimize FEASIBLE_POINT_FOUND"<< std::endl << std::flush;
+          retValue = Feasible_Point_Found;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Feasible point for square problem found.\n");
+       }
+       else if( status == DIVERGING_ITERATES )
+       {
++            std::cout << "IpoptApplication::call_optimize DIVERGING_ITERATES"<< std::endl << std::flush;
+          retValue = Diverging_Iterates;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Iterates diverging; problem might be unbounded.\n");
+       }
+       else if( status == RESTORATION_FAILURE )
+       {
++            std::cout << "IpoptApplication::call_optimize RESTORATION_FAILURE"<< std::endl << std::flush;
+          retValue = Restoration_Failed;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Restoration Failed!\n");
+       }
+       else if( status == ERROR_IN_STEP_COMPUTATION )
+       {
++            std::cout << "IpoptApplication::call_optimize ERROR_IN_STEP_COMPUTATION"<< std::endl << std::flush;
+          retValue = Error_In_Step_Computation;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Error in step computation!\n");
+       }
+       else if( status == LOCAL_INFEASIBILITY )
+       {
++            std::cout << "IpoptApplication::call_optimize LOCAL_INFEASIBILITY"<< std::endl << std::flush;
+          retValue = Infeasible_Problem_Detected;
+          jnlst_->Printf(J_SUMMARY, J_MAIN,
+                         "\nEXIT: Converged to a point of local infeasibility. Problem may be infeasible.\n");
+       }
+       else if( status == USER_REQUESTED_STOP )
+       {
++            std::cout << "IpoptApplication::call_optimize USER_REQUESTED_STOP"<< std::endl << std::flush;
+          retValue = User_Requested_Stop;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Stopping optimization at current point as requested by user.\n");
+       }
+       else if( status == INVALID_NUMBER_DETECTED )
+       {
++            std::cout << "IpoptApplication::call_optimize INVALID_NUMBER_DETECTED"<< std::endl << std::flush;
+          retValue = Invalid_Number_Detected;
+          jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid number in NLP function or derivative detected.\n");
+       }
+       else
+       {
++            std::cout << "IpoptApplication::call_optimize Internal_Error"<< std::endl << std::flush;
+          retValue = Internal_Error;
+          jnlst_->Printf(J_SUMMARY, J_MAIN,
+                         "\nEXIT: INTERNAL ERROR: Unknown SolverReturn value - Notify IPOPT Authors.\n");
+@@ -826,6 +859,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( TOO_FEW_DOF& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize TOO_FEW_DOF"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_STRONGWARNING);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has too few degrees of freedom.\n");
+       retValue = Not_Enough_Degrees_Of_Freedom;
+@@ -833,6 +867,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( OPTION_INVALID& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize OPTION_INVALID"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Invalid option encountered.\n");
+       retValue = Invalid_Option;
+@@ -840,12 +875,14 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( DYNAMIC_LIBRARY_FAILURE& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize DYNAMIC_LIBRARY_FAILURE"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Library loading failure.\n");
+       retValue = Invalid_Option;
+    }
+    catch( INCONSISTENT_BOUNDS& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize INCONSISTENT_BOUNDS"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_MOREDETAILED);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Problem has inconsistent variable bounds or constraint sides.\n");
+       retValue = Invalid_Problem_Definition;
+@@ -853,6 +890,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+    catch( IpoptException& exc )
+    {
++         std::cout << "IpoptApplication::call_optimize IpoptException"<< std::endl << std::flush;
+       exc.ReportException(*jnlst_, J_ERROR);
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Some uncaught Ipopt exception encountered.\n");
+       retValue = Unrecoverable_Exception;
+@@ -860,25 +898,30 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    catch( std::bad_alloc& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::call_optimize Insufficient_Memory std::bad_alloc" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Not enough memory.\n");
+       status = OUT_OF_MEMORY;
+    }
+    catch( std::overflow_error& )
+    {
+       retValue = Insufficient_Memory;
++      std::cout << "IpoptApplication::call_optimize Insufficient_Memory std::overflow_error" << std::endl << std::flush;
+       jnlst_->Printf(J_SUMMARY, J_MAIN, "\nEXIT: Integer type too small for required memory.\n");
+       status = OUT_OF_MEMORY;
+    }
+    catch( ... )
+    {
++         std::cout << "IpoptApplication::call_optimize ..." << std::endl << std::flush;
+       if( !rethrow_nonipoptexception_ )
+       {
+          IpoptException exc("Unknown Exception caught in Ipopt", "Unknown File", -1);
+          exc.ReportException(*jnlst_, J_ERROR);
+          retValue = NonIpopt_Exception_Thrown;
++         std::cout << "IpoptApplication::call_optimize NonIpopt_Exception_Thrown" << std::endl << std::flush;
+       }
+       else
+       {
++            std::cout << "IpoptApplication::call_optimize throw" << std::endl << std::flush;
+          jnlst_->FlushBuffer();
+          throw;
+       }
+@@ -923,6 +966,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+             break;
+          default:
+          {
++               std::cout << "IpoptApplication::call_optimize status.default" << std::endl << std::flush;
+             SmartPtr<Vector> tmp = p2ip_data->curr()->y_c()->MakeNew();
+             tmp->Set(0.);
+             c = ConstPtr(tmp);
+@@ -944,7 +988,7 @@ ApplicationReturnStatus IpoptApplication::call_optimize()
+    }
+ 
+    jnlst_->FlushBuffer();
+-
++std::cout << "IpoptApplication::call_optimize final retValue="<< retValue<< std::endl << std::flush;
+    return retValue;
+ }
+ 

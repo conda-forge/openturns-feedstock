@@ -10,18 +10,25 @@ source:
   sha256: 4c7cfe5d2310933e3a2e91f7db9531d80e32157143157df80f6e93267c29f414
   patches:
     - numpy2.patch
+    - unique.patch
+    - ot_bonmin.patch
 
 build:
   number: 9
   skip: true  # [win and py>=313]
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
+  skip: true  # [not unix or py<313]
 
 requirements:
   build:
     - cmake
     - ninja
     - swig
+    - make  # [unix]
+    - curl
+    - pkg-config
+    - gnuconfig  # [unix]
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
@@ -31,30 +38,32 @@ requirements:
     - m2-diffutils  # [win]
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - lldb >=17  # [osx]
   host:
     - python
     - libboost-headers  # [not win]
-    - matplotlib-base  # [python_impl == 'cpython']
-    - mpc  # [not win]
+    # - matplotlib-base  # [python_impl == 'cpython']
+    # - mpc  # [not win]
     - libblas
     - libcblas  # [win]
     - liblapack
     - libxml2  # [not win]
-    - tbb-devel  # [not win]
-    - cminpack  # [not win]
-    - ceres-solver  # [not win]
-    - glog  # [not win]
-    - nlopt  # [not win]
-    - dlib-cpp  # [not win]
+    # - tbb-devel  # [not win]
+    # - cminpack  # [not win]
+    # - ceres-solver  # [not win]
+    # - glog  # [not win]
+    # - nlopt  # [not win]
+    # - dlib-cpp  # [not win]
     - ipopt  # [not win]
     - coin-or-bonmin  # [not win]
-    - spectralib  # [not win]
-    - hdf5  # [not win]
-    - pagmo-devel  # [not win]
+    # - spectralib  # [not win]
+    # - hdf5  # [not win]
+    # - pagmo-devel  # [not win]
     - libboost-devel  # [not win]
-    - primesieve  # [not win]
-    - libcuba  # [not win]
-    - nanoflann  # [not win]
+    # - primesieve  # [not win]
+    # - libcuba  # [not win]
+    # - nanoflann  # [not win]
+    - gdb  # [linux]
   run:
     - python
     - dill
