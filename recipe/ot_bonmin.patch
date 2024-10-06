@@ -126,40 +126,10 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..494eb370e 100644
+index 147ddd9ad..02481e993 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
-@@ -94,63 +94,20 @@ bool BonminProblem::get_nlp_info(int & n,
- 
- bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
- {
--  // Conversion from OptimizationProblemImplementation::VariableType to TMINLP::VariableType
--  for (int i = 0; i < n; ++i)
--  {
--    switch (optimProblem_.getVariablesType()[i])
--    {
--      case OptimizationProblemImplementation::CONTINUOUS:
--      {
--        var_types[i] = TMINLP::CONTINUOUS;
--        break;
--      }
--      case OptimizationProblemImplementation::INTEGER:
--      {
--        var_types[i] = TMINLP::INTEGER;
--        break;
--      }
--      case OptimizationProblemImplementation::BINARY:
--      {
--        var_types[i] = TMINLP::BINARY;
--        break;
--      }
--    }
--  }
--
-+  var_types[0] = TMINLP::BINARY;
-+  var_types[1] = TMINLP::CONTINUOUS;
-+  var_types[2] = TMINLP::CONTINUOUS;
-+  var_types[3] = TMINLP::INTEGER;
+@@ -120,37 +120,13 @@ bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
    return true;
  }
  
@@ -202,7 +172,7 @@ index 147ddd9ad..494eb370e 100644
    return true;
  }
  
-@@ -198,52 +155,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +174,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -264,16 +234,14 @@ index 147ddd9ad..494eb370e 100644
    return true;
  }
  
-@@ -289,32 +214,12 @@ bool BonminProblem::eval_f(int n,
+@@ -289,31 +233,11 @@ bool BonminProblem::eval_f(int n,
    else
      obj_value = -yPoint[0];
  
 +  obj_value = -x[0] -x[1] -x[2];
    // track input/outputs
--  evaluationInputHistory_.add(xPoint);
--  evaluationOutputHistory_.add(yPoint);
-+  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
-+  evaluationOutputHistory_.add(Point({obj_value}));
+   evaluationInputHistory_.add(xPoint);
+   evaluationOutputHistory_.add(yPoint);
  
 -  // enforce time limit even before bonmin.time_limit can be taken into account
 -  std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -296,12 +264,10 @@ index 147ddd9ad..494eb370e 100644
 -      return false;
 -  }
 -
--  return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
-+  return (evaluationInputHistory_.getSize() <= 10000);
+   return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
  }
  
- 
-@@ -323,29 +228,10 @@ bool BonminProblem::eval_grad_f( int n,
+@@ -323,29 +247,10 @@ bool BonminProblem::eval_grad_f( int n,
                                   bool /*new_x*/,
                                   double* grad_f)
  {
@@ -334,7 +300,7 @@ index 147ddd9ad..494eb370e 100644
    return true;
  }
  
-@@ -355,49 +241,10 @@ bool BonminProblem::eval_g(int n,
+@@ -355,49 +260,10 @@ bool BonminProblem::eval_g(int n,
                             int /*m*/,
                             double* g)
  {
@@ -388,7 +354,7 @@ index 147ddd9ad..494eb370e 100644
    return true;
  }
  
-@@ -434,27 +281,6 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -434,27 +300,6 @@ bool BonminProblem::eval_jac_g(int n,
      UnsignedInteger nbEqualityConstraints = 0;
      UnsignedInteger nbInequalityConstraints = 0;
  
@@ -416,7 +382,7 @@ index 147ddd9ad..494eb370e 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -493,14 +319,6 @@ bool BonminProblem::eval_h(int n,
+@@ -493,14 +338,6 @@ bool BonminProblem::eval_h(int n,
                             int* jCol,
                             double* values)
  {
@@ -431,7 +397,7 @@ index 147ddd9ad..494eb370e 100644
    /* Switch on first call / later calls */
    if (values == NULL) // First call: initialization of iRow/jCol
    {
-@@ -515,76 +333,8 @@ bool BonminProblem::eval_h(int n,
+@@ -515,76 +352,8 @@ bool BonminProblem::eval_h(int n,
    }
    else // Later calls
    {
@@ -510,7 +476,7 @@ index 147ddd9ad..494eb370e 100644
    }
  
    return true;
-@@ -596,28 +346,12 @@ bool BonminProblem::eval_gi(int n,
+@@ -596,28 +365,12 @@ bool BonminProblem::eval_gi(int n,
                              int i,
                              double& gi)
  {
