@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..1cb2b45c7 100644
+index 147ddd9ad..01fdd882a 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -120,37 +120,13 @@ bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
@@ -408,7 +408,20 @@ index 147ddd9ad..1cb2b45c7 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -596,28 +422,12 @@ bool BonminProblem::eval_gi(int n,
+@@ -582,9 +408,11 @@ bool BonminProblem::eval_h(int n,
+     for (int i = 0; i < n; ++i)
+       for (int j = 0; j < n; ++j)
+       {
+-        values[k] = lagrangianHessian(i, j);
++        values[k] = 0.0;
+         ++k;
+       }
++    values[5] = -2.0 * lambda[0];
++    values[10] = -2.0 * lambda[0];
+   }
+ 
+   return true;
+@@ -596,28 +424,12 @@ bool BonminProblem::eval_gi(int n,
                              int i,
                              double& gi)
  {
