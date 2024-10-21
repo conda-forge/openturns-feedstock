@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..b1c8de708 100644
+index 147ddd9ad..4a1d9f0cc 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -148,7 +148,7 @@ index 147ddd9ad..b1c8de708 100644
    , optimProblem_(optimProblem)
    , startingPoint_(startingPoint)
    , evaluationInputHistory_(0, optimProblem.getDimension())
-@@ -73,121 +70,45 @@ bool BonminProblem::get_nlp_info(int & n,
+@@ -73,121 +70,51 @@ bool BonminProblem::get_nlp_info(int & n,
                                   Ipopt::TNLP::IndexStyleEnum & index_style)
  {
    // Number of variables
@@ -249,12 +249,17 @@ index 147ddd9ad..b1c8de708 100644
 -    else
 -      var_types[i] = Ipopt::TNLP::NON_LINEAR;
 -
--  return true;
--}
--
--bool BonminProblem::get_constraints_linearity( int /*m*/,
++  var_types[0] = ::Ipopt::TNLP::LINEAR;
++  var_types[1] = ::Ipopt::TNLP::NON_LINEAR;
++  var_types[2] = ::Ipopt::TNLP::NON_LINEAR;
++  var_types[3] = ::Ipopt::TNLP::LINEAR;
+   return true;
+ }
+ 
+ bool BonminProblem::get_constraints_linearity( int /*m*/,
 -    LinearityTypeTable const_types)
--{
++    LinearityTypeTable /*const_types*/)
+ {
 -  // Retrieving number of constraints
 -  const UnsignedInteger nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
 -  const UnsignedInteger nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
@@ -286,14 +291,10 @@ index 147ddd9ad..b1c8de708 100644
 -    ++k;
 -  }
 -
-+  var_types[0] = ::Ipopt::TNLP::LINEAR;
-+  var_types[1] = ::Ipopt::TNLP::NON_LINEAR;
-+  var_types[2] = ::Ipopt::TNLP::NON_LINEAR;
-+  var_types[3] = ::Ipopt::TNLP::LINEAR;
    return true;
  }
  
-@@ -198,52 +119,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +125,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -355,7 +356,7 @@ index 147ddd9ad..b1c8de708 100644
    return true;
  }
  
-@@ -257,9 +146,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
+@@ -257,9 +152,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
                                         bool /*init_lambda*/,
                                         double* /*lambda*/)
  {
@@ -367,7 +368,7 @@ index 147ddd9ad..b1c8de708 100644
    return true;
  }
  
-@@ -269,135 +157,37 @@ bool BonminProblem::eval_f(int n,
+@@ -269,135 +163,37 @@ bool BonminProblem::eval_f(int n,
                             bool /*new_x*/,
                             double& obj_value)
  {
@@ -516,7 +517,7 @@ index 147ddd9ad..b1c8de708 100644
    return true;
  }
  
-@@ -431,30 +221,9 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -431,30 +227,9 @@ bool BonminProblem::eval_jac_g(int n,
  
      // Filling values array
      UnsignedInteger k = 0;
@@ -548,7 +549,7 @@ index 147ddd9ad..b1c8de708 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -494,10 +263,10 @@ bool BonminProblem::eval_h(int n,
+@@ -494,10 +269,10 @@ bool BonminProblem::eval_h(int n,
                             double* values)
  {
    // Retrieve number of constraints
@@ -562,7 +563,7 @@ index 147ddd9ad..b1c8de708 100644
    if (optimProblem_.hasInequalityConstraint())
      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
  
-@@ -538,25 +307,6 @@ bool BonminProblem::eval_h(int n,
+@@ -538,25 +313,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -588,7 +589,7 @@ index 147ddd9ad..b1c8de708 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -582,42 +332,28 @@ bool BonminProblem::eval_h(int n,
+@@ -582,42 +338,28 @@ bool BonminProblem::eval_h(int n,
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
@@ -654,19 +655,6 @@ index 6a9fc2482..8ef033f67 100644
  
  #ifdef OPENTURNS_HAVE_PAGMO
  #include <pagmo/algorithm.hpp>
-diff --git a/lib/src/Base/Optim/openturns/BonminProblem.hxx b/lib/src/Base/Optim/openturns/BonminProblem.hxx
-index 79af481e0..099de79dd 100644
---- a/lib/src/Base/Optim/openturns/BonminProblem.hxx
-+++ b/lib/src/Base/Optim/openturns/BonminProblem.hxx
-@@ -72,8 +72,6 @@ public:
-   bool get_variables_linearity( int n,
-                                 LinearityTypeTable var_types);
- 
--  bool get_constraints_linearity( int m,
--                                  LinearityTypeTable const_types);
- 
-   bool get_bounds_info( int n,
-                         double* x_l,  // Lower bounds
 diff --git a/lib/src/Base/openturns/OTBase.hxx b/lib/src/Base/openturns/OTBase.hxx
 index 5fc788d0a..2aef4ce8b 100644
 --- a/lib/src/Base/openturns/OTBase.hxx
