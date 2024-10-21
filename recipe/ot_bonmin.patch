@@ -126,10 +126,65 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..01fdd882a 100644
+index 147ddd9ad..7e4c81a39 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
-@@ -120,37 +120,13 @@ bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
+@@ -23,9 +23,6 @@
+ #include "openturns/BonminProblem.hxx"
+ #include "openturns/SpecFunc.hxx"
+ 
+-using namespace Bonmin;
+-using namespace Ipopt;
+-
+ BEGIN_NAMESPACE_OPENTURNS
+ 
+ /** Constructor with parameters */
+@@ -34,7 +31,7 @@ BonminProblem::BonminProblem( const OptimizationProblem & optimProblem,
+                               const UnsignedInteger maximumCallsNumber,
+                               const Scalar maximumTimeDuration,
+                               const std::chrono::steady_clock::time_point & t0)
+-  : TMINLP()
++  : ::Bonmin::TMINLP()
+   , optimProblem_(optimProblem)
+   , startingPoint_(startingPoint)
+   , evaluationInputHistory_(0, optimProblem.getDimension())
+@@ -87,8 +84,9 @@ bool BonminProblem::get_nlp_info(int & n,
+   nnz_h_lag = n * n;
+ 
+   // Index style is C-like
+-  index_style = Ipopt::TNLP::C_STYLE;
++  index_style = ::Ipopt::TNLP::C_STYLE;
+ 
++  std::cout << "BonminProblem::get_nlp_info m="<<m<<" n="<<n<<" nnz_jac_g="<<nnz_jac_g<<" nnz_h_lag="<< nnz_h_lag<<std::endl;
+   return true;
+ }
+ 
+@@ -101,56 +99,35 @@ bool BonminProblem::get_variables_types(int n, VariableTypeTable var_types)
+     {
+       case OptimizationProblemImplementation::CONTINUOUS:
+       {
+-        var_types[i] = TMINLP::CONTINUOUS;
++        var_types[i] = ::Bonmin::TMINLP::CONTINUOUS;
+         break;
+       }
+       case OptimizationProblemImplementation::INTEGER:
+       {
+-        var_types[i] = TMINLP::INTEGER;
++        var_types[i] = ::Bonmin::TMINLP::INTEGER;
+         break;
+       }
+       case OptimizationProblemImplementation::BINARY:
+       {
+-        var_types[i] = TMINLP::BINARY;
++        var_types[i] = ::Bonmin::TMINLP::BINARY;
+         break;
+       }
+     }
+   }
+ 
++  std::cout << "BonminProblem::get_variables_types CONTINUOUS="<<::Bonmin::TMINLP::CONTINUOUS<<" INTEGER="<<::Bonmin::TMINLP::INTEGER<<"BINARY="<<::Bonmin::TMINLP::BINARY<<std::endl;
++  for (int i = 0; i < n; ++ i)
++    std::cout << "BonminProblem::get_variables_types i="<<i<<" var_types="<<var_types[i]<<std::endl;
    return true;
  }
  
@@ -165,14 +220,14 @@ index 147ddd9ad..01fdd882a 100644
 -    else
 -      var_types[i] = Ipopt::TNLP::NON_LINEAR;
 -
-+  var_types[0] = Ipopt::TNLP::LINEAR;
-+  var_types[1] = Ipopt::TNLP::NON_LINEAR;
-+  var_types[2] = Ipopt::TNLP::NON_LINEAR;
-+  var_types[3] = Ipopt::TNLP::LINEAR;
++  var_types[0] = ::Ipopt::TNLP::LINEAR;
++  var_types[1] = ::Ipopt::TNLP::NON_LINEAR;
++  var_types[2] = ::Ipopt::TNLP::NON_LINEAR;
++  var_types[3] = ::Ipopt::TNLP::LINEAR;
    return true;
  }
  
-@@ -198,52 +174,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +175,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -234,7 +289,7 @@ index 147ddd9ad..01fdd882a 100644
    return true;
  }
  
-@@ -289,31 +233,11 @@ bool BonminProblem::eval_f(int n,
+@@ -289,115 +234,37 @@ bool BonminProblem::eval_f(int n,
    else
      obj_value = -yPoint[0];
  
@@ -267,7 +322,11 @@ index 147ddd9ad..01fdd882a 100644
    return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
  }
  
-@@ -323,29 +247,10 @@ bool BonminProblem::eval_grad_f( int n,
+ 
+-bool BonminProblem::eval_grad_f( int n,
+-                                 const double* x,
++bool BonminProblem::eval_grad_f( int /*n*/,
++                                 const double* /*x*/,
                                   bool /*new_x*/,
                                   double* grad_f)
  {
@@ -300,7 +359,10 @@ index 147ddd9ad..01fdd882a 100644
    return true;
  }
  
-@@ -355,49 +260,10 @@ bool BonminProblem::eval_g(int n,
+-bool BonminProblem::eval_g(int n,
++bool BonminProblem::eval_g(int /*n*/,
+                            const double* x,
+                            bool /*new_x*/,
                             int /*m*/,
                             double* g)
  {
@@ -354,8 +416,12 @@ index 147ddd9ad..01fdd882a 100644
    return true;
  }
  
-@@ -434,27 +300,6 @@ bool BonminProblem::eval_jac_g(int n,
-     UnsignedInteger nbEqualityConstraints = 0;
+@@ -431,30 +298,9 @@ bool BonminProblem::eval_jac_g(int n,
+ 
+     // Filling values array
+     UnsignedInteger k = 0;
+-    UnsignedInteger nbEqualityConstraints = 0;
++    // UnsignedInteger nbEqualityConstraints = 0;
      UnsignedInteger nbInequalityConstraints = 0;
  
 -    if (optimProblem_.hasEqualityConstraint())
@@ -382,7 +448,21 @@ index 147ddd9ad..01fdd882a 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -538,25 +383,6 @@ bool BonminProblem::eval_h(int n,
+@@ -494,10 +340,10 @@ bool BonminProblem::eval_h(int n,
+                            double* values)
+ {
+   // Retrieve number of constraints
+-  UnsignedInteger nbEqualityConstraints = 0;
++  //UnsignedInteger nbEqualityConstraints = 0;
+   UnsignedInteger nbInequalityConstraints = 0;
+-  if (optimProblem_.hasEqualityConstraint())
+-    nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
++  // if (optimProblem_.hasEqualityConstraint())
++    // nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
+   if (optimProblem_.hasInequalityConstraint())
+     nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
+ 
+@@ -538,25 +384,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -408,7 +488,7 @@ index 147ddd9ad..01fdd882a 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -582,9 +408,11 @@ bool BonminProblem::eval_h(int n,
+@@ -582,42 +409,28 @@ bool BonminProblem::eval_h(int n,
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
@@ -421,7 +501,12 @@ index 147ddd9ad..01fdd882a 100644
    }
  
    return true;
-@@ -596,28 +424,12 @@ bool BonminProblem::eval_gi(int n,
+ }
+ 
+-bool BonminProblem::eval_gi(int n,
++bool BonminProblem::eval_gi(int /*n*/,
+                             const double* x,
+                             bool /*new_x*/,
                              int i,
                              double& gi)
  {
