@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..70d01aaf9 100644
+index 147ddd9ad..78d89980b 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -318,15 +318,47 @@ index 147ddd9ad..70d01aaf9 100644
    return true;
  }
  
-@@ -289,115 +215,37 @@ bool BonminProblem::eval_f(int n,
-   else
-     obj_value = -yPoint[0];
+@@ -257,9 +183,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
+                                        bool /*init_lambda*/,
+                                        double* /*lambda*/)
+ {
+-  // Conversion starting point from OT::Point to double array
+-  std::copy(startingPoint_.begin(), startingPoint_.end(), x);
+-
++  for (int i=0;i <4; ++i)
++    x[i] = 0.0;
+   return true;
+ }
  
+@@ -269,135 +194,37 @@ bool BonminProblem::eval_f(int n,
+                            bool /*new_x*/,
+                            double& obj_value)
+ {
+-  // Convert x to OT::Point
+-  Point xPoint(n);
+-  std::copy(x, x + n, xPoint.begin());
+-
+-  // Computing objective function value
+-  Point yPoint;
+-  try
+-  {
+-    yPoint = optimProblem_.getObjective()(xPoint);
+-  }
+-  catch (const std::exception & exc)
+-  {
+-    LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-    return false;
+-  }
+-  if (optimProblem_.isMinimization())
+-    obj_value = yPoint[0];
+-  else
+-    obj_value = -yPoint[0];
+-
 +  obj_value = -x[0] -x[1] -x[2];
    // track input/outputs
-   evaluationInputHistory_.add(xPoint);
-   evaluationOutputHistory_.add(yPoint);
- 
+-  evaluationInputHistory_.add(xPoint);
+-  evaluationOutputHistory_.add(yPoint);
+-
 -  // enforce time limit even before bonmin.time_limit can be taken into account
 -  std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 -  const Scalar timeDuration = std::chrono::duration<Scalar>(t1 - t0_).count();
@@ -347,7 +379,9 @@ index 147ddd9ad..70d01aaf9 100644
 -    if (stop)
 -      return false;
 -  }
--
++  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
++  evaluationOutputHistory_.add(Point({obj_value}));
+ 
    return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
  }
  
@@ -445,7 +479,7 @@ index 147ddd9ad..70d01aaf9 100644
    return true;
  }
  
-@@ -431,30 +279,9 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -431,30 +258,9 @@ bool BonminProblem::eval_jac_g(int n,
  
      // Filling values array
      UnsignedInteger k = 0;
@@ -477,7 +511,7 @@ index 147ddd9ad..70d01aaf9 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -494,10 +321,10 @@ bool BonminProblem::eval_h(int n,
+@@ -494,10 +300,10 @@ bool BonminProblem::eval_h(int n,
                             double* values)
  {
    // Retrieve number of constraints
@@ -491,7 +525,7 @@ index 147ddd9ad..70d01aaf9 100644
    if (optimProblem_.hasInequalityConstraint())
      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
  
-@@ -538,25 +365,6 @@ bool BonminProblem::eval_h(int n,
+@@ -538,25 +344,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -517,7 +551,7 @@ index 147ddd9ad..70d01aaf9 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -582,42 +390,28 @@ bool BonminProblem::eval_h(int n,
+@@ -582,42 +369,28 @@ bool BonminProblem::eval_h(int n,
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
