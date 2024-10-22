@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..d52e9b65e 100644
+index 147ddd9ad..6ca2d7bec 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -549,7 +549,12 @@ index 147ddd9ad..d52e9b65e 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -475,6 +250,16 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -471,10 +246,20 @@ bool BonminProblem::eval_jac_g(int n,
+       for (UnsignedInteger i = 0; i < nbInequalityConstraints; ++i)
+         for (int j = 0; j < n; ++j)
+         {
+-          values[k] = inequalityConstraintGradient(j, i);
++          //values[k] = inequalityConstraintGradient(j, i);
            ++k;
          }
      }
