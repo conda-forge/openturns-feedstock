@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..4a1d9f0cc 100644
+index 147ddd9ad..d52e9b65e 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -549,7 +549,24 @@ index 147ddd9ad..4a1d9f0cc 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -494,10 +269,10 @@ bool BonminProblem::eval_h(int n,
+@@ -475,6 +250,16 @@ bool BonminProblem::eval_jac_g(int n,
+           ++k;
+         }
+     }
++
++    for (int i = 0; i < 12; ++i)
++      values[i] = 0.0;
++    values[1] = -2.0*(x[1]-0.5);
++    values[2] = -2.0*(x[2]-0.5);
++    values[4] = -1.0;
++    values[5] = 1.0;
++    values[8] = -1.0;
++    values[10] = -1.0;
++    values[11] = -1.0;
+   }
+ 
+   return true;
+@@ -494,10 +279,10 @@ bool BonminProblem::eval_h(int n,
                             double* values)
  {
    // Retrieve number of constraints
@@ -563,7 +580,7 @@ index 147ddd9ad..4a1d9f0cc 100644
    if (optimProblem_.hasInequalityConstraint())
      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
  
-@@ -538,25 +313,6 @@ bool BonminProblem::eval_h(int n,
+@@ -538,25 +323,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -589,7 +606,7 @@ index 147ddd9ad..4a1d9f0cc 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -582,42 +338,28 @@ bool BonminProblem::eval_h(int n,
+@@ -582,42 +348,28 @@ bool BonminProblem::eval_h(int n,
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
