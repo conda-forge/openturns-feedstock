@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..2f693f27a 100644
+index 147ddd9ad..2b9c4e8de 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -148,10 +148,22 @@ index 147ddd9ad..2f693f27a 100644
    , optimProblem_(optimProblem)
    , startingPoint_(startingPoint)
    , evaluationInputHistory_(0, optimProblem.getDimension())
-@@ -73,121 +70,51 @@ bool BonminProblem::get_nlp_info(int & n,
+@@ -61,10 +58,6 @@ Sample BonminProblem::getOutputHistory() const
+   return evaluationOutputHistory_;
+ }
+ 
+-/** Overloading functions from bonmin/Ipopt
+-    See Ipopt online documentation at
+-    https://coin-or.github.io/Ipopt/INTERFACES.html#INTERFACE_CPP
+-    for description */
+ 
+ bool BonminProblem::get_nlp_info(int & n,
+                                  int & m,
+@@ -72,122 +65,41 @@ bool BonminProblem::get_nlp_info(int & n,
+                                  int & nnz_h_lag, // Number of non-zero components in Hessian of Lagrangean
                                   Ipopt::TNLP::IndexStyleEnum & index_style)
  {
-   // Number of variables
+-  // Number of variables
 -  n = optimProblem_.getDimension();
 -
 -  // Number of constraints
@@ -161,15 +173,6 @@ index 147ddd9ad..2f693f27a 100644
 -  if (optimProblem_.hasInequalityConstraint())
 -    m += optimProblem_.getInequalityConstraint().getOutputDimension();
 -
-+  // n = optimProblem_.getDimension();
-+  // 
-+  // // Number of constraints
-+  // m = 0;
-+  // if (optimProblem_.hasEqualityConstraint())
-+  //   m += optimProblem_.getEqualityConstraint().getOutputDimension();
-+  // if (optimProblem_.hasInequalityConstraint())
-+  //   m += optimProblem_.getInequalityConstraint().getOutputDimension();
-+
 +  m = 3;
 +  n = 4;
 +  
@@ -181,7 +184,6 @@ index 147ddd9ad..2f693f27a 100644
 -  index_style = Ipopt::TNLP::C_STYLE;
 +  index_style = ::Ipopt::TNLP::C_STYLE;
  
-+  // std::cout << "BonminProblem::get_nlp_info m="<<m<<" n="<<n<<" nnz_jac_g="<<nnz_jac_g<<" nnz_h_lag="<< nnz_h_lag<<std::endl;
    return true;
  }
  
@@ -294,7 +296,7 @@ index 147ddd9ad..2f693f27a 100644
    return true;
  }
  
-@@ -198,52 +125,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +110,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -356,7 +358,7 @@ index 147ddd9ad..2f693f27a 100644
    return true;
  }
  
-@@ -257,9 +152,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
+@@ -257,9 +137,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
                                         bool /*init_lambda*/,
                                         double* /*lambda*/)
  {
@@ -368,7 +370,7 @@ index 147ddd9ad..2f693f27a 100644
    return true;
  }
  
-@@ -269,135 +163,37 @@ bool BonminProblem::eval_f(int n,
+@@ -269,135 +148,39 @@ bool BonminProblem::eval_f(int n,
                             bool /*new_x*/,
                             double& obj_value)
  {
@@ -420,7 +422,10 @@ index 147ddd9ad..2f693f27a 100644
 +  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
 +  evaluationOutputHistory_.add(Point({obj_value}));
  
-   return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
+-  return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
++  static int ncalls = 0;
++  ++ ncalls;
++  return ncalls <= 10000;
  }
  
  
@@ -517,7 +522,7 @@ index 147ddd9ad..2f693f27a 100644
    return true;
  }
  
-@@ -425,56 +221,15 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -425,56 +208,15 @@ bool BonminProblem::eval_jac_g(int n,
    }
    else     // Later calls
    {
@@ -583,21 +588,22 @@ index 147ddd9ad..2f693f27a 100644
    }
  
    return true;
-@@ -494,10 +249,10 @@ bool BonminProblem::eval_h(int n,
+@@ -493,14 +235,6 @@ bool BonminProblem::eval_h(int n,
+                            int* jCol,
                             double* values)
  {
-   // Retrieve number of constraints
+-  // Retrieve number of constraints
 -  UnsignedInteger nbEqualityConstraints = 0;
-+  //UnsignedInteger nbEqualityConstraints = 0;
-   UnsignedInteger nbInequalityConstraints = 0;
+-  UnsignedInteger nbInequalityConstraints = 0;
 -  if (optimProblem_.hasEqualityConstraint())
 -    nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
-+  // if (optimProblem_.hasEqualityConstraint())
-+    // nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
-   if (optimProblem_.hasInequalityConstraint())
-     nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
- 
-@@ -515,109 +270,32 @@ bool BonminProblem::eval_h(int n,
+-  if (optimProblem_.hasInequalityConstraint())
+-    nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
+-
+   /* Switch on first call / later calls */
+   if (values == NULL) // First call: initialization of iRow/jCol
+   {
+@@ -515,109 +249,32 @@ bool BonminProblem::eval_h(int n,
    }
    else // Later calls
    {
@@ -717,7 +723,7 @@ index 147ddd9ad..2f693f27a 100644
    return true;
  }
  
-@@ -641,39 +319,9 @@ bool BonminProblem::eval_grad_gi(int n,
+@@ -641,39 +298,9 @@ bool BonminProblem::eval_grad_gi(int n,
        jCol[j] = j;
    else
    {
