@@ -125,11 +125,58 @@ index ea936172e..3d963dbd3 100644
  add_subdirectory (Type)
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
+diff --git a/lib/src/Base/Optim/Bonmin.cxx b/lib/src/Base/Optim/Bonmin.cxx
+index c17385aaf..b7947a046 100644
+--- a/lib/src/Base/Optim/Bonmin.cxx
++++ b/lib/src/Base/Optim/Bonmin.cxx
+@@ -141,10 +141,7 @@ void Bonmin::run()
+     throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << getStartingPoint().getDimension() << "), expected " << getProblem().getDimension();
+ 
+   // Create BonminProblem
+-  std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
+-  Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem(getProblem(), getStartingPoint(), getMaximumCallsNumber(), getMaximumTimeDuration(), t0);
+-  tminlp->setProgressCallback(progressCallback_.first, progressCallback_.second);
+-  tminlp->setStopCallback(stopCallback_.first, stopCallback_.second);
++  Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem();
+ 
+   // Create setup, initialize options
+   ::Bonmin::BonminSetup app;
+@@ -153,18 +150,11 @@ void Bonmin::run()
+     throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for bonmin.algorithm";
+   if (!app.options()->SetIntegerValue("bonmin.iteration_limit", getMaximumIterationNumber()))
+     throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for bonmin.iteration_limit";
+-  if (getMaximumTimeDuration() > 0.0)
+-    app.options()->SetNumericValue("bonmin.time_limit", getMaximumTimeDuration());
+-  if (!app.options()->SetStringValue("sb", "yes"))
+-    throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for sb";
+-  if (!app.options()->SetIntegerValue("print_level", 0))
+-    throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for print_level";
++  
++
+   if (!app.options()->SetStringValue("honor_original_bounds", "yes"))
+     throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for honor_original_bounds";
+-  const Description algos = {"bb", "nlp", "lp", "oa", "fp", "milp"};
+-  for (UnsignedInteger i = 0; i < algos.getSize(); ++ i)
+-    if (!app.options()->SetIntegerValue("bonmin." + algos[i] + "_log_level", 0))
+-      throw InvalidArgumentException(HERE) << "Bonmin: Invalid parameter for bonmin." << algos[i] << "_log_level";
++  
+   if (getMaximumConstraintError() > 0.0)
+     app.options()->SetNumericValue("constr_viol_tol", getMaximumConstraintError());
+   else
+@@ -233,8 +223,6 @@ void Bonmin::run()
+       result_.setStatus(OptimizationResult::FAILURE);
+       break;
+   }
+-  if (tminlp->getTimeOut())
+-    result_.setStatus(OptimizationResult::TIMEOUT);
+ 
+   if (result_.getStatus() != OptimizationResult::SUCCESS)
+   {
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..2b9c4e8de 100644
+index 147ddd9ad..b9ac4d59f 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
-@@ -23,9 +23,6 @@
+@@ -23,30 +23,14 @@
  #include "openturns/BonminProblem.hxx"
  #include "openturns/SpecFunc.hxx"
  
@@ -139,16 +186,31 @@ index 147ddd9ad..2b9c4e8de 100644
  BEGIN_NAMESPACE_OPENTURNS
  
  /** Constructor with parameters */
-@@ -34,7 +31,7 @@ BonminProblem::BonminProblem( const OptimizationProblem & optimProblem,
-                               const UnsignedInteger maximumCallsNumber,
-                               const Scalar maximumTimeDuration,
-                               const std::chrono::steady_clock::time_point & t0)
+-BonminProblem::BonminProblem( const OptimizationProblem & optimProblem,
+-                              const Point & startingPoint,
+-                              const UnsignedInteger maximumCallsNumber,
+-                              const Scalar maximumTimeDuration,
+-                              const std::chrono::steady_clock::time_point & t0)
 -  : TMINLP()
+-  , optimProblem_(optimProblem)
+-  , startingPoint_(startingPoint)
+-  , evaluationInputHistory_(0, optimProblem.getDimension())
+-  , evaluationOutputHistory_(0, 1)
+-  , maximumCallsNumber_(maximumCallsNumber)
+-  , maximumTimeDuration_(maximumTimeDuration)
+-  , t0_(t0)
+-  , progressCallback_(std::make_pair<OptimizationAlgorithmImplementation::ProgressCallback, void *>(0, 0))
+-  , stopCallback_(std::make_pair<OptimizationAlgorithmImplementation::StopCallback, void *>(0, 0))
++BonminProblem::BonminProblem()
 +  : ::Bonmin::TMINLP()
-   , optimProblem_(optimProblem)
-   , startingPoint_(startingPoint)
-   , evaluationInputHistory_(0, optimProblem.getDimension())
-@@ -61,10 +58,6 @@ Sample BonminProblem::getOutputHistory() const
+ {
+   // initialize history
+-  evaluationInputHistory_ = Sample(0, optimProblem.getDimension());
++  evaluationInputHistory_ = Sample(0, 4);
+   evaluationOutputHistory_ = Sample(0, 1);
+ }
+ 
+@@ -61,10 +45,6 @@ Sample BonminProblem::getOutputHistory() const
    return evaluationOutputHistory_;
  }
  
@@ -159,7 +221,7 @@ index 147ddd9ad..2b9c4e8de 100644
  
  bool BonminProblem::get_nlp_info(int & n,
                                   int & m,
-@@ -72,122 +65,41 @@ bool BonminProblem::get_nlp_info(int & n,
+@@ -72,122 +52,41 @@ bool BonminProblem::get_nlp_info(int & n,
                                   int & nnz_h_lag, // Number of non-zero components in Hessian of Lagrangean
                                   Ipopt::TNLP::IndexStyleEnum & index_style)
  {
@@ -296,7 +358,7 @@ index 147ddd9ad..2b9c4e8de 100644
    return true;
  }
  
-@@ -198,52 +110,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +97,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -358,7 +420,7 @@ index 147ddd9ad..2b9c4e8de 100644
    return true;
  }
  
-@@ -257,9 +137,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
+@@ -257,9 +124,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
                                         bool /*init_lambda*/,
                                         double* /*lambda*/)
  {
@@ -370,7 +432,7 @@ index 147ddd9ad..2b9c4e8de 100644
    return true;
  }
  
-@@ -269,135 +148,39 @@ bool BonminProblem::eval_f(int n,
+@@ -269,135 +135,39 @@ bool BonminProblem::eval_f(int n,
                             bool /*new_x*/,
                             double& obj_value)
  {
@@ -398,7 +460,9 @@ index 147ddd9ad..2b9c4e8de 100644
    // track input/outputs
 -  evaluationInputHistory_.add(xPoint);
 -  evaluationOutputHistory_.add(yPoint);
--
++  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
++  evaluationOutputHistory_.add(Point({obj_value}));
+ 
 -  // enforce time limit even before bonmin.time_limit can be taken into account
 -  std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
 -  const Scalar timeDuration = std::chrono::duration<Scalar>(t1 - t0_).count();
@@ -419,9 +483,7 @@ index 147ddd9ad..2b9c4e8de 100644
 -    if (stop)
 -      return false;
 -  }
-+  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
-+  evaluationOutputHistory_.add(Point({obj_value}));
- 
+-
 -  return (evaluationInputHistory_.getSize() <= maximumCallsNumber_);
 +  static int ncalls = 0;
 +  ++ ncalls;
@@ -522,7 +584,7 @@ index 147ddd9ad..2b9c4e8de 100644
    return true;
  }
  
-@@ -425,56 +208,15 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -425,56 +195,15 @@ bool BonminProblem::eval_jac_g(int n,
    }
    else     // Later calls
    {
@@ -588,7 +650,7 @@ index 147ddd9ad..2b9c4e8de 100644
    }
  
    return true;
-@@ -493,14 +235,6 @@ bool BonminProblem::eval_h(int n,
+@@ -493,14 +222,6 @@ bool BonminProblem::eval_h(int n,
                             int* jCol,
                             double* values)
  {
@@ -603,7 +665,7 @@ index 147ddd9ad..2b9c4e8de 100644
    /* Switch on first call / later calls */
    if (values == NULL) // First call: initialization of iRow/jCol
    {
-@@ -515,109 +249,32 @@ bool BonminProblem::eval_h(int n,
+@@ -515,109 +236,32 @@ bool BonminProblem::eval_h(int n,
    }
    else // Later calls
    {
@@ -723,7 +785,18 @@ index 147ddd9ad..2b9c4e8de 100644
    return true;
  }
  
-@@ -641,39 +298,9 @@ bool BonminProblem::eval_grad_gi(int n,
+@@ -629,10 +273,6 @@ bool BonminProblem::eval_grad_gi(int n,
+                                  int* jCol,
+                                  double* values)
+ {
+-  // Convert x to OT::Point
+-  Point xPoint(n);
+-  std::copy(x, x + n, xPoint.begin());
+-
+   // Computing constraint derivative
+   nele_grad_gi = n;
+ 
+@@ -641,39 +281,9 @@ bool BonminProblem::eval_grad_gi(int n,
        jCol[j] = j;
    else
    {
@@ -779,6 +852,64 @@ index 6a9fc2482..8ef033f67 100644
  
  #ifdef OPENTURNS_HAVE_PAGMO
  #include <pagmo/algorithm.hpp>
+diff --git a/lib/src/Base/Optim/openturns/BonminProblem.hxx b/lib/src/Base/Optim/openturns/BonminProblem.hxx
+index 79af481e0..a87423fe6 100644
+--- a/lib/src/Base/Optim/openturns/BonminProblem.hxx
++++ b/lib/src/Base/Optim/openturns/BonminProblem.hxx
+@@ -44,11 +44,7 @@ class BonminProblem
+ public:
+ 
+   /** Constructor with parameters */
+-  BonminProblem( const OptimizationProblem & optimProblem,
+-                 const Point & startingPoint,
+-                 const UnsignedInteger maximumCallsNumber,
+-                 const Scalar maximumTimeDuration,
+-                 const std::chrono::steady_clock::time_point & t0);
++  BonminProblem();
+ 
+   /** Retrieving objective function input.output history */
+   Sample getInputHistory() const;
+@@ -163,38 +159,13 @@ public:
+     return status_;
+   }
+ 
+-  Bool getTimeOut() const
+-  {
+-    return timeOut_;
+-  }
+-
+-  virtual void setProgressCallback(OptimizationAlgorithmImplementation::ProgressCallback callBack, void * state = nullptr)
+-  {
+-    progressCallback_ = std::pair<OptimizationAlgorithmImplementation::ProgressCallback, void *>(callBack, state);
+-  }
+-
+-  virtual void setStopCallback(OptimizationAlgorithmImplementation::StopCallback callBack, void * state = nullptr)
+-  {
+-    stopCallback_ = std::pair<OptimizationAlgorithmImplementation::StopCallback, void *>(callBack, state);
+-  }
+ 
+ 
+ private:
+-  // Clip point wrt problem bounds
+-  void clip(Point & xPoint) const;
+-
+-  const OptimizationProblem optimProblem_;
+-  const Point startingPoint_;
++  ::Bonmin::TMINLP::SolverReturn status_;
+   Sample evaluationInputHistory_;
+   Sample evaluationOutputHistory_;
+-  ::Bonmin::TMINLP::SolverReturn status_;
+-  // Callbacks
+-  UnsignedInteger maximumCallsNumber_ = 0;
+-  Scalar maximumTimeDuration_ = 0.0;
+-  Bool timeOut_ = false;
+-  std::chrono::steady_clock::time_point t0_;
+-  std::pair< OptimizationAlgorithmImplementation::ProgressCallback, void *> progressCallback_;
+-  std::pair< OptimizationAlgorithmImplementation::StopCallback, void *> stopCallback_;
++
+ };
+ 
+ END_NAMESPACE_OPENTURNS
 diff --git a/lib/src/Base/openturns/OTBase.hxx b/lib/src/Base/openturns/OTBase.hxx
 index 5fc788d0a..2aef4ce8b 100644
 --- a/lib/src/Base/openturns/OTBase.hxx
