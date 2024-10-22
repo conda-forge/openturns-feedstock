@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..f34e55631 100644
+index 147ddd9ad..2f693f27a 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -717,6 +717,49 @@ index 147ddd9ad..f34e55631 100644
    return true;
  }
  
+@@ -641,39 +319,9 @@ bool BonminProblem::eval_grad_gi(int n,
+       jCol[j] = j;
+   else
+   {
+-    // Retrieve number of constraints
+-    int nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
+-
+-    if (i < nbEqualityConstraints)
+-    {
+-      Matrix equalityConstraintGradient;
+-      try
+-      {
+-        equalityConstraintGradient = optimProblem_.getEqualityConstraint().getMarginal(i).gradient(xPoint);
+-      }
+-      catch (const std::exception & exc)
+-      {
+-        LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-        return false;
+-      }
+-      for (int j = 0; j < n; ++j)
+-        values[j] = equalityConstraintGradient(j, 0);
+-    }
+-    else
+-    {
+-      Matrix inequalityConstraintGradient;
+-      try
+-      {
+-        inequalityConstraintGradient = optimProblem_.getInequalityConstraint().getMarginal(i - nbEqualityConstraints).gradient(xPoint);
+-      }
+-      catch (const std::exception & exc)
+-      {
+-        LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-        return false;
+-      }
+-      for (int j = 0; j < n; ++j)
+-        values[j] = inequalityConstraintGradient(j, 0);
+-    }
++    // not implemented
++    for (int j = 0; j < n; ++ j)
++      values[j] = 0.0;
+   }
+   return true;
+ }
 diff --git a/lib/src/Base/Optim/Pagmo.cxx b/lib/src/Base/Optim/Pagmo.cxx
 index 6a9fc2482..8ef033f67 100644
 --- a/lib/src/Base/Optim/Pagmo.cxx
