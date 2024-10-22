@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..ab284bc06 100644
+index 147ddd9ad..f34e55631 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -597,10 +597,33 @@ index 147ddd9ad..ab284bc06 100644
    if (optimProblem_.hasInequalityConstraint())
      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
  
-@@ -538,25 +293,6 @@ bool BonminProblem::eval_h(int n,
+@@ -515,109 +270,32 @@ bool BonminProblem::eval_h(int n,
+   }
+   else // Later calls
+   {
+-    // The definition of the Lagrangian used in Bonmin is available in Ipopt online documentation
+-    // at https://coin-or.github.io/Ipopt/classIpopt_1_1TNLP.html#a26b9145267e2574c53acc284fef1c354
+-
+-    // Convert x to OT::Point
+-    Point xPoint(n);
+-    std::copy(x, x + n, xPoint.begin());
+-
+-    // Compute objective hessian
+-    SymmetricMatrix objectiveHessian;
+-    try
+-    {
+-      objectiveHessian = obj_factor * optimProblem_.getObjective().hessian(xPoint).getSheet(0);
+-    }
+-    catch (const std::exception & exc)
+-    {
+-      LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-      return false;
+-    }
+-
+-    // Compute constraints hessian
      int k = 0;
-     SymmetricMatrix constraintsHessian(n, 0.0);
- 
+-    SymmetricMatrix constraintsHessian(n, 0.0);
+-
 -    if (optimProblem_.hasEqualityConstraint())
 -    {
 -      SymmetricTensor equalityConstraintHessian;
@@ -620,10 +643,28 @@ index 147ddd9ad..ab284bc06 100644
 -      }
 -    }
 -
-     if (optimProblem_.hasInequalityConstraint())
-     {
-       SymmetricTensor inequalityConstraintHessian;
-@@ -582,42 +318,28 @@ bool BonminProblem::eval_h(int n,
+-    if (optimProblem_.hasInequalityConstraint())
+-    {
+-      SymmetricTensor inequalityConstraintHessian;
+-      try
+-      {
+-        inequalityConstraintHessian = optimProblem_.getInequalityConstraint().hessian(xPoint);
+-      }
+-      catch (const std::exception & exc)
+-      {
+-        LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-        return false;
+-      }
+-      for (UnsignedInteger i = 0; i < nbInequalityConstraints; ++i)
+-      {
+-        constraintsHessian = constraintsHessian + lambda[k] * inequalityConstraintHessian.getSheet(i);
+-        ++k;
+-      }
+-    }
+-
+-    // Filling 'values' array
+-    SymmetricMatrix lagrangianHessian(objectiveHessian + constraintsHessian);
+-    k = 0;
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
