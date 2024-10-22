@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..6ca2d7bec 100644
+index 147ddd9ad..ab284bc06 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
 @@ -23,9 +23,6 @@
@@ -517,14 +517,19 @@ index 147ddd9ad..6ca2d7bec 100644
    return true;
  }
  
-@@ -431,30 +227,9 @@ bool BonminProblem::eval_jac_g(int n,
- 
-     // Filling values array
-     UnsignedInteger k = 0;
+@@ -425,56 +221,15 @@ bool BonminProblem::eval_jac_g(int n,
+   }
+   else     // Later calls
+   {
+-    // Convert x to OT::Point
+-    Point xPoint(n);
+-    std::copy(x, x + n, xPoint.begin());
+-
+-    // Filling values array
+-    UnsignedInteger k = 0;
 -    UnsignedInteger nbEqualityConstraints = 0;
-+    // UnsignedInteger nbEqualityConstraints = 0;
-     UnsignedInteger nbInequalityConstraints = 0;
- 
+-    UnsignedInteger nbInequalityConstraints = 0;
+-
 -    if (optimProblem_.hasEqualityConstraint())
 -    {
 -      nbEqualityConstraints = optimProblem_.getEqualityConstraint().getOutputDimension();
@@ -546,19 +551,26 @@ index 147ddd9ad..6ca2d7bec 100644
 -        }
 -    }
 -
-     if (optimProblem_.hasInequalityConstraint())
-     {
-       nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
-@@ -471,10 +246,20 @@ bool BonminProblem::eval_jac_g(int n,
-       for (UnsignedInteger i = 0; i < nbInequalityConstraints; ++i)
-         for (int j = 0; j < n; ++j)
-         {
+-    if (optimProblem_.hasInequalityConstraint())
+-    {
+-      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
+-      Matrix inequalityConstraintGradient;
+-      try
+-      {
+-        inequalityConstraintGradient = optimProblem_.getInequalityConstraint().gradient(xPoint);
+-      }
+-      catch (const std::exception & exc)
+-      {
+-        LOGWARN(OSS() << "Bonmin went to an abnormal point x=" << xPoint.__str__() << " msg=" << exc.what());
+-        return false;
+-      }
+-      for (UnsignedInteger i = 0; i < nbInequalityConstraints; ++i)
+-        for (int j = 0; j < n; ++j)
+-        {
 -          values[k] = inequalityConstraintGradient(j, i);
-+          //values[k] = inequalityConstraintGradient(j, i);
-           ++k;
-         }
-     }
-+
+-          ++k;
+-        }
+-    }
 +    for (int i = 0; i < 12; ++i)
 +      values[i] = 0.0;
 +    values[1] = -2.0*(x[1]-0.5);
@@ -571,7 +583,7 @@ index 147ddd9ad..6ca2d7bec 100644
    }
  
    return true;
-@@ -494,10 +279,10 @@ bool BonminProblem::eval_h(int n,
+@@ -494,10 +249,10 @@ bool BonminProblem::eval_h(int n,
                             double* values)
  {
    // Retrieve number of constraints
@@ -585,7 +597,7 @@ index 147ddd9ad..6ca2d7bec 100644
    if (optimProblem_.hasInequalityConstraint())
      nbInequalityConstraints = optimProblem_.getInequalityConstraint().getOutputDimension();
  
-@@ -538,25 +323,6 @@ bool BonminProblem::eval_h(int n,
+@@ -538,25 +293,6 @@ bool BonminProblem::eval_h(int n,
      int k = 0;
      SymmetricMatrix constraintsHessian(n, 0.0);
  
@@ -611,7 +623,7 @@ index 147ddd9ad..6ca2d7bec 100644
      if (optimProblem_.hasInequalityConstraint())
      {
        SymmetricTensor inequalityConstraintHessian;
-@@ -582,42 +348,28 @@ bool BonminProblem::eval_h(int n,
+@@ -582,42 +318,28 @@ bool BonminProblem::eval_h(int n,
      for (int i = 0; i < n; ++i)
        for (int j = 0; j < n; ++j)
        {
