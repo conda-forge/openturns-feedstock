@@ -289,10 +289,10 @@ index c17385aaf..1ff8bc1e0 100644
  
  
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
-index 147ddd9ad..b9ac4d59f 100644
+index 147ddd9ad..dae3160fb 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
 +++ b/lib/src/Base/Optim/BonminProblem.cxx
-@@ -23,30 +23,14 @@
+@@ -23,31 +23,13 @@
  #include "openturns/BonminProblem.hxx"
  #include "openturns/SpecFunc.hxx"
  
@@ -320,13 +320,14 @@ index 147ddd9ad..b9ac4d59f 100644
 +BonminProblem::BonminProblem()
 +  : ::Bonmin::TMINLP()
  {
-   // initialize history
+-  // initialize history
 -  evaluationInputHistory_ = Sample(0, optimProblem.getDimension());
-+  evaluationInputHistory_ = Sample(0, 4);
-   evaluationOutputHistory_ = Sample(0, 1);
+-  evaluationOutputHistory_ = Sample(0, 1);
++
  }
  
-@@ -61,10 +45,6 @@ Sample BonminProblem::getOutputHistory() const
+ /** Retrieving objective function input.output history */
+@@ -61,10 +43,6 @@ Sample BonminProblem::getOutputHistory() const
    return evaluationOutputHistory_;
  }
  
@@ -337,7 +338,7 @@ index 147ddd9ad..b9ac4d59f 100644
  
  bool BonminProblem::get_nlp_info(int & n,
                                   int & m,
-@@ -72,122 +52,41 @@ bool BonminProblem::get_nlp_info(int & n,
+@@ -72,122 +50,41 @@ bool BonminProblem::get_nlp_info(int & n,
                                   int & nnz_h_lag, // Number of non-zero components in Hessian of Lagrangean
                                   Ipopt::TNLP::IndexStyleEnum & index_style)
  {
@@ -474,7 +475,7 @@ index 147ddd9ad..b9ac4d59f 100644
    return true;
  }
  
-@@ -198,52 +97,20 @@ bool BonminProblem::get_bounds_info( int n,
+@@ -198,52 +95,20 @@ bool BonminProblem::get_bounds_info( int n,
                                       double* g_l,  // Lower bounds
                                       double* g_u)  // Upper bounds
  {
@@ -536,7 +537,7 @@ index 147ddd9ad..b9ac4d59f 100644
    return true;
  }
  
-@@ -257,9 +124,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
+@@ -257,9 +122,8 @@ bool BonminProblem::get_starting_point(int /*n*/,
                                         bool /*init_lambda*/,
                                         double* /*lambda*/)
  {
@@ -548,7 +549,7 @@ index 147ddd9ad..b9ac4d59f 100644
    return true;
  }
  
-@@ -269,135 +135,39 @@ bool BonminProblem::eval_f(int n,
+@@ -269,135 +133,36 @@ bool BonminProblem::eval_f(int n,
                             bool /*new_x*/,
                             double& obj_value)
  {
@@ -572,12 +573,10 @@ index 147ddd9ad..b9ac4d59f 100644
 -  else
 -    obj_value = -yPoint[0];
 -
-+  obj_value = -x[0] -x[1] -x[2];
-   // track input/outputs
+-  // track input/outputs
 -  evaluationInputHistory_.add(xPoint);
 -  evaluationOutputHistory_.add(yPoint);
-+  evaluationInputHistory_.add(Point({x[0], x[1], x[2], x[3]}));
-+  evaluationOutputHistory_.add(Point({obj_value}));
++  obj_value = -x[0] -x[1] -x[2];
  
 -  // enforce time limit even before bonmin.time_limit can be taken into account
 -  std::chrono::steady_clock::time_point t1 = std::chrono::steady_clock::now();
@@ -700,7 +699,7 @@ index 147ddd9ad..b9ac4d59f 100644
    return true;
  }
  
-@@ -425,56 +195,15 @@ bool BonminProblem::eval_jac_g(int n,
+@@ -425,56 +190,15 @@ bool BonminProblem::eval_jac_g(int n,
    }
    else     // Later calls
    {
@@ -766,7 +765,7 @@ index 147ddd9ad..b9ac4d59f 100644
    }
  
    return true;
-@@ -493,14 +222,6 @@ bool BonminProblem::eval_h(int n,
+@@ -493,14 +217,6 @@ bool BonminProblem::eval_h(int n,
                             int* jCol,
                             double* values)
  {
@@ -781,7 +780,7 @@ index 147ddd9ad..b9ac4d59f 100644
    /* Switch on first call / later calls */
    if (values == NULL) // First call: initialization of iRow/jCol
    {
-@@ -515,109 +236,32 @@ bool BonminProblem::eval_h(int n,
+@@ -515,109 +231,32 @@ bool BonminProblem::eval_h(int n,
    }
    else // Later calls
    {
@@ -901,7 +900,7 @@ index 147ddd9ad..b9ac4d59f 100644
    return true;
  }
  
-@@ -629,10 +273,6 @@ bool BonminProblem::eval_grad_gi(int n,
+@@ -629,10 +268,6 @@ bool BonminProblem::eval_grad_gi(int n,
                                   int* jCol,
                                   double* values)
  {
@@ -912,7 +911,7 @@ index 147ddd9ad..b9ac4d59f 100644
    // Computing constraint derivative
    nele_grad_gi = n;
  
-@@ -641,39 +281,9 @@ bool BonminProblem::eval_grad_gi(int n,
+@@ -641,39 +276,9 @@ bool BonminProblem::eval_grad_gi(int n,
        jCol[j] = j;
    else
    {
@@ -955,6 +954,21 @@ index 147ddd9ad..b9ac4d59f 100644
    }
    return true;
  }
+diff --git a/lib/src/Base/Optim/CMakeLists.txt b/lib/src/Base/Optim/CMakeLists.txt
+index d61e05a7d..d4d9287f6 100644
+--- a/lib/src/Base/Optim/CMakeLists.txt
++++ b/lib/src/Base/Optim/CMakeLists.txt
+@@ -9,9 +9,7 @@ ot_add_source_file (Bonmin.cxx)
+ ot_add_source_file (Ceres.cxx)
+ ot_add_source_file (CMinpack.cxx)
+ ot_add_source_file (Cobyla.cxx)
+-if (OPENTURNS_HAVE_BONMIN)
+-  ot_add_source_file (BonminProblem.cxx)
+-endif ()
++
+ ot_add_source_file (Dlib.cxx)
+ if (dlib_FOUND)
+   ot_add_source_file (DlibFunctions.cxx)
 diff --git a/lib/src/Base/Optim/Pagmo.cxx b/lib/src/Base/Optim/Pagmo.cxx
 index 6a9fc2482..8ef033f67 100644
 --- a/lib/src/Base/Optim/Pagmo.cxx
@@ -969,10 +983,10 @@ index 6a9fc2482..8ef033f67 100644
  #ifdef OPENTURNS_HAVE_PAGMO
  #include <pagmo/algorithm.hpp>
 diff --git a/lib/src/Base/Optim/openturns/BonminProblem.hxx b/lib/src/Base/Optim/openturns/BonminProblem.hxx
-index 79af481e0..a87423fe6 100644
+index 79af481e0..baf7bac4f 100644
 --- a/lib/src/Base/Optim/openturns/BonminProblem.hxx
 +++ b/lib/src/Base/Optim/openturns/BonminProblem.hxx
-@@ -44,11 +44,7 @@ class BonminProblem
+@@ -44,43 +44,78 @@ class BonminProblem
  public:
  
    /** Constructor with parameters */
@@ -981,11 +995,276 @@ index 79af481e0..a87423fe6 100644
 -                 const UnsignedInteger maximumCallsNumber,
 -                 const Scalar maximumTimeDuration,
 -                 const std::chrono::steady_clock::time_point & t0);
-+  BonminProblem();
+-
+-  /** Retrieving objective function input.output history */
+-  Sample getInputHistory() const;
+-  Sample getOutputHistory() const;
+-
+-  /** Overloading functions from Bonmin::TMINLP
+-   See BonTMINLP.hpp for description */
++  BonminProblem()
++  : ::Bonmin::TMINLP()
++{
  
-   /** Retrieving objective function input.output history */
-   Sample getInputHistory() const;
-@@ -163,38 +159,13 @@ public:
+-  // n: number of variables
+-  // m: number of constraints
++}
+ 
+   bool get_nlp_info(int & n,
+                     int & m,
+                     int & nnz_jac_g, // Number of non-zero components in the Jacobian of g
+                     int & nnz_h_lag, // Number of non-zero components in Hessian of Lagrangean
+-                    ::Ipopt::TNLP::IndexStyleEnum & index_style);
++                    ::Ipopt::TNLP::IndexStyleEnum & index_style)
++  {
++    m = 3;
++    n = 4;
++    
++    // All components of the jacobian and lagrangian's hessian are assumed to be non-zero
++    nnz_jac_g = n * m;
++    nnz_h_lag = n * n;
++
++    // Index style is C-like
++    index_style = ::Ipopt::TNLP::C_STYLE;
++
++    return true;
++  }
+ 
+   bool get_variables_types( int n,
+-                            VariableTypeTable var_types);
++                            VariableTypeTable var_types)
++  {
++    var_types[0] = ::Bonmin::TMINLP::BINARY;
++    var_types[1] = ::Bonmin::TMINLP::CONTINUOUS;
++    var_types[2] = ::Bonmin::TMINLP::CONTINUOUS;
++    var_types[3] = ::Bonmin::TMINLP::INTEGER;
++    return true;
++  }
+ 
+   bool get_variables_linearity( int n,
+-                                LinearityTypeTable var_types);
+-
+-  bool get_constraints_linearity( int m,
+-                                  LinearityTypeTable const_types);
++                                LinearityTypeTable var_types)
++  {
++    var_types[0] = ::Ipopt::TNLP::LINEAR;
++    var_types[1] = ::Ipopt::TNLP::NON_LINEAR;
++    var_types[2] = ::Ipopt::TNLP::NON_LINEAR;
++    var_types[3] = ::Ipopt::TNLP::LINEAR;
++    return true;
++  }
+ 
++  bool get_constraints_linearity( int m, LinearityTypeTable const_types)
++  {
++    return true;
++  }
+   bool get_bounds_info( int n,
+                         double* x_l,  // Lower bounds
+                         double* x_u,  // Upper bounds
+                         int m,
+                         double* g_l,  // Lower bounds
+-                        double* g_u); // Upper bounds
++                        double* g_u) // Upper bounds
++  {
++    for (int i = 0; i < n; ++i)
++    {
++      x_l[i] = 0.0;
++      x_u[i] = std::numeric_limits<double>::max();
++    }
++    x_u[0] = 1.0;  
++    x_u[3] = 5.0;
++
++    for (UnsignedInteger i = 0; i < 3; ++i)
++    {
++      g_l[i] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
++      g_u[i] = std::numeric_limits<double>::max();
++    }
++
++    return true;
++  }
+ 
+   bool get_starting_point(int n,
+                           bool init_x,
+@@ -90,24 +125,46 @@ public:
+                           double* z_U,
+                           int m,
+                           bool init_lambda,
+-                          double* lambda);
+-
++                          double* lambda)
++  {
++    for (int i=0;i <4; ++i)
++      x[i] = 0.0;
++    return true;
++  }
+   bool eval_f(int n,
+               const double* x,
+               bool new_x,
+-              double& obj_value);
++              double& obj_value)
++  {
++    obj_value = -x[0] -x[1] -x[2];
+ 
++    static int ncalls = 0;
++    ++ ncalls;
++    return ncalls <= 10000;
++  }
+   bool eval_grad_f( int n,
+                     const double* x,
+                     bool new_x,
+-                    double* grad_f);
++                    double* grad_f)
++  {
+ 
++    grad_f[0] = -1.0;
++  grad_f[1] = -1.0;
++  grad_f[2] = -1.0;
++    return true;
++  }
+   bool eval_g(int n,
+               const double* x,
+               bool new_x,
+               int m,
+-              double* g);
+-
++              double* g)
++  {
++    g[0] = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++      g[1] = -x[0] +x[1];
++      g[2] = -x[0] -x[2]-x[3] + 2.0;
++    
++    return true;
++  }
+   bool eval_jac_g(int n,
+                   const double* x,
+                   bool new_x,
+@@ -115,8 +172,36 @@ public:
+                   int nele_jac,
+                   int* iRow,
+                   int *jCol,
+-                  double* values);
+-
++                  double* values)
++  {
++    /* Switch on first call / later calls */
++    if (values == NULL)
++    {
++      // First call: initialization of iRow/jCol
++      int k = 0;
++      for (int i = 0; i < m; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          iRow[k] = i;
++          jCol[k] = j;
++          ++k;
++        }
++    }
++    else     // Later calls
++    {
++      for (int i = 0; i < 12; ++i)
++        values[i] = 0.0;
++      values[1] = -2.0*(x[1]-0.5);
++      values[2] = -2.0*(x[2]-0.5);
++      values[4] = -1.0;
++      values[5] = 1.0;
++      values[8] = -1.0;
++      values[10] = -1.0;
++      values[11] = -1.0;
++    }
++
++    return true;
++  }
+   bool eval_h(int n,
+               const double* x,
+               bool new_x,
+@@ -127,26 +212,78 @@ public:
+               int nele_hess,
+               int* iRow,
+               int* jCol,
+-              double* values);
+-
++              double* values)
++  {
++    /* Switch on first call / later calls */
++    if (values == NULL) // First call: initialization of iRow/jCol
++    {
++      int k = 0;
++      for (int i = 0; i < n; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          iRow[k] = i;
++          jCol[k] = j;
++          ++k;
++        }
++    }
++    else // Later calls
++    {
++      int k = 0;
++      for (int i = 0; i < n; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          values[k] = 0.0;
++          ++k;
++        }
++      values[5] = -2.0 * lambda[0];
++      values[10] = -2.0 * lambda[0];
++    }
++
++    return true;
++  }
+   bool eval_gi(int n,
+                const double* x,
+                bool new_x,
+                int i,
+-               double& gi);
+-
++               double& gi)
++  {
++    if (i == 0)
++      gi = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++    if (i == 1)
++      gi = -x[0] +x[1];
++    if (i == 2)
++      gi = -x[0] -x[2]-x[3] + 2.0;
++    return true;
++  }
+   bool eval_grad_gi(int n,
+                     const double* x,
+                     bool new_x,
+                     int i,
+                     int& nele_grad_gi,
+                     int* jCol,
+-                    double* values);
+-
++                    double* values)
++  {
++    // Computing constraint derivative
++    nele_grad_gi = n;
++
++    if (values == NULL) // First call
++      for (int j = 0; j < n; ++j)
++        jCol[j] = j;
++    else
++    {
++      // not implemented
++      for (int j = 0; j < n; ++ j)
++        values[j] = 0.0;
++    }
++    return true;
++  }
+   void finalize_solution( ::Bonmin::TMINLP::SolverReturn status,
+                           ::Ipopt::Index n,
+                           const ::Ipopt::Number* x,
+-                          ::Ipopt::Number obj_value);
++                          ::Ipopt::Number obj_value)
++  {
++    status_ = status;
++  }
+ 
+   const ::Bonmin::TMINLP::BranchingInfo * branchingInfo() const
+   {
+@@ -163,38 +300,11 @@ public:
      return status_;
    }
  
@@ -1011,10 +1290,9 @@ index 79af481e0..a87423fe6 100644
 -
 -  const OptimizationProblem optimProblem_;
 -  const Point startingPoint_;
-+  ::Bonmin::TMINLP::SolverReturn status_;
-   Sample evaluationInputHistory_;
-   Sample evaluationOutputHistory_;
--  ::Bonmin::TMINLP::SolverReturn status_;
+-  Sample evaluationInputHistory_;
+-  Sample evaluationOutputHistory_;
+   ::Bonmin::TMINLP::SolverReturn status_;
 -  // Callbacks
 -  UnsignedInteger maximumCallsNumber_ = 0;
 -  Scalar maximumTimeDuration_ = 0.0;
@@ -1064,61 +1342,244 @@ index 42e3942d9..8e9c9693a 100644
  
  #endif /* OPENTURNS_OT_HXX */
 diff --git a/lib/test/CMakeLists.txt b/lib/test/CMakeLists.txt
-index ccf74e675..9c630f06d 100644
+index ccf74e675..76586a45c 100644
 --- a/lib/test/CMakeLists.txt
 +++ b/lib/test/CMakeLists.txt
-@@ -194,6 +194,7 @@ if (dlib_FOUND)
+@@ -194,6 +194,8 @@ if (dlib_FOUND)
  endif()
  if (Bonmin_FOUND)
    ot_check_test (Bonmin_std IGNOREOUT)
++  target_include_directories(t_Bonmin_std PRIVATE ${COIN_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS})
 +  target_link_libraries(t_Bonmin_std PRIVATE ${COIN_BONMIN_LIBRARIES})
  endif()
  
  ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..ef221a931 100644
+index 02fdffeac..ab570c011 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
-@@ -20,117 +20,56 @@
-  */
- #include "openturns/OT.hxx"
- #include "openturns/OTtestcode.hxx"
+@@ -1,136 +1,323 @@
+-//                                               -*- C++ -*-
+-/**
+- *  @brief The test file of class Bonmin
+- *
+- *  Copyright 2005-2024 Airbus-EDF-IMACS-ONERA-Phimeca
+- *
+- *  This library is free software: you can redistribute it and/or modify
+- *  it under the terms of the GNU Lesser General Public License as published by
+- *  the Free Software Foundation, either version 3 of the License, or
+- *  (at your option) any later version.
+- *
+- *  This library is distributed in the hope that it will be useful,
+- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- *  GNU Lesser General Public License for more details.
+- *
+- *  You should have received a copy of the GNU Lesser General Public License
+- *  along with this library.  If not, see <http://www.gnu.org/licenses/>.
+- *
+- */
+-#include "openturns/OT.hxx"
+-#include "openturns/OTtestcode.hxx"
 -#include <float.h>
+-
+-using namespace OT;
+-using namespace OT::Test;
+-
+-void debug(const String & message,
+-           const String & where)
 +
-+#include "openturns/BonminProblem.hxx"
 +#include <BonBonminSetup.hpp>
 +#include <BonCbc.hpp>
 +#include <BonminConfig.h>
- 
- using namespace OT;
- using namespace OT::Test;
- 
--void debug(const String & message,
--           const String & where)
--{
--  std::cout << " DEBUG [" << where << "]: " << message << std::endl;
--}
--
- 
- int main()
++#include <BonTMINLP.hpp>
++#include <IpTNLP.hpp>
++
++typedef ::Bonmin::TMINLP::VariableType * VariableTypeTable;
++typedef ::Ipopt::TNLP::LinearityType * LinearityTypeTable;
++
++
++class MyTMINLP
++  : public ::Bonmin::TMINLP
++{
++public:
++
++  /** Constructor with parameters */
++  MyTMINLP()
++  : ::Bonmin::TMINLP()
  {
+-  std::cout << " DEBUG [" << where << "]: " << message << std::endl;
++
+ }
+ 
++  bool get_nlp_info(int & n,
++                    int & m,
++                    int & nnz_jac_g, // Number of non-zero components in the Jacobian of g
++                    int & nnz_h_lag, // Number of non-zero components in Hessian of Lagrangean
++                    ::Ipopt::TNLP::IndexStyleEnum & index_style)
++  {
++    m = 3;
++    n = 4;
++    
++    // All components of the jacobian and lagrangian's hessian are assumed to be non-zero
++    nnz_jac_g = n * m;
++    nnz_h_lag = n * n;
+ 
+-int main()
+-{
 -  TESTPREAMBLE;
 -  OStream fullprint(std::cout);
--
-+  // Create BonminProblem
-+  ::Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem();
++    // Index style is C-like
++    index_style = ::Ipopt::TNLP::C_STYLE;
+ 
+-  try
++    return true;
++  }
 +
-+  // Create setup, initialize options
-+  ::Bonmin::BonminSetup app;
-+  app.initializeOptionsAndJournalist();
-+  app.options()->SetStringValue("bonmin.algorithm", "B-BB");
-+  app.options()->SetIntegerValue("bonmin.iteration_limit", 1000);
-+  app.options()->SetStringValue("honor_original_bounds", "yes"); 
-+  app.options()->SetNumericValue("constr_viol_tol", 1e-5);
-+  app.options()->SetNumericValue("bound_relax_factor", 0.0);
++  bool get_variables_types( int n,
++                            VariableTypeTable var_types)
++  {
++    var_types[0] = ::Bonmin::TMINLP::BINARY;
++    var_types[1] = ::Bonmin::TMINLP::CONTINUOUS;
++    var_types[2] = ::Bonmin::TMINLP::CONTINUOUS;
++    var_types[3] = ::Bonmin::TMINLP::INTEGER;
++    return true;
++  }
 +
-+  // Update setup with BonminProblem
-   try
++  bool get_variables_linearity( int n,
++                                LinearityTypeTable var_types)
++  {
++    var_types[0] = ::Ipopt::TNLP::LINEAR;
++    var_types[1] = ::Ipopt::TNLP::NON_LINEAR;
++    var_types[2] = ::Ipopt::TNLP::NON_LINEAR;
++    var_types[3] = ::Ipopt::TNLP::LINEAR;
++    return true;
++  }
++
++  bool get_constraints_linearity( int m, LinearityTypeTable const_types)
++  {
++    return true;
++  }
++  bool get_bounds_info( int n,
++                        double* x_l,
++                        double* x_u,
++                        int m,
++                        double* g_l,
++                        double* g_u)
++  {
++    for (int i = 0; i < n; ++i)
++    {
++      x_l[i] = 0.0;
++      x_u[i] = std::numeric_limits<double>::max();
++    }
++    x_u[0] = 1.0;  
++    x_u[3] = 5.0;
++
++    for (int i = 0; i < 3; ++i)
++    {
++      g_l[i] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
++      g_u[i] = std::numeric_limits<double>::max();
++    }
++
++    return true;
++  }
++
++  bool get_starting_point(int n,
++                          bool init_x,
++                          double* x,
++                          bool init_z,
++                          double* z_L,
++                          double* z_U,
++                          int m,
++                          bool init_lambda,
++                          double* lambda)
++  {
++    for (int i=0;i <4; ++i)
++      x[i] = 0.0;
++    return true;
++  }
++  bool eval_f(int n,
++              const double* x,
++              bool new_x,
++              double& obj_value)
++  {
++    obj_value = -x[0] -x[1] -x[2];
++
++    static int ncalls = 0;
++    ++ ncalls;
++    return ncalls <= 10000;
++  }
++  bool eval_grad_f( int n,
++                    const double* x,
++                    bool new_x,
++                    double* grad_f)
++  {
++
++    grad_f[0] = -1.0;
++  grad_f[1] = -1.0;
++  grad_f[2] = -1.0;
++    return true;
++  }
++  bool eval_g(int n,
++              const double* x,
++              bool new_x,
++              int m,
++              double* g)
++  {
++    g[0] = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++      g[1] = -x[0] +x[1];
++      g[2] = -x[0] -x[2]-x[3] + 2.0;
++    
++    return true;
++  }
++  bool eval_jac_g(int n,
++                  const double* x,
++                  bool new_x,
++                  int m,
++                  int nele_jac,
++                  int* iRow,
++                  int *jCol,
++                  double* values)
++  {
++    /* Switch on first call / later calls */
++    if (values == NULL)
++    {
++      // First call: initialization of iRow/jCol
++      int k = 0;
++      for (int i = 0; i < m; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          iRow[k] = i;
++          jCol[k] = j;
++          ++k;
++        }
++    }
++    else     // Later calls
++    {
++      for (int i = 0; i < 12; ++i)
++        values[i] = 0.0;
++      values[1] = -2.0*(x[1]-0.5);
++      values[2] = -2.0*(x[2]-0.5);
++      values[4] = -1.0;
++      values[5] = 1.0;
++      values[8] = -1.0;
++      values[10] = -1.0;
++      values[11] = -1.0;
++    }
++
++    return true;
++  }
++  bool eval_h(int n,
++              const double* x,
++              bool new_x,
++              double obj_factor,
++              int m,
++              const double* lambda,
++              bool new_lambda,
++              int nele_hess,
++              int* iRow,
++              int* jCol,
++              double* values)
    {
 -    /* TEST ON SIMPLE FUNCTION */
 -
@@ -1168,8 +1629,7 @@ index 02fdffeac..ef221a931 100644
 -    problem.setBounds(variablesBounds);
 -    problem.setVariablesType(varTypes);
 -    problem.setInequalityConstraint(inequalityConstraints);
-+    app.initialize(GetRawPtr(tminlp));
- 
+-
 -    // Running Bonmin algorithm
 -    Bonmin bonminAlgorithm(problem);
 -    bonminAlgorithm.setStartingPoint(Point(4, 0));
@@ -1187,7 +1647,9 @@ index 02fdffeac..ef221a931 100644
 -    const Description solvers(Bonmin::GetAlgorithmNames());
 -
 -    for (UnsignedInteger i = 0; i < solvers.getSize(); ++i)
--    {
++    /* Switch on first call / later calls */
++    if (values == NULL) // First call: initialization of iRow/jCol
+     {
 -      // Set solver
 -      bonminAlgorithm.setAlgorithmName(solvers[i]);
 -      std::cout << " == TEST WITH " << bonminAlgorithm.getAlgorithmName() << " SOLVER:" << std::endl;
@@ -1204,13 +1666,120 @@ index 02fdffeac..ef221a931 100644
 -      // Check result
 -      assert_almost_equal(result.getOptimalPoint(), referenceSolution, 1e-2);
 -      std::cout << " => TEST " << bonminAlgorithm.getAlgorithmName() << " PASSED" << std::endl << std::endl;
--    }
++      int k = 0;
++      for (int i = 0; i < n; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          iRow[k] = i;
++          jCol[k] = j;
++          ++k;
++        }
+     }
++    else // Later calls
++    {
++      int k = 0;
++      for (int i = 0; i < n; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          values[k] = 0.0;
++          ++k;
++        }
++      values[5] = -2.0 * lambda[0];
++      values[10] = -2.0 * lambda[0];
++    }
++
++    return true;
++  }
++  bool eval_gi(int n,
++               const double* x,
++               bool new_x,
++               int i,
++               double& gi)
++  {
++    if (i == 0)
++      gi = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
++    if (i == 1)
++      gi = -x[0] +x[1];
++    if (i == 2)
++      gi = -x[0] -x[2]-x[3] + 2.0;
++    return true;
++  }
++  bool eval_grad_gi(int n,
++                    const double* x,
++                    bool new_x,
++                    int i,
++                    int& nele_grad_gi,
++                    int* jCol,
++                    double* values)
++  {
++    // Computing constraint derivative
++    nele_grad_gi = n;
++
++    if (values == NULL) // First call
++      for (int j = 0; j < n; ++j)
++        jCol[j] = j;
++    else
++    {
++      // not implemented
++      for (int j = 0; j < n; ++ j)
++        values[j] = 0.0;
++    }
++    return true;
++  }
++  void finalize_solution( ::Bonmin::TMINLP::SolverReturn status,
++                          ::Ipopt::Index n,
++                          const ::Ipopt::Number* x,
++                          ::Ipopt::Number obj_value)
++  {
++    status_ = status;
+   }
+ 
+-  catch (TestFailed & ex)
++  const ::Bonmin::TMINLP::BranchingInfo * branchingInfo() const
++  {
++    return NULL;
++  };
++
++  const ::Bonmin::TMINLP::SosInfo * sosConstraints() const
++  {
++    return NULL;
++  };
++
++  ::Bonmin::TMINLP::SolverReturn getStatus() const
++  {
++    return status_;
++  }
++
++
++
++private:
++  ::Bonmin::TMINLP::SolverReturn status_;
++
++};
++
++int main()
++{
++  // Create MyTMINLP
++  ::Ipopt::SmartPtr<MyTMINLP> tminlp = new MyTMINLP();
++
++  // Create setup, initialize options
++  ::Bonmin::BonminSetup app;
++  app.initializeOptionsAndJournalist();
++  app.options()->SetStringValue("bonmin.algorithm", "B-BB");
++  app.options()->SetIntegerValue("bonmin.iteration_limit", 1000);
++  app.options()->SetStringValue("honor_original_bounds", "yes"); 
++  app.options()->SetNumericValue("constr_viol_tol", 1e-5);
++  app.options()->SetNumericValue("bound_relax_factor", 0.0);
++
++  // Update setup with MyTMINLP
++  try
++  {
++    app.initialize(GetRawPtr(tminlp));
++
 +    // Solve problem
 +    ::Bonmin::Bab solver;
 +    solver(app);
-   }
--
--  catch (TestFailed & ex)
++  }
 +  catch (::Bonmin::TNLPSolver::UnsolvedError *exc)
 +  {
 +    return 1;
@@ -1227,9 +1796,10 @@ index 02fdffeac..ef221a931 100644
    }
  
 +  // print used options
-+  String optionsLog;
++  std::string optionsLog;
 +  app.options()->PrintList(optionsLog);
 +  std::cout << optionsLog << std::endl;
  
-   return ExitCode::Success;
+-  return ExitCode::Success;
++  return 0;
  }
