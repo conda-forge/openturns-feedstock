@@ -126,10 +126,10 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/Bonmin.cxx b/lib/src/Base/Optim/Bonmin.cxx
-index c17385aaf..9b030118d 100644
+index c17385aaf..1ff8bc1e0 100644
 --- a/lib/src/Base/Optim/Bonmin.cxx
 +++ b/lib/src/Base/Optim/Bonmin.cxx
-@@ -97,38 +97,6 @@ void Bonmin::checkProblem(const OptimizationProblem & problem) const
+@@ -97,80 +97,20 @@ void Bonmin::checkProblem(const OptimizationProblem & problem) const
  }
  
  
@@ -168,9 +168,14 @@ index c17385aaf..9b030118d 100644
  /** Performs the actual computation. */
  void Bonmin::run()
  {
-@@ -141,36 +109,16 @@ void Bonmin::run()
-     throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << getStartingPoint().getDimension() << "), expected " << getProblem().getDimension();
- 
+-#ifdef OPENTURNS_HAVE_BONMIN
+-  // Check problem
+-  checkProblem(getProblem());
+-
+-  // Check starting point
+-  if (getStartingPoint().getDimension() != getProblem().getDimension())
+-    throw InvalidArgumentException(HERE) << "Invalid starting point dimension (" << getStartingPoint().getDimension() << "), expected " << getProblem().getDimension();
+-
    // Create BonminProblem
 -  std::chrono::steady_clock::time_point t0 = std::chrono::steady_clock::now();
 -  Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem(getProblem(), getStartingPoint(), getMaximumCallsNumber(), getMaximumTimeDuration(), t0);
@@ -210,7 +215,7 @@ index c17385aaf..9b030118d 100644
  
    // Update setup with BonminProblem
    try
-@@ -183,66 +131,22 @@ void Bonmin::run()
+@@ -183,71 +123,21 @@ void Bonmin::run()
    }
    catch (::Bonmin::TNLPSolver::UnsolvedError *exc)
    {
@@ -242,8 +247,7 @@ index c17385aaf..9b030118d 100644
    String optionsLog;
    app.options()->PrintList(optionsLog);
 -  LOGINFO(optionsLog);
-+  std::cout << optionsLog << std::endl;
- 
+-
 -  const Sample inputHistory(tminlp->getInputHistory());
 -  setResultFromEvaluationHistory(inputHistory, tminlp->getOutputHistory(),
 -                                 getProblem().hasInequalityConstraint() ? getProblem().getInequalityConstraint()(inputHistory) : Sample(),
@@ -275,9 +279,15 @@ index c17385aaf..9b030118d 100644
 -    else
 -      LOGWARN(OSS() << "Bonmin algorithm failed. The error message is " << result_.getStatusMessage());
 -  }
- #else
-   result_.setStatus(OptimizationResult::FAILURE);
-   throw NotYetImplementedException(HERE) << "No Bonmin support";
+-#else
+-  result_.setStatus(OptimizationResult::FAILURE);
+-  throw NotYetImplementedException(HERE) << "No Bonmin support";
+-
+-#endif
++  std::cout << optionsLog << std::endl;
+ }
+ 
+ 
 diff --git a/lib/src/Base/Optim/BonminProblem.cxx b/lib/src/Base/Optim/BonminProblem.cxx
 index 147ddd9ad..b9ac4d59f 100644
 --- a/lib/src/Base/Optim/BonminProblem.cxx
