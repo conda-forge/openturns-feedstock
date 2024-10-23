@@ -1076,7 +1076,7 @@ index ccf74e675..9c630f06d 100644
  
  ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..a397f2523 100644
+index 02fdffeac..ef221a931 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
 @@ -20,117 +20,56 @@
@@ -1106,7 +1106,7 @@ index 02fdffeac..a397f2523 100644
 -  OStream fullprint(std::cout);
 -
 +  // Create BonminProblem
-+  Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem();
++  ::Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem();
 +
 +  // Create setup, initialize options
 +  ::Bonmin::BonminSetup app;
