@@ -126,7 +126,7 @@ index ea936172e..3d963dbd3 100644
 -add_subdirectory (IterativeStat)
 +# add_subdirectory (IterativeStat)
 diff --git a/lib/src/Base/Optim/Bonmin.cxx b/lib/src/Base/Optim/Bonmin.cxx
-index c17385aaf..90ce36247 100644
+index c17385aaf..9b030118d 100644
 --- a/lib/src/Base/Optim/Bonmin.cxx
 +++ b/lib/src/Base/Optim/Bonmin.cxx
 @@ -97,38 +97,6 @@ void Bonmin::checkProblem(const OptimizationProblem & problem) const
@@ -210,7 +210,34 @@ index c17385aaf..90ce36247 100644
  
    // Update setup with BonminProblem
    try
-@@ -210,39 +158,8 @@ void Bonmin::run()
+@@ -183,66 +131,22 @@ void Bonmin::run()
+   }
+   catch (::Bonmin::TNLPSolver::UnsolvedError *exc)
+   {
+-    const Sample inputHistory(tminlp->getInputHistory());
+-    setResultFromEvaluationHistory(inputHistory, tminlp->getOutputHistory(),
+-                                   getProblem().hasInequalityConstraint() ? getProblem().getInequalityConstraint()(inputHistory) : Sample(),
+-                                   getProblem().hasEqualityConstraint() ? getProblem().getEqualityConstraint()(inputHistory) : Sample());
+-
+-    result_.setStatus(OptimizationResult::FAILURE);
+-    std::ostringstream oss;
+-    exc->printError(oss);
+-    result_.setStatusMessage(oss.str());
+     return;
+   }
+   catch(const ::Bonmin::OsiTMINLPInterface::SimpleError & exc)
+   {
+-    result_.setStatus(OptimizationResult::FAILURE);
+-    result_.setStatusMessage(exc.message());
+     return;
+   }
+   catch(const CoinError & exc)
+   {
+-    result_.setStatus(OptimizationResult::FAILURE);
+-    result_.setStatusMessage(exc.message());
+     return;
+   }
+ 
    // print used options
    String optionsLog;
    app.options()->PrintList(optionsLog);
