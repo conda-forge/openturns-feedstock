@@ -1063,23 +1063,138 @@ index 42e3942d9..8e9c9693a 100644
 +// #include "openturns/OTUncertainty.hxx"
  
  #endif /* OPENTURNS_OT_HXX */
+diff --git a/lib/test/CMakeLists.txt b/lib/test/CMakeLists.txt
+index ccf74e675..9c630f06d 100644
+--- a/lib/test/CMakeLists.txt
++++ b/lib/test/CMakeLists.txt
+@@ -194,6 +194,7 @@ if (dlib_FOUND)
+ endif()
+ if (Bonmin_FOUND)
+   ot_check_test (Bonmin_std IGNOREOUT)
++  target_link_libraries(t_Bonmin_std PRIVATE ${COIN_BONMIN_LIBRARIES})
+ endif()
+ 
+ ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..76e654f83 100644
+index 02fdffeac..a397f2523 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
-@@ -102,7 +102,7 @@ int main()
-     const Point referenceSolution = {1.0, 1.0, 0.5, 0.0};
+@@ -20,117 +20,56 @@
+  */
+ #include "openturns/OT.hxx"
+ #include "openturns/OTtestcode.hxx"
+-#include <float.h>
++
++#include "openturns/BonminProblem.hxx"
++#include <BonBonminSetup.hpp>
++#include <BonCbc.hpp>
++#include <BonminConfig.h>
  
-     // Defining solvers to test
+ using namespace OT;
+ using namespace OT::Test;
+ 
+-void debug(const String & message,
+-           const String & where)
+-{
+-  std::cout << " DEBUG [" << where << "]: " << message << std::endl;
+-}
+-
+ 
+ int main()
+ {
+-  TESTPREAMBLE;
+-  OStream fullprint(std::cout);
+-
++  // Create BonminProblem
++  Ipopt::SmartPtr<BonminProblem> tminlp = new BonminProblem();
++
++  // Create setup, initialize options
++  ::Bonmin::BonminSetup app;
++  app.initializeOptionsAndJournalist();
++  app.options()->SetStringValue("bonmin.algorithm", "B-BB");
++  app.options()->SetIntegerValue("bonmin.iteration_limit", 1000);
++  app.options()->SetStringValue("honor_original_bounds", "yes"); 
++  app.options()->SetNumericValue("constr_viol_tol", 1e-5);
++  app.options()->SetNumericValue("bound_relax_factor", 0.0);
++
++  // Update setup with BonminProblem
+   try
+   {
+-    /* TEST ON SIMPLE FUNCTION */
+-
+-    // Definition of objective function
+-    const Description inputVariables = {"x0", "x1", "x2", "x3"};
+-    Description objective(1, "-x0 -x1 -x2");
+-    SymbolicFunction objectiveFunction(inputVariables, objective);
+-
+-    // Definition of bounds
+-    Point variablesLowerBounds(4);
+-    Point variablesUpperBounds(4);
+-    Collection<UnsignedInteger> variablesFiniteLowerBounds(4, 1);
+-    Collection<UnsignedInteger> variablesFiniteUpperBounds(4, 1);
+-    variablesLowerBounds[0] = 0;
+-    variablesUpperBounds[0] = 1;
+-
+-    variablesLowerBounds[1] = 0;
+-    variablesUpperBounds[1] = DBL_MAX;
+-    variablesFiniteUpperBounds[1] = 0;
+-
+-    variablesLowerBounds[2] = 0;
+-    variablesUpperBounds[2] = DBL_MAX;
+-    variablesFiniteUpperBounds[2] = 0;
+-
+-    variablesLowerBounds[3] = 0;
+-    variablesUpperBounds[3] = 5;
+-    Interval variablesBounds(variablesLowerBounds, variablesUpperBounds, variablesFiniteLowerBounds, variablesFiniteUpperBounds) ;
+-
+-    // Definition of inequality constraints:
+-    // Bonmin constraints are defined as g_l <= g(x) <= g_u
+-    // OpenTURNS' are defined as g(x) >= 0
+-    Description inequalityFormulas(3);
+-    inequalityFormulas[0] = "-(x1 - 1/2)^2 - (x2 - 1/2)^2 + 1/4";
+-    inequalityFormulas[1] = "-x0 + x1";
+-    inequalityFormulas[2] = "-x0 - x2 - x3 + 2";
+-    SymbolicFunction inequalityConstraints(inputVariables, inequalityFormulas);
+-
+-    // Definition of variables types
+-    Indices varTypes(4);
+-    varTypes[0] = OT::OptimizationProblemImplementation::BINARY;
+-    varTypes[1] = OT::OptimizationProblemImplementation::CONTINUOUS;
+-    varTypes[2] = OT::OptimizationProblemImplementation::CONTINUOUS;
+-    varTypes[3] = OT::OptimizationProblemImplementation::INTEGER;
+-
+-    // Definition of OptimizationProblem
+-    OptimizationProblem problem(objectiveFunction);
+-    problem.setBounds(variablesBounds);
+-    problem.setVariablesType(varTypes);
+-    problem.setInequalityConstraint(inequalityConstraints);
++    app.initialize(GetRawPtr(tminlp));
+ 
+-    // Running Bonmin algorithm
+-    Bonmin bonminAlgorithm(problem);
+-    bonminAlgorithm.setStartingPoint(Point(4, 0));
+-    bonminAlgorithm.setMaximumCallsNumber(10000);
+-    bonminAlgorithm.setMaximumIterationNumber(1000);
+-
+-    // Test __repr__ method
+-    std::cout << bonminAlgorithm.__repr__() << std::endl;
+-
+-
+-    // Defining reference solution
+-    const Point referenceSolution = {1.0, 1.0, 0.5, 0.0};
+-
+-    // Defining solvers to test
 -    const Description solvers(Bonmin::GetAlgorithmNames());
-+    const Description solvers = {"B-BB"};
- 
-     for (UnsignedInteger i = 0; i < solvers.getSize(); ++i)
-     {
-@@ -113,15 +113,15 @@ int main()
-       // Run the solver
-       bonminAlgorithm.run();
- 
+-
+-    for (UnsignedInteger i = 0; i < solvers.getSize(); ++i)
+-    {
+-      // Set solver
+-      bonminAlgorithm.setAlgorithmName(solvers[i]);
+-      std::cout << " == TEST WITH " << bonminAlgorithm.getAlgorithmName() << " SOLVER:" << std::endl;
+-
+-      // Run the solver
+-      bonminAlgorithm.run();
+-
 -      // Retrieve solution
 -      OptimizationResult result(bonminAlgorithm.getResult());
 -      std::cout << " -- Optimal point = " << result.getOptimalPoint() << std::endl;
@@ -1089,15 +1204,32 @@ index 02fdffeac..76e654f83 100644
 -      // Check result
 -      assert_almost_equal(result.getOptimalPoint(), referenceSolution, 1e-2);
 -      std::cout << " => TEST " << bonminAlgorithm.getAlgorithmName() << " PASSED" << std::endl << std::endl;
-+      // // Retrieve solution
-+      // OptimizationResult result(bonminAlgorithm.getResult());
-+      // std::cout << " -- Optimal point = " << result.getOptimalPoint() << std::endl;
-+      // std::cout << " -- Optimal value = " << result.getOptimalValue() << std::endl;
-+      // std::cout << " -- Evaluation num = " << result.getInputSample().getSize() << std::endl;
-+      // 
-+      // // Check result
-+      // assert_almost_equal(result.getOptimalPoint(), referenceSolution, 1e-2);
-+      // std::cout << " => TEST " << bonminAlgorithm.getAlgorithmName() << " PASSED" << std::endl << std::endl;
-     }
+-    }
++    // Solve problem
++    ::Bonmin::Bab solver;
++    solver(app);
+   }
+-
+-  catch (TestFailed & ex)
++  catch (::Bonmin::TNLPSolver::UnsolvedError *exc)
++  {
++    return 1;
++  }
++  catch(const ::Bonmin::OsiTMINLPInterface::SimpleError & exc)
++  {
++    return 1;
++  }
++  catch(const CoinError & exc)
+   {
+-    std::cerr << ex << std::endl;
+-    return ExitCode::Error;
++    return 1;
    }
  
++  // print used options
++  String optionsLog;
++  app.options()->PrintList(optionsLog);
++  std::cout << optionsLog << std::endl;
+ 
+   return ExitCode::Success;
+ }
