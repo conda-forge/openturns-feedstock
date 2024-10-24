@@ -1,4 +1,4 @@
-{% set version = "1.23" %}
+{% set version = "1.24" %}
 
 package:
   name: openturns
@@ -7,13 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 4c7cfe5d2310933e3a2e91f7db9531d80e32157143157df80f6e93267c29f414
-  patches:
-    - numpy2.patch
+  sha256: 6c5232b4daf0b93fbc49dee45299ade2c2c16d44476700e7689af6b50c999f57
 
 build:
-  number: 10
-  skip: true  # [win and py>=313]
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -21,7 +18,7 @@ requirements:
   build:
     - cmake
     - ninja
-    - swig <4.3
+    - swig
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
@@ -55,6 +52,7 @@ requirements:
     - primesieve  # [not win]
     - libcuba  # [not win]
     - nanoflann  # [not win]
+    - zlib  # [not win]
   run:
     - python
     - dill
