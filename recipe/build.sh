@@ -93,8 +93,8 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -D_HAVE_FR_LOC_RUNS=0 \
   -DUSE_CERES=OFF -DUSE_PAGMO=OFF -DUSE_CMINPACK=OFF -DUSE_NLOPT=OFF -DUSE_HDF5=OFF -DUSE_DLIB=OFF -DUSE_NANOFLANN=OFF -DUSE_CUBA=OFF -DUSE_PRIMESIEVE=OFF -DUSE_SPECTRA=OFF -DUSE_TBB=OFF \
   -B build .
-# cmake --build build --target t_Bonmin_std --parallel ${CPU_COUNT}
-make t_Bonmin_std -C build VERBOSE=1
+cmake --build build --target t_Bonmin_std --parallel ${CPU_COUNT}
+# make t_Bonmin_std -C build VERBOSE=1
 
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
