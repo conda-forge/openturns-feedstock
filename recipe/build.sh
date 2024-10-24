@@ -43,7 +43,7 @@
 #make -j "${CPU_COUNT}"
 #make install
 # make test || "ipopt test :["
-cd ..
+# cd ..
 
 # compat
 #cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
@@ -75,7 +75,7 @@ cd ..
 #./CppExample
 #cd ../..
 # make test || "bonmin test :["
-cd ..
+# cd ..
 
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
