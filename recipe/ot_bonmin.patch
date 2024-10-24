@@ -1358,10 +1358,10 @@ index ccf74e675..14449baac 100644
  
  ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..ab570c011 100644
+index 02fdffeac..0e4893847 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
-@@ -1,136 +1,323 @@
+@@ -1,136 +1,302 @@
 -//                                               -*- C++ -*-
 -/**
 - *  @brief The test file of class Bonmin
@@ -1391,30 +1391,32 @@ index 02fdffeac..ab570c011 100644
 -
 -void debug(const String & message,
 -           const String & where)
-+
+-{
+-  std::cout << " DEBUG [" << where << "]: " << message << std::endl;
+-}
+ 
 +#include <BonBonminSetup.hpp>
 +#include <BonCbc.hpp>
 +#include <BonminConfig.h>
 +#include <BonTMINLP.hpp>
 +#include <IpTNLP.hpp>
-+
+ 
+-int main()
 +typedef ::Bonmin::TMINLP::VariableType * VariableTypeTable;
 +typedef ::Ipopt::TNLP::LinearityType * LinearityTypeTable;
 +
 +
 +class MyTMINLP
 +  : public ::Bonmin::TMINLP
-+{
-+public:
-+
-+  /** Constructor with parameters */
-+  MyTMINLP()
-+  : ::Bonmin::TMINLP()
  {
--  std::cout << " DEBUG [" << where << "]: " << message << std::endl;
-+
- }
+-  TESTPREAMBLE;
+-  OStream fullprint(std::cout);
++public:
  
+-  try
++  /** Constructor with parameters */
++  MyTMINLP() : ::Bonmin::TMINLP() {}
++
 +  bool get_nlp_info(int & n,
 +                    int & m,
 +                    int & nnz_jac_g, // Number of non-zero components in the Jacobian of g
@@ -1427,15 +1429,9 @@ index 02fdffeac..ab570c011 100644
 +    // All components of the jacobian and lagrangian's hessian are assumed to be non-zero
 +    nnz_jac_g = n * m;
 +    nnz_h_lag = n * n;
- 
--int main()
--{
--  TESTPREAMBLE;
--  OStream fullprint(std::cout);
++
 +    // Index style is C-like
 +    index_style = ::Ipopt::TNLP::C_STYLE;
- 
--  try
 +    return true;
 +  }
 +
@@ -1530,11 +1526,11 @@ index 02fdffeac..ab570c011 100644
 +              double* g)
 +  {
 +    g[0] = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
-+      g[1] = -x[0] +x[1];
-+      g[2] = -x[0] -x[2]-x[3] + 2.0;
-+    
++    g[1] = -x[0] +x[1];
++    g[2] = -x[0] -x[2]-x[3] + 2.0;
 +    return true;
 +  }
++
 +  bool eval_jac_g(int n,
 +                  const double* x,
 +                  bool new_x,
@@ -1652,6 +1648,17 @@ index 02fdffeac..ab570c011 100644
 -    for (UnsignedInteger i = 0; i < solvers.getSize(); ++i)
 +    /* Switch on first call / later calls */
 +    if (values == NULL) // First call: initialization of iRow/jCol
++    {
++      int k = 0;
++      for (int i = 0; i < n; ++i)
++        for (int j = 0; j < n; ++j)
++        {
++          iRow[k] = i;
++          jCol[k] = j;
++          ++k;
++        }
++    }
++    else // Later calls
      {
 -      // Set solver
 -      bonminAlgorithm.setAlgorithmName(solvers[i]);
@@ -1673,23 +1680,12 @@ index 02fdffeac..ab570c011 100644
 +      for (int i = 0; i < n; ++i)
 +        for (int j = 0; j < n; ++j)
 +        {
-+          iRow[k] = i;
-+          jCol[k] = j;
-+          ++k;
-+        }
-     }
-+    else // Later calls
-+    {
-+      int k = 0;
-+      for (int i = 0; i < n; ++i)
-+        for (int j = 0; j < n; ++j)
-+        {
 +          values[k] = 0.0;
 +          ++k;
 +        }
 +      values[5] = -2.0 * lambda[0];
 +      values[10] = -2.0 * lambda[0];
-+    }
+     }
 +
 +    return true;
 +  }
@@ -1699,14 +1695,9 @@ index 02fdffeac..ab570c011 100644
 +               int i,
 +               double& gi)
 +  {
-+    if (i == 0)
-+      gi = -(x[1] - 0.5)*(x[1] - 0.5) - (x[2] - 0.5)*(x[2] - 0.5) + 0.25;
-+    if (i == 1)
-+      gi = -x[0] +x[1];
-+    if (i == 2)
-+      gi = -x[0] -x[2]-x[3] + 2.0;
 +    return true;
 +  }
++
 +  bool eval_grad_gi(int n,
 +                    const double* x,
 +                    bool new_x,
@@ -1715,29 +1706,17 @@ index 02fdffeac..ab570c011 100644
 +                    int* jCol,
 +                    double* values)
 +  {
-+    // Computing constraint derivative
-+    nele_grad_gi = n;
-+
-+    if (values == NULL) // First call
-+      for (int j = 0; j < n; ++j)
-+        jCol[j] = j;
-+    else
-+    {
-+      // not implemented
-+      for (int j = 0; j < n; ++ j)
-+        values[j] = 0.0;
-+    }
 +    return true;
 +  }
++
 +  void finalize_solution( ::Bonmin::TMINLP::SolverReturn status,
 +                          ::Ipopt::Index n,
 +                          const ::Ipopt::Number* x,
 +                          ::Ipopt::Number obj_value)
 +  {
 +    status_ = status;
-   }
- 
--  catch (TestFailed & ex)
++  }
++
 +  const ::Bonmin::TMINLP::BranchingInfo * branchingInfo() const
 +  {
 +    return NULL;
@@ -1751,8 +1730,9 @@ index 02fdffeac..ab570c011 100644
 +  ::Bonmin::TMINLP::SolverReturn getStatus() const
 +  {
 +    return status_;
-+  }
-+
+   }
+ 
+-  catch (TestFailed & ex)
 +
 +
 +private:
