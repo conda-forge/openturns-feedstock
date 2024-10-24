@@ -51,7 +51,6 @@ cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
 curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
 cd Bonmin-releases-1.8.9/
-curl -L https://github.com/coin-or/Bonmin/commit/f2c2744263.patch | patch -p1
 mkdir Data
 git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
 # patch -p1 -i ${RECIPE_DIR}/bonmini_debug.patch
