@@ -692,7 +692,7 @@ index ccf74e675..14449baac 100644
  
  ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..3ae4b57bb 100644
+index 02fdffeac..fcfc5c023 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
 @@ -1,136 +1,298 @@
@@ -1081,7 +1081,7 @@ index 02fdffeac..3ae4b57bb 100644
 +  app.initializeOptionsAndJournalist();
 +  app.options()->SetStringValue("bonmin.algorithm", "B-BB");
 +  // app.options()->SetStringValue("honor_original_bounds", "yes"); 
-+  app.options()->SetNumericValue("constr_viol_tol", 1e-5);
++  // app.options()->SetNumericValue("constr_viol_tol", 1e-5);
 +  app.options()->SetNumericValue("bound_relax_factor", 0.0);
 +
 +  // Update setup with MyTMINLP
