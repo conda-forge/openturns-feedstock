@@ -17,7 +17,7 @@ curl -L https://github.com/coin-or/Cbc/archive/releases/2.10.12.tar.gz | tar xz
 cd Cbc-releases-2.10.12/
 mkdir Data
 git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
-patch -p1 -i ${RECIPE_DIR}/cbc_debug.patch
+# patch -p1 -i ${RECIPE_DIR}/cbc_debug.patch
 curl -L https://raw.githubusercontent.com/conda-forge/coin-or-cbc-feedstock/main/recipe/patches/0001-Patch-for-downstream.patch | patch -p1
 ./configure --prefix="${PREFIX}" --exec-prefix="${PREFIX}" --disable-cbc-parallel --enable-gnu-packages
 #cat ./Cbc/src/config.h
@@ -30,7 +30,7 @@ cd ..
 curl -L https://github.com/coin-or/Ipopt/archive/refs/tags/releases/3.14.16.tar.gz | tar xz
 cd Ipopt-releases-3.14.16/
 curl -L https://raw.githubusercontent.com/conda-forge/ipopt-feedstock/main/recipe/pkg-config-do-not-add-requires-private.patch | patch -p1
-patch -p1 -i ${RECIPE_DIR}/ipopt.patch
+# patch -p1 -i ${RECIPE_DIR}/ipopt.patch
 ./configure \
   --without-hsl \
   --disable-java \
@@ -49,11 +49,12 @@ cd ..
 # compat
 cp -rv ${PREFIX}/include/coin-or/* ${PREFIX}/include/coin
 
-curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
+# curl -L https://github.com/coin-or/Bonmin/archive/refs/tags/releases/1.8.9.tar.gz | tar xz
+git clone https://github.com/coin-or/Bonmin.git Bonmin-releases-1.8.9/
 cd Bonmin-releases-1.8.9/
 mkdir Data
 git clone --depth 1 https://github.com/coin-or-tools/Data-Sample.git Data/Sample
-patch -p1 -i ${RECIPE_DIR}/bonmini_debug.patch
+# patch -p1 -i ${RECIPE_DIR}/bonmini_debug.patch
 LIBS="-lCoinUtils -lOsi -lCgl" ./configure --prefix="${PREFIX}" \
   --with-coinutils-lib="$(pkg-config --libs coinutils)" \
   --with-coinutils-incdir="${PREFIX}/include/coin/" \
