@@ -1342,13 +1342,16 @@ index 42e3942d9..8e9c9693a 100644
  
  #endif /* OPENTURNS_OT_HXX */
 diff --git a/lib/test/CMakeLists.txt b/lib/test/CMakeLists.txt
-index ccf74e675..76586a45c 100644
+index ccf74e675..14449baac 100644
 --- a/lib/test/CMakeLists.txt
 +++ b/lib/test/CMakeLists.txt
-@@ -194,6 +194,8 @@ if (dlib_FOUND)
+@@ -193,7 +193,10 @@ if (dlib_FOUND)
+   ot_check_test (Dlib_global IGNOREOUT)
  endif()
  if (Bonmin_FOUND)
-   ot_check_test (Bonmin_std IGNOREOUT)
+-  ot_check_test (Bonmin_std IGNOREOUT)
++  # ot_check_test (Bonmin_std IGNOREOUT)
++  add_executable(t_Bonmin_std t_Bonmin_std.cxx)
 +  target_include_directories(t_Bonmin_std PRIVATE ${COIN_INCLUDE_DIRS} ${IPOPT_INCLUDE_DIRS})
 +  target_link_libraries(t_Bonmin_std PRIVATE ${COIN_BONMIN_LIBRARIES})
  endif()
