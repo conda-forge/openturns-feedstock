@@ -15,7 +15,7 @@ index ccf74e675..14449baac 100644
  
  ot_check_test (SQP_std)
 diff --git a/lib/test/t_Bonmin_std.cxx b/lib/test/t_Bonmin_std.cxx
-index 02fdffeac..ce15ddc79 100644
+index 02fdffeac..702051112 100644
 --- a/lib/test/t_Bonmin_std.cxx
 +++ b/lib/test/t_Bonmin_std.cxx
 @@ -1,136 +1,298 @@
@@ -192,7 +192,7 @@ index 02fdffeac..ce15ddc79 100644
 +    for (int i = 0; i < n; ++i)
 +    {
 +      x_l[i] = 0.0;
-+      x_u[i] = 1e50;
++      x_u[i] = 1e10;
 +    }
 +    x_u[0] = 1.0;  
 +    x_u[3] = 5.0;
@@ -216,7 +216,7 @@ index 02fdffeac..ce15ddc79 100644
 -      assert_almost_equal(result.getOptimalPoint(), referenceSolution, 1e-2);
 -      std::cout << " => TEST " << bonminAlgorithm.getAlgorithmName() << " PASSED" << std::endl << std::endl;
 +      g_l[i] = 0.0;   // OT constraints are expressed as g(x) = 0 and h(x) >= 0
-+      g_u[i] = 1e50;
++      g_u[i] = 1e10;
      }
 +
 +    return true;
