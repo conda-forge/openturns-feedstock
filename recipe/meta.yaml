@@ -21,7 +21,7 @@ requirements:
   build:
     - cmake
     - ninja
-    - swig
+    - swig <4.3
     - {{ compiler('c') }}
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
