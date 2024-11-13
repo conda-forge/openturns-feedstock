@@ -5,7 +5,7 @@ MACOSX_SDK_VERSION:
 c_compiler:
 - clang
 c_compiler_version:
-- '17'
+- '18'
 c_stdlib:
 - macosx_deployment_target
 c_stdlib_version:
@@ -17,7 +17,7 @@ channel_targets:
 cxx_compiler:
 - clangxx
 cxx_compiler_version:
-- '17'
+- '18'
 glog:
 - '0.7'
 hdf5:
@@ -37,7 +37,7 @@ libxml2:
 macos_machine:
 - arm64-apple-darwin20.0.0
 nlopt:
-- '2.8'
+- '2.9'
 numpy:
 - '2.0'
 pin_run_as_build:
@@ -58,4 +58,3 @@ zip_keys:
 - - python
   - numpy
   - python_impl
-  - channel_sources
