@@ -58,3 +58,5 @@ zip_keys:
 - - python
   - numpy
   - python_impl
+zlib:
+- '1'
