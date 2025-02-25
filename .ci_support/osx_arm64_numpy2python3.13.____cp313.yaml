@@ -25,13 +25,13 @@ hdf5:
 ipopt:
 - 3.14.17
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libboost_devel:
 - '1.86'
 libboost_headers:
 - '1.86'
 liblapack:
-- 3.9 *netlib
+- 3.9.* *netlib
 libxml2:
 - '2'
 macos_machine:
