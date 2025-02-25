@@ -10,7 +10,9 @@ source:
   sha256: 6c5232b4daf0b93fbc49dee45299ade2c2c16d44476700e7689af6b50c999f57
 
 build:
-  number: 2
+  number: 3
+  skip: true  # [win]
+  python_version_independent: true
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -27,9 +29,11 @@ requirements:
     - m2-sed  # [win]
     - m2-diffutils  # [win]
     - python                                 # [build_platform != target_platform]
+    - python-abi3                            # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
     - python
+    - python-abi3
     - libboost-headers  # [not win]
     - matplotlib-base  # [python_impl == 'cpython']
     - mpc  # [not win]
@@ -54,7 +58,8 @@ requirements:
     - nanoflann  # [not win]
     - zlib  # [not win]
   run:
-    - python
+    - cpython >=3.9
+    - python-gil
     - dill
     - psutil
     - tbb-devel  # [not win]
