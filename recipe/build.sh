@@ -12,6 +12,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DPython_ROOT_DIR=${PREFIX} \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
   -DSWIG_COMPILE_FLAGS="-O1" \
+  -DBLA_VENDOR=Generic \
   -D_HAVE_FR_LOC_RUNS=0 \
   -B build .
 cmake --build build --target install --parallel ${CPU_COUNT}
