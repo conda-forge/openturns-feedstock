@@ -21,31 +21,31 @@ cxx_compiler_version:
 glog:
 - '0.7'
 hdf5:
-- 1.14.4
+- 1.14.3
 ipopt:
 - 3.14.17
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libboost_devel:
 - '1.86'
 libboost_headers:
 - '1.86'
 liblapack:
-- 3.9 *netlib
+- 3.9.* *netlib
 libxml2:
 - '2'
 macos_machine:
 - arm64-apple-darwin20.0.0
 nlopt:
-- '2.9'
+- '2.10'
 numpy:
-- '2.0'
+- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.12.* *_cpython
+- 3.13.* *_cp313
 python_impl:
 - cpython
 target_platform:

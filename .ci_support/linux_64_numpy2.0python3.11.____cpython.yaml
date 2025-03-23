@@ -21,21 +21,21 @@ docker_image:
 glog:
 - '0.7'
 hdf5:
-- 1.14.4
+- 1.14.3
 ipopt:
 - 3.14.17
 libblas:
-- 3.9 *netlib
+- 3.9.* *netlib
 libboost_devel:
 - '1.86'
 libboost_headers:
 - '1.86'
 liblapack:
-- 3.9 *netlib
+- 3.9.* *netlib
 libxml2:
 - '2'
 nlopt:
-- '2.9'
+- '2.10'
 numpy:
 - '2.0'
 pin_run_as_build:
