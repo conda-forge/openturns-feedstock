@@ -1,4 +1,5 @@
 del /s /q "C:\Program Files\R"
+del /s /q "C:\Program Files\LLVM"
 
 curl -fsSLO https://github.com/openturns/build/releases/download/v%PKG_VERSION%/openturns-%PKG_VERSION%-py%PY_VER%-x86_64.exe
 if errorlevel 1 exit 1
