@@ -13,6 +13,7 @@ build:
   number: 3
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
+  python_version_independent: true
 
 requirements:
   build:
@@ -29,6 +30,7 @@ requirements:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
   host:
+    - python-abi3
     - python
     - libboost-headers  # [not win]
     - matplotlib-base  # [python_impl == 'cpython']

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+git clone https://github.com/openturns/openturns.git
+cd openturns
+
 # https://conda-forge.org/docs/maintainer/knowledge_base/#newer-c-features-with-old-sdk
 CXXFLAGS="${CXXFLAGS} -D_LIBCPP_DISABLE_AVAILABILITY"
 
@@ -12,7 +15,8 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DPython_ROOT_DIR=${PREFIX} \
   -DBLA_VENDOR=Generic \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
-  -DSWIG_COMPILE_FLAGS="-O1" \
+  -DUSE_PYTHON_SABI=ON \
+  -DSWIG_COMPILE_FLAGS="-O1 -DPy_LIMITED_API=0x03090000" \
   -D_HAVE_FR_LOC_RUNS=0 \
   -B build .
 cmake --build build --target install --parallel ${CPU_COUNT}
