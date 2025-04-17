@@ -1,0 +1,22 @@
+From da06e6a2cf867d7bbedfa5a9207c0922edfda8b2 Mon Sep 17 00:00:00 2001
+From: Julien Schueller <schueller@phimeca.com>
+Date: Sat, 7 Dec 2024 11:42:33 +0100
+Subject: [PATCH] PythonWrappingFunctions: Fix exc type
+
+---
+ python/src/openturns/PythonWrappingFunctions.hxx | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/python/src/openturns/PythonWrappingFunctions.hxx b/python/src/openturns/PythonWrappingFunctions.hxx
+index 8cf8b7ae314..2d0e03cec3d 100644
+--- a/python/src/openturns/PythonWrappingFunctions.hxx
++++ b/python/src/openturns/PythonWrappingFunctions.hxx
+@@ -762,7 +762,7 @@ void handleException()
+     String exceptionMessage("Python exception");
+ 
+     // get the name of the exception
+-    if (type)
++    if (type && PyObject_HasAttrString(type, "__name__"))
+     {
+       ScopedPyObjectPointer nameObj(PyObject_GetAttrString(type, "__name__"));
+       if (nameObj.get())
