@@ -21,7 +21,7 @@ docker_image:
 glog:
 - '0.7'
 hdf5:
-- 1.14.3
+- 1.14.6
 ipopt:
 - 3.14.17
 libblas:
