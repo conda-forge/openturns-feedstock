@@ -17,7 +17,7 @@ libcblas:
 liblapack:
 - 3.9.* *netlib
 numpy:
-- '2.0'
+- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
@@ -30,5 +30,4 @@ target_platform:
 - win-64
 zip_keys:
 - - python
-  - numpy
   - python_impl
