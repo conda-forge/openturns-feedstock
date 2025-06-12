@@ -37,13 +37,13 @@ libxml2:
 nlopt:
 - '2.10'
 numpy:
-- '2.0'
+- '2'
 pin_run_as_build:
   python:
     min_pin: x.x
     max_pin: x.x
 python:
-- 3.12.* *_cpython
+- 3.10.* *_cpython
 python_impl:
 - cpython
 target_platform:
@@ -54,7 +54,6 @@ zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
 - - python
-  - numpy
   - python_impl
 zlib:
 - '1'
