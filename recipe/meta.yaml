@@ -1,4 +1,4 @@
-{% set version = "1.24" %}
+{% set version = "1.25" %}
 
 package:
   name: openturns
@@ -7,13 +7,10 @@ package:
 source:
   fn: openturns-{{ version }}.tar.gz
   url: https://github.com/openturns/openturns/archive/v{{ version }}.tar.gz
-  sha256: 6c5232b4daf0b93fbc49dee45299ade2c2c16d44476700e7689af6b50c999f57
-  patches:
-    - cpr_str.patch
-    - exc_name.patch
+  sha256: d9606f25824a84233b2ccf07e0d03716e387453a4be26fdd031bd0d47458d045
 
 build:
-  number: 6
+  number: 0
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -26,7 +23,6 @@ requirements:
     - {{ stdlib("c") }}
     - {{ compiler('cxx') }}
     - curl  # [win]
-    - bison  # [not win]
     - m2-sed  # [win]
     - m2-diffutils  # [win]
     - diffutils  # [linux]
