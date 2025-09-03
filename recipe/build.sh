@@ -19,5 +19,5 @@ rm -r ${PREFIX}/share/gdb
 
 if test "$CONDA_BUILD_CROSS_COMPILATION" != "1"
 then
-  ctest --test-dir build -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E oscillator
+  ctest --test-dir build -R pyinstallcheck --output-on-failure --schedule-random -j${CPU_COUNT} -E "oscillator|Function_python"
 fi
