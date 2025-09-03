@@ -11,6 +11,7 @@ source:
 
 build:
   number: 2
+  skip: true  # [win and py==314]
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
