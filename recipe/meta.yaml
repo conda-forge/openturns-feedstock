@@ -10,7 +10,7 @@ source:
   sha256: d9606f25824a84233b2ccf07e0d03716e387453a4be26fdd031bd0d47458d045
 
 build:
-  number: 3
+  number: 4
   skip: true  # [win and py==314]
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
@@ -37,7 +37,7 @@ requirements:
     - libblas
     - libcblas  # [win]
     - liblapack
-    - libxml2  # [not win]
+    - libxml2-devel  # [not win]
     - tbb-devel  # [not win]
     - cminpack  # [not win]
     - ceres-solver  # [not win]
