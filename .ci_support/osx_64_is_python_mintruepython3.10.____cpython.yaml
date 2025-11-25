@@ -24,6 +24,10 @@ hdf5:
 - 1.14.6
 ipopt:
 - 3.14.19
+is_abi3:
+- true
+is_python_min:
+- true
 libblas:
 - 3.9.* *netlib
 libboost_devel:
@@ -53,5 +57,7 @@ tbb_devel:
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
+- - python
+  - is_python_min
 zlib:
 - '1'
