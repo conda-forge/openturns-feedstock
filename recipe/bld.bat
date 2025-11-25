@@ -1,18 +1,24 @@
-del /s /q "C:\Program Files\R"
 
-curl -fsSLO https://github.com/openturns/build/releases/download/v%PKG_VERSION%/openturns-%PKG_VERSION%-py%PY_VER%-x86_64.exe
+:: remove -GL from CXXFLAGS
+set "CXXFLAGS=-MD"
+
+:: from Azure
+set "Boost_ROOT="
+
+cmake -LAH -G "Ninja" ^
+    -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" ^
+    -DCMAKE_INSTALL_PREFIX="%LIBRARY_PREFIX%" ^
+    -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 ^
+    -DBLA_VENDOR=Generic ^
+    -DPython_FIND_STRATEGY=LOCATION ^
+    -DPython_ROOT_DIR="%PREFIX%" ^
+    -DOPENTURNS_PYTHON_MODULE_PATH=../Lib/site-packages ^
+    -B build .
 if errorlevel 1 exit 1
 
-openturns-%PKG_VERSION%-py%PY_VER%-x86_64.exe /userlevel=1 /S /FORCE /D=%PREFIX%
+cmake --build build --target install --config Release --parallel %CPU_COUNT%
 if errorlevel 1 exit 1
 
-:: our lapack libs conflict when numpy is loaded first
-del %SP_DIR%\openturns\libblas.dll
-del %SP_DIR%\openturns\libcblas.dll
-del %SP_DIR%\openturns\liblapack.dll
-
-cmake -LAH -G "Ninja" -DCMAKE_PREFIX_PATH="%LIBRARY_PREFIX%" -DBLAS_LIBRARIES=1 -DLAPACK_LIBRARIES=1 -DPython_FIND_STRATEGY=LOCATION -DPython_ROOT_DIR="%PREFIX%" .
+ctest --test-dir build -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT%
 if errorlevel 1 exit 1
 
-ctest -R pyinstallcheck --output-on-failure --timeout 1000 -E "docstring|example"
-if errorlevel 1 exit 1
