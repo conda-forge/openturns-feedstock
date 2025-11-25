@@ -59,6 +59,7 @@ requirements:
     - dill
     - psutil
     - tbb-devel  # [not win]
+    - highs  # [not win]
 
 test:
   requires:
