@@ -12,7 +12,7 @@ cmake ${CMAKE_ARGS} -LAH -G "Ninja" \
   -DPython_ROOT_DIR=${PREFIX} \
   -DBLA_VENDOR=Generic \
   -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 \
-  -DSWIG_COMPILE_FLAGS="-O1" \
+  -DSWIG_COMPILE_FLAGS="-O1 -DPy_LIMITED_API=0x030A0000" -DUSE_PYTHON_SABI=ON \
   -B build .
 cmake --build build --target install --parallel ${CPU_COUNT}
 rm -r ${PREFIX}/share/gdb
