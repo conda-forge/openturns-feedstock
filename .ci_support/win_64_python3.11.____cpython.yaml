@@ -6,18 +6,26 @@ channel_sources:
 - conda-forge
 channel_targets:
 - conda-forge main
-curl:
-- '8'
 cxx_compiler:
 - vs2022
+glog:
+- '0.7'
+hdf5:
+- 1.14.6
+ipopt:
+- 3.14.19
 libblas:
 - 3.9.* *netlib
-libcblas:
-- 3.9.* *netlib
+libboost_devel:
+- '1.88'
+libboost_headers:
+- '1.88'
 liblapack:
 - 3.9.* *netlib
-numpy:
-- '2'
+libxml2_devel:
+- '2.14'
+nlopt:
+- '2.10'
 pin_run_as_build:
   python:
     min_pin: x.x
@@ -28,3 +36,7 @@ python_impl:
 - cpython
 target_platform:
 - win-64
+tbb_devel:
+- '2022'
+zlib:
+- '1'
