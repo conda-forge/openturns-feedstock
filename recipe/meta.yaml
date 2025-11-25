@@ -10,8 +10,7 @@ source:
   sha256: 624bd45f89ab3afe1931cb07f8c5398e6983faa40a1d92a81b04006f45b66147
 
 build:
-  number: 0
-  skip: true  # [win and py==314]
+  number: 1
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
 
@@ -48,6 +47,7 @@ requirements:
     - coin-or-bonmin  # [not win]
     - spectralib  # [not win]
     - hdf5  # [not win]
+    - highs  # [not win]
     - pagmo-devel  # [not win]
     - libboost-devel  # [not win]
     - primesieve  # [not win]
