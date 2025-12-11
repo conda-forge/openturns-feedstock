@@ -10,7 +10,7 @@ source:
   sha256: 624bd45f89ab3afe1931cb07f8c5398e6983faa40a1d92a81b04006f45b66147
 
 build:
-  number: 5
+  number: 6
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
   python_version_independent: true  # [is_abi3]
@@ -39,7 +39,7 @@ requirements:
     - libxml2-devel
     - tbb-devel
     - cminpack
-    - ceres-solver
+    - ceres-solver * *lgpl*
     - glog
     - nlopt
     - dlib-cpp
