@@ -10,7 +10,7 @@ source:
   sha256: 624bd45f89ab3afe1931cb07f8c5398e6983faa40a1d92a81b04006f45b66147
 
 build:
-  number: 4
+  number: 5
   run_exports:
     - {{ pin_subpackage('openturns', max_pin='x.x') }}
   python_version_independent: true  # [is_abi3]
@@ -68,6 +68,8 @@ test:
     - openturns
   commands:
     - abi3audit $SP_DIR/openturns/_common.so -s -v --assume-minimum-abi3 3.10  # [unix and is_abi3]
+    - abi3audit %SP_DIR%\\openturns\\_common.pyd -s -v --assume-minimum-abi3 3.10  # [win and is_abi3]
+    - if not exist %PREFIX%\\Library\\bin\\openturns.conf exit 1  # [win]
 
 about:
   home: http://openturns.org/
