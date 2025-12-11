@@ -5,11 +5,14 @@ cmake %CMAKE_ARGS% -LAH -G "Ninja" ^
     -DPython_ROOT_DIR="%PREFIX%" ^
     -DOPENTURNS_PYTHON_MODULE_PATH=../Lib/site-packages ^
     -DSWIG_COMPILE_FLAGS="/DPy_LIMITED_API=0x030A0000" -DUSE_PYTHON_SABI=ON ^
-    -DUSE_PRIMESIEVE=OFF ^
     -B build .
 if errorlevel 1 exit 1
 
 cmake --build build --target install --config Release --parallel %CPU_COUNT%
+if errorlevel 1 exit 1
+
+:: move the config file next to the OT dll
+move %LIBRARY_PREFIX%\etc\openturns\openturns.conf %LIBRARY_BIN%
 if errorlevel 1 exit 1
 
 ctest --test-dir build -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT%
