@@ -1,0 +1,89 @@
+context:
+  version: "1.26.1"
+
+package:
+  name: openturns
+  version: ${{ version }}
+
+source:
+  url: https://github.com/openturns/openturns/archive/v${{ version }}.tar.gz
+  sha256: 41ddda08a44ea9980e725987669d49448280acb2c8e06d9d279a7321ec9452c0
+
+build:
+  number: 1
+  python:
+    version_independent: true
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ stdlib("c") }}
+    - ${{ compiler('cxx') }}
+    - cmake
+    - ninja
+    - swig
+    - if: linux
+      then: diffutils
+    - if: win
+      then: m2-diffutils
+    - if: build_platform != target_platform
+      then:
+        - python-abi3 ${{ python_min }}.*
+        - python ${{ python_min }}.*
+        - cross-python_${{ target_platform }}
+  host:
+    - python-abi3 ${{ python_min }}.*
+    - python ${{ python_min }}.*
+    - libboost-headers
+    - matplotlib-base
+    - mpc
+    - libblas
+    - liblapack
+    - libxml2-devel
+    - tbb-devel
+    - cminpack
+    - ceres-solver * *lgpl*
+    - glog
+    - nlopt
+    - dlib-cpp
+    - ipopt
+    - spectralib
+    - hdf5
+    - highs
+    - pagmo-devel
+    - libboost-devel
+    - primesieve
+    - libcuba
+    - nanoflann
+    - zlib
+    - if: not win
+      then: coin-or-bonmin
+  run:
+    - python >=${{ python_min }}
+    - dill
+    - psutil
+    - tbb-devel
+    - highs
+    - ceres-solver * *lgpl*
+  run_exports:
+    - ${{ pin_subpackage('openturns', upper_bound='x.x') }}
+
+tests:
+  - python:
+      imports:
+        - openturns
+  - script:
+    - if: win
+      then:
+        - if not exist %PREFIX%\\Library\\bin\\openturns.conf exit 1
+
+about:
+  homepage: http://openturns.org/
+  license: LGPL-3.0-or-later
+  license_family: LGPL
+  license_file: COPYING.LESSER
+  summary: Uncertainty treatment library
+
+extra:
+  recipe-maintainers:
+    - jschueller

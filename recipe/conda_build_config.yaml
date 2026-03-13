@@ -1,3 +1,0 @@
-# for tbb aligned deallocation
-c_stdlib_version:          # [osx and x86_64]
-  - '10.14'                # [osx and x86_64]
