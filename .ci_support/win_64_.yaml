@@ -14,10 +14,6 @@ hdf5:
 - 1.14.6
 ipopt:
 - 3.14.19
-is_abi3:
-- true
-is_python_min:
-- true
 libblas:
 - 3.9.* *netlib
 libboost_devel:
@@ -30,20 +26,11 @@ libxml2_devel:
 - '2.14'
 nlopt:
 - '2.10'
-pin_run_as_build:
-  python:
-    min_pin: x.x
-    max_pin: x.x
-python:
-- 3.10.* *_cpython
-python_impl:
-- cpython
+python_min:
+- '3.10'
 target_platform:
 - win-64
 tbb_devel:
 - '2022'
-zip_keys:
-- - python
-  - is_python_min
 zlib:
 - '1'
