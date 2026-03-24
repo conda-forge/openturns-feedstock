@@ -10,7 +10,7 @@ source:
   sha256: 41ddda08a44ea9980e725987669d49448280acb2c8e06d9d279a7321ec9452c0
 
 build:
-  number: 1
+  number: 2
   python:
     version_independent: true
 
@@ -73,9 +73,9 @@ tests:
       imports:
         - openturns
   - script:
-    - if: win
-      then:
-        - if not exist %PREFIX%\\Library\\bin\\openturns.conf exit 1
+      - if: win
+        then:
+          - if not exist %PREFIX%\\Library\\bin\\openturns.conf exit 1
 
 about:
   homepage: http://openturns.org/
