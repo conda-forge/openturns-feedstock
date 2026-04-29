@@ -22,6 +22,8 @@ libboost_headers:
 - '1.88'
 liblapack:
 - 3.9.* *netlib
+libxml2:
+- '2.14'
 libxml2_devel:
 - '2.14'
 nlopt:
