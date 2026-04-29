@@ -1,7 +1,6 @@
 
 cmake %CMAKE_ARGS% -LAH -G "Ninja" ^
     -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 ^
-    -DBLA_VENDOR=Generic ^
     -DPython_FIND_STRATEGY=LOCATION ^
     -DPython_ROOT_DIR="%PREFIX%" ^
     -DOPENTURNS_PYTHON_MODULE_PATH=../Lib/site-packages ^

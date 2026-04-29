@@ -10,7 +10,7 @@ source:
   sha256: 2b152d54530ff86512177231f0aba61afc4a2815686b18e574d6aebda4da36c3
 
 build:
-  number: 1
+  number: 2
   python:
     version_independent: true
   skip:
@@ -36,9 +36,9 @@ requirements:
   host:
     - python-abi3 ${{ python_min }}.*
     - python ${{ python_min }}.*
-    - libboost-headers
-    - matplotlib-base
-    - mpc
+    # - libboost-headers
+    # - matplotlib-base
+    # - mpc
     - libblas
     - liblapack
     - libxml2-devel
@@ -46,20 +46,20 @@ requirements:
     - cminpack
     # - ceres-solver * *lgpl*
     # - glog
-    - nlopt
+    # - nlopt
     # - dlib-cpp
     # - ipopt
     # - spectralib
     # - hdf5
     # - highs
     # - pagmo-devel
-    - libboost-devel
+    # - libboost-devel
     # - primesieve
     # - libcuba
     # - nanoflann
     # - zlib
-    - if: not win
-      then: coin-or-bonmin
+    # - if: not win
+    #   then: coin-or-bonmin
   run:
     - python >=${{ python_min }}
     - dill
