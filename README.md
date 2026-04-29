@@ -27,73 +27,10 @@ Current build status
         <table>
           <thead><tr><th>Variant</th><th>Status</th></tr></thead>
           <tbody><tr>
-              <td>linux_64_hdf51.14.6</td>
+              <td>win_64</td>
               <td>
                 <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_hdf51.14.6" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>linux_64_hdf52</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_64_hdf52" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>linux_aarch64_hdf51.14.6</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_hdf51.14.6" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>linux_aarch64_hdf52</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=linux&configuration=linux%20linux_aarch64_hdf52" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_hdf51.14.6</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_hdf51.14.6" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_64_hdf52</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_64_hdf52" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_arm64_hdf51.14.6</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_hdf51.14.6" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>osx_arm64_hdf52</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=osx&configuration=osx%20osx_arm64_hdf52" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>win_64_hdf51.14.6</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=win&configuration=win%20win_64_hdf51.14.6" alt="variant">
-                </a>
-              </td>
-            </tr><tr>
-              <td>win_64_hdf52</td>
-              <td>
-                <a href="https://dev.azure.com/conda-forge/feedstock-builds/_build/latest?definitionId=727&branchName=main">
-                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=win&configuration=win%20win_64_hdf52" alt="variant">
+                  <img src="https://dev.azure.com/conda-forge/feedstock-builds/_apis/build/status/openturns-feedstock?branchName=main&jobName=win&configuration=win%20win_64_" alt="variant">
                 </a>
               </td>
             </tr>
@@ -114,14 +51,14 @@ Current release info
 Installing openturns
 ====================
 
-Installing `openturns` from the `conda-forge` channel can be achieved by adding `conda-forge` to your channels with:
+Installing `openturns` from the `conda-forge/label/openturns_dev` channel can be achieved by adding `conda-forge/label/openturns_dev` to your channels with:
 
 ```
-conda config --add channels conda-forge
+conda config --add channels conda-forge/label/openturns_dev
 conda config --set channel_priority strict
 ```
 
-Once the `conda-forge` channel has been enabled, `openturns` can be installed with `conda`:
+Once the `conda-forge/label/openturns_dev` channel has been enabled, `openturns` can be installed with `conda`:
 
 ```
 conda install openturns
@@ -136,26 +73,26 @@ mamba install openturns
 It is possible to list all of the versions of `openturns` available on your platform with `conda`:
 
 ```
-conda search openturns --channel conda-forge
+conda search openturns --channel conda-forge/label/openturns_dev
 ```
 
 or with `mamba`:
 
 ```
-mamba search openturns --channel conda-forge
+mamba search openturns --channel conda-forge/label/openturns_dev
 ```
 
 Alternatively, `mamba repoquery` may provide more information:
 
 ```
 # Search all versions available on your platform:
-mamba repoquery search openturns --channel conda-forge
+mamba repoquery search openturns --channel conda-forge/label/openturns_dev
 
 # List packages depending on `openturns`:
-mamba repoquery whoneeds openturns --channel conda-forge
+mamba repoquery whoneeds openturns --channel conda-forge/label/openturns_dev
 
 # List dependencies of `openturns`:
-mamba repoquery depends openturns --channel conda-forge
+mamba repoquery depends openturns --channel conda-forge/label/openturns_dev
 ```
 
 
