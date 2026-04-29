@@ -10,7 +10,7 @@ source:
   sha256: 2b152d54530ff86512177231f0aba61afc4a2815686b18e574d6aebda4da36c3
 
 build:
-  number: 2
+  number: 3
   python:
     version_independent: true
   skip:
@@ -41,9 +41,9 @@ requirements:
     # - mpc
     - libblas
     - liblapack
-    - libxml2-devel
+    # - libxml2-devel
     # - tbb-devel
-    - cminpack
+    # - cminpack
     # - ceres-solver * *lgpl*
     # - glog
     # - nlopt
