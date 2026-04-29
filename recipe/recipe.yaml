@@ -1,18 +1,20 @@
 context:
-  version: "1.27"
+  version: "1.27.dev1"
 
 package:
   name: openturns
   version: ${{ version }}
 
 source:
-  url: https://github.com/openturns/openturns/archive/v${{ version }}.tar.gz
+  url: https://github.com/openturns/openturns/archive/v1.27.tar.gz
   sha256: 2b152d54530ff86512177231f0aba61afc4a2815686b18e574d6aebda4da36c3
 
 build:
-  number: 0
+  number: 1
   python:
     version_independent: true
+  skip:
+    - unix
 
 requirements:
   build:
@@ -40,31 +42,31 @@ requirements:
     - libblas
     - liblapack
     - libxml2-devel
-    - tbb-devel
+    # - tbb-devel
     - cminpack
-    - ceres-solver * *lgpl*
-    - glog
+    # - ceres-solver * *lgpl*
+    # - glog
     - nlopt
-    - dlib-cpp
-    - ipopt
-    - spectralib
-    - hdf5
-    - highs
-    - pagmo-devel
+    # - dlib-cpp
+    # - ipopt
+    # - spectralib
+    # - hdf5
+    # - highs
+    # - pagmo-devel
     - libboost-devel
-    - primesieve
-    - libcuba
-    - nanoflann
-    - zlib
+    # - primesieve
+    # - libcuba
+    # - nanoflann
+    # - zlib
     - if: not win
       then: coin-or-bonmin
   run:
     - python >=${{ python_min }}
     - dill
     - psutil
-    - tbb-devel
-    - highs
-    - ceres-solver * *lgpl*
+    # - tbb-devel
+    # - highs
+    # - ceres-solver * *lgpl*
   run_exports:
     - ${{ pin_subpackage('openturns', upper_bound='x.x') }}
 

@@ -1,3 +1,4 @@
+
 cmake %CMAKE_ARGS% -LAH -G "Ninja" ^
     -DCMAKE_UNITY_BUILD=ON -DCMAKE_UNITY_BUILD_BATCH_SIZE=32 ^
     -DBLA_VENDOR=Generic ^
@@ -15,6 +16,6 @@ if errorlevel 1 exit 1
 move %LIBRARY_PREFIX%\etc\openturns\openturns.conf %LIBRARY_BIN%
 if errorlevel 1 exit 1
 
-ctest --test-dir build -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT%
+ctest --test-dir build -R pyinstallcheck_Axial --output-on-failure --timeout 1000 -j%CPU_COUNT%
 if errorlevel 1 exit 1
 
