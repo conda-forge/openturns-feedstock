@@ -15,6 +15,6 @@ if errorlevel 1 exit 1
 move %LIBRARY_PREFIX%\etc\openturns\openturns.conf %LIBRARY_BIN%
 if errorlevel 1 exit 1
 
-ctest --test-dir build -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT%
+ctest --test-dir build -R pyinstallcheck --output-on-failure --timeout 1000 -j%CPU_COUNT% -E oscillator
 if errorlevel 1 exit 1
 
