@@ -1,0 +1,12 @@
+diff --git a/python/test/t_oscillator.py b/python/test/t_oscillator.py
+index 5fa4744be..5975ad9ca 100755
+--- a/python/test/t_oscillator.py
++++ b/python/test/t_oscillator.py
+@@ -27,6 +27,7 @@ optimAlgo.setMaximumResidualError(1.0e-3)
+ optimAlgo.setMaximumConstraintError(1.0e-3)
+ optimAlgo.setStartingPoint(distribution.getMean())
+ 
++ot.ResourceMap.SetAsScalar("Analytical-LimitStateToleranceFactor", 2e-3)
+ algo = ot.FORM(optimAlgo, event)
+ algo.run()
+ result = algo.getResult()
