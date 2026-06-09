@@ -37,13 +37,13 @@ libxml2_devel:
 macos_machine:
 - x86_64-apple-darwin13.4.0
 nlopt:
-- '2.10'
+- '2.11'
 python_min:
 - '3.10'
 target_platform:
 - osx-64
 tbb_devel:
-- '2022'
+- '2023'
 zip_keys:
 - - c_compiler_version
   - cxx_compiler_version
