@@ -1,5 +1,5 @@
 context:
-  version: "1.27"
+  version: "1.27.2"
 
 package:
   name: openturns
@@ -7,10 +7,10 @@ package:
 
 source:
   url: https://github.com/openturns/openturns/archive/v${{ version }}.tar.gz
-  sha256: 2b152d54530ff86512177231f0aba61afc4a2815686b18e574d6aebda4da36c3
+  sha256: 0af43d5b7cada6fcfb98d97e7bb9e89aee5c98eaac7320bbef6f9404d9a84c8e
 
 build:
-  number: 2
+  number: 0
   python:
     version_independent: true
 
