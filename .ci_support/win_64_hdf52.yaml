@@ -1,5 +1,7 @@
 c_compiler:
-- vs2022
+- vs
+c_compiler_version:
+- '2022'
 c_stdlib:
 - vs
 channel_sources:
@@ -7,13 +9,15 @@ channel_sources:
 channel_targets:
 - conda-forge main
 cxx_compiler:
-- vs2022
+- vs
+cxx_compiler_version:
+- '2022'
 glog:
 - '0.7'
 hdf5:
 - '2'
 ipopt:
-- 3.14.19
+- 3.14.20
 libblas:
 - 3.9.* *netlib
 libboost_devel:
@@ -23,11 +27,11 @@ libboost_headers:
 liblapack:
 - 3.9.* *netlib
 libxml2_devel:
-- '2.14'
+- '2.15'
 nlopt:
 - '2.11'
 python_min:
-- '3.10'
+- '3.11'
 target_platform:
 - win-64
 tbb_devel:
