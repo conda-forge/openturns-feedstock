@@ -1,5 +1,5 @@
 context:
-  version: "1.27.3"
+  version: "1.28"
 
 package:
   name: openturns
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/openturns/openturns/archive/v${{ version }}.tar.gz
-  sha256: 6cd10e65682a09a5c8f7b40e3b4926d64fc93dcdff19c0e432ec843886cc1bc2
+  sha256: 8d81ed39004c06b7d5e628daca545a09e4f6b04f790ce33acd4146473b61e1fa
 
 build:
   number: 0
@@ -19,7 +19,7 @@ requirements:
     - ${{ compiler('c') }}
     - ${{ stdlib("c") }}
     - ${{ compiler('cxx') }}
-    - cmake <4.4
+    - cmake
     - ninja
     - swig
     - if: linux
